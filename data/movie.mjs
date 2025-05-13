@@ -1,25 +1,44 @@
 import mongoose from "mongoose";
 
-const movieSchema = new mongoose.Schema(
+const movie_schema = new mongoose.Schema(
   {
-    movieId: { type: Number, unique: true }, // TMDb 고유 ID
+    movie_id: { type: Number, unique: true }, // TMDb 고유 ID
     title: String,
     overview: String,
-    releaseDate: String,
-    posterPath: String,
-    originalTitle: String,
-    genreIds: [Number],
+    release_date: String,
+    poster_path: String,
+    original_title: String,
+    genre_ids: [Number],
     popularity: Number,
-    originalLanguage: String,
+    original_language: String,
+    cast: [
+      {
+        name: String,
+        character: String,
+        profile_path: String,
+      },
+    ],
+    director: [
+      {
+        name: String,
+        profile_path: String,
+      },
+    ],
   },
   { versionKey: false }
 );
 
-export const Movie = mongoose.model("Movie", movieSchema);
+export const Movie = mongoose.model("movie", movie_schema);
 
-const genreSchema = new mongoose.Schema({
-  genreId: { type: Number, unique: true }, // TMDb genre_id
+const genre_schema = new mongoose.Schema({
+  genre_ids: { type: Number, unique: true }, // TMDb genre_id
   name: { type: String, required: true }, // 장르명 (한글 또는 영문)
 });
 
-export const Genre_name = mongoose.model("Genre", genreSchema);
+export const genre_name = mongoose.model("Genre", genre_schema);
+
+const cc_schema = new mongoose.Schema({
+  movie_id: { type: Number, unique: true },
+  crew: { type: String, required: true },
+  cast: { type: Array, required: true },
+});

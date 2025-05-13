@@ -2,12 +2,12 @@ import axios from "axios";
 import mongoose from "mongoose";
 import dotenv from "dotenv";
 import { config } from "./config.mjs";
-import { Genre_name } from "./data/movie.mjs"; // 또는 "../models/genre.js"
+import { genre_name } from "./data/movie.mjs"; // 또는 "../models/genre.js"
 dotenv.config();
 
 const API_KEY = process.env.TMDB_API_KEY;
 
-async function importGenres() {
+async function import_genres() {
   await mongoose.connect(config.db.url);
   console.log("✅ MongoDB 연결 완료");
 
@@ -19,14 +19,14 @@ async function importGenres() {
     name: g.name,
   }));
 
-  await Genre_name.deleteMany(); // 기존 데이터 초기화
-  await Genre_name.insertMany(genres);
+  await genre_name.deleteMany(); // 기존 데이터 초기화
+  await genre_name.insertMany(genres);
 
   console.log("🎉 장르 저장 완료");
   await mongoose.disconnect();
 }
 
-importGenres().catch(console.error);
+import_genres().catch(console.error);
 
 const moviesWithGenres = await Movie.aggregate([
   {

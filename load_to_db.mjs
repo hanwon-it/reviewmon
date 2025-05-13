@@ -33,20 +33,20 @@ async function delay(ms) {
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
 
-function formatDate(date) {
+function format_date(date) {
   return date.toISOString().slice(0, 10);
 }
 
-function getMonthRange(year, month) {
+function get_month_range(year, month) {
   const start = new Date(year, month, 1);
   const end = new Date(year, month + 1, 0);
   return {
-    gte: formatDate(start),
-    lte: formatDate(end),
+    gte: format_date(start),
+    lte: format_date(end),
   };
 }
 
-async function fetchMoviesByDateRange(gte, lte, page) {
+async function fetch_movies_by_date_range(gte, lte, page) {
   const url = `${BASE_URL}?api_key=${API_KEY}&language=ko-KR&sort_by=popularity.desc&primary_release_date.gte=${gte}&primary_release_date.lte=${lte}&page=${page}`;
   const { data } = await axios.get(url);
   return {
@@ -55,7 +55,7 @@ async function fetchMoviesByDateRange(gte, lte, page) {
   };
 }
 
-async function insertMovies(movies) {
+async function insert_movies(movies) {
   for (const movie of movies) {
     // 필수값 검사
     if (
@@ -74,21 +74,28 @@ async function insertMovies(movies) {
       continue;
     }
 
+    // popularity 필터링
+    if (typeof movie.popularity !== "number" || movie.popularity < 0.1) {
+      console.warn(
+        `🚫 popularity 너무 낮음 (${movie.popularity}): ${movie.title}`
+      );
+      continue;
+    }
+
     const doc = {
-      movieId: movie.id,
+      movie_id: movie.id,
       title: movie.title,
       overview: movie.overview || "",
-      releaseDate: movie.release_date,
-      posterPath: movie.poster_path || null,
-      originalTitle: movie.original_title || null,
-      genreIds: movie.genre_ids || [],
-      popularity:
-        typeof movie.popularity === "number" ? movie.popularity : null,
-      originalLanguage: lang,
+      release_date: movie.release_date,
+      poster_path: movie.poster_path || null,
+      original_title: movie.original_title || null,
+      genre_ids: movie.genre_ids || [],
+      popularity: movie.popularity,
+      original_language: lang,
     };
 
     await Movie.updateOne(
-      { movieId: movie.id },
+      { movie_id: movie.id },
       { $set: doc },
       { upsert: true }
     );
@@ -96,20 +103,17 @@ async function insertMovies(movies) {
   }
 }
 
-async function fetchAndInsertByMonth() {
+async function fetch_and_insert_by_month() {
   await mongoose.connect(config.db.url);
   console.log("✅ MongoDB 연결 완료");
 
   for (let year = START_YEAR; year <= END_YEAR; year++) {
     for (let month = 0; month < 12; month++) {
-      const { gte, lte } = getMonthRange(year, month);
+      const { gte, lte } = get_month_range(year, month);
       console.log(`📅 ${gte} ~ ${lte} 수집 시작`);
 
-      const { movies: firstMovies, totalPages } = await fetchMoviesByDateRange(
-        gte,
-        lte,
-        1
-      );
+      const { movies: firstMovies, totalPages } =
+        await fetch_movies_by_date_range(gte, lte, 1);
       if (firstMovies.length === 0) {
         console.log(`⚠️ ${gte} ~ ${lte} 데이터 없음`);
         continue;
@@ -117,18 +121,18 @@ async function fetchAndInsertByMonth() {
 
       for (let i = 0; i < firstMovies.length; i += BATCH_SIZE) {
         const batch = firstMovies.slice(i, i + BATCH_SIZE);
-        await insertMovies(batch);
+        await insert_movies(batch);
         if (i + BATCH_SIZE < firstMovies.length) await delay(DELAY_MS);
       }
 
       for (let page = 2; page <= totalPages; page++) {
         console.log(`📄 ${gte} ~ ${lte} - 페이지 ${page}`);
-        const { movies } = await fetchMoviesByDateRange(gte, lte, page);
+        const { movies } = await fetch_movies_by_date_range(gte, lte, page);
         if (!movies.length) break;
 
         for (let i = 0; i < movies.length; i += BATCH_SIZE) {
           const batch = movies.slice(i, i + BATCH_SIZE);
-          await insertMovies(batch);
+          await insert_movies(batch);
           if (i + BATCH_SIZE < movies.length) await delay(DELAY_MS);
         }
 
@@ -143,4 +147,4 @@ async function fetchAndInsertByMonth() {
   console.log("🎉 전체 월별 수집 완료");
 }
 
-fetchAndInsertByMonth().catch(console.error);
+fetch_and_insert_by_month().catch(console.error);
