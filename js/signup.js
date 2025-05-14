@@ -1,39 +1,100 @@
-// 비밀번호 일치 확인
-const pw = document.getElementById('password');
-const pwConfirm = document.getElementById('password_confirm');
-const pwMsg = document.getElementById('pw_check_msg');
+// 비밀번호 확인 실시간 체크
+const pwInput = document.getElementById("password");
+const pwConfirmInput = document.getElementById("password_confirm");
+const pwMsg = document.getElementById("pw_check_msg");
 
-if (pw && pwConfirm && pwMsg) {
-  function checkPwMatch() {
-    if (!pw.value || !pwConfirm.value) {
-      pwMsg.textContent = '';
+function checkPasswordMatch() {
+  const pw = pwInput.value;
+  const pwConfirm = pwConfirmInput.value;
+
+  if (pw && pwConfirm) {
+    if (pw === pwConfirm) {
+      pwMsg.textContent = "비밀번호가 일치합니다.";
+      pwMsg.style.color = "green";
+    } else {
+      pwMsg.textContent = "비밀번호가 일치하지 않습니다.";
+      pwMsg.style.color = "red";
+    }
+  } else {
+    pwMsg.textContent = "";
+  }
+}
+
+pwInput.addEventListener("input", checkPasswordMatch);
+pwConfirmInput.addEventListener("input", checkPasswordMatch);
+
+// 장르 선택 최대 3개 제한
+const genreCheckboxes = document.querySelectorAll('input[name="genre"]');
+genreCheckboxes.forEach((checkbox) => {
+  checkbox.addEventListener("change", () => {
+    const checkedCount = document.querySelectorAll(
+      'input[name="genre"]:checked'
+    ).length;
+    if (checkedCount > 3) {
+      checkbox.checked = false;
+      alert("장르는 최대 3개까지만 선택할 수 있습니다.");
+    }
+  });
+});
+
+// 약관 모달 열기 / 닫기
+const linkTerms = document.querySelector(".link_terms");
+const termsOverlay = document.getElementById("terms_overlay");
+const closeTerms = document.getElementById("terms_close");
+
+linkTerms.addEventListener("click", (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "block";
+});
+
+closeTerms.addEventListener("click", () => {
+  termsOverlay.style.display = "none";
+});
+
+// 아이디 중복 확인 (가짜 fetch 예시)
+const checkBtn = document.querySelector(".btn_check");
+const userIdInput = document.getElementById("user_id");
+
+checkBtn.addEventListener("click", async () => {
+  const userId = userIdInput.value.trim();
+  if (!userId) {
+    alert("아이디를 입력해주세요.");
+    return;
+  }
+
+  // TODO: 실제 서버 API 주소로 변경
+  try {
+    const res = await fetch(`/api/check-id?user_id=${userId}`);
+    const data = await res.json();
+
+    if (data.exists) {
+      alert("이미 사용 중인 아이디입니다.");
+    } else {
+      alert("사용 가능한 아이디입니다.");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("서버 오류로 확인에 실패했습니다.");
+  }
+});
+
+// 폼 제출 시 필수값 체크
+const form = document.querySelector(".signup_form");
+
+form.addEventListener("submit", (e) => {
+  const requiredFields = ["user_id", "password", "password_confirm", "name", "phone", "nickname", "email"];
+  for (let fieldId of requiredFields) {
+    const input = document.getElementById(fieldId);
+    if (!input.value.trim()) {
+      e.preventDefault();
+      alert(`${input.previousElementSibling.textContent}을(를) 입력해주세요.`);
+      input.focus();
       return;
     }
-    if (pw.value === pwConfirm.value) {
-      pwMsg.textContent = '비밀번호가 일치합니다.';
-      pwMsg.style.color = '#00b894';
-    } else {
-      pwMsg.textContent = '비밀번호가 일치하지 않습니다.';
-      pwMsg.style.color = '#ff7675';
-    }
   }
-  pw.addEventListener('input', checkPwMatch);
-  pwConfirm.addEventListener('input', checkPwMatch);
-}
 
-// 약관 오버레이 열기/닫기
-const termsOverlay = document.getElementById('terms_overlay');
-const termsClose = document.getElementById('terms_close');
-const linkTerms = document.querySelector('.link_terms');
-
-if (linkTerms && termsOverlay) {
-  linkTerms.onclick = (e) => {
+  if (!document.getElementById("agree_terms").checked) {
     e.preventDefault();
-    termsOverlay.style.display = 'flex';
-  };
-}
-if (termsClose && termsOverlay) {
-  termsClose.onclick = () => {
-    termsOverlay.style.display = 'none';
-  };
-} 
+    alert("이용약관에 동의해주세요.");
+  }
+});
