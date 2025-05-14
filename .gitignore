@@ -14,6 +14,8 @@ load_to_db.mjs
 
 test.mjs
 
+package-lock.json
+
 # 깃에 안 올릴 확장자
 *.sql
 
