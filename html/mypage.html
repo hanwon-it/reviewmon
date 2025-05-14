@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>마이 페이지 – review_mon</title>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/mypage.css" />
+    <style>
+      /* --- 모달 오버레이 --- */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal.open {
+        display: flex;
+      }
+
+      /* --- 모달 박스 --- */
+      .modal-content {
+        background: #d1d1d1;
+        padding: 24px;
+        border-radius: 12px;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      /* 안내 문구 */
+      .modal-text {
+        margin-bottom: 20px;
+        line-height: 1.4;
+        color: #000;
+      }
+
+      /* 버튼 그룹 */
+      .modal-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+      }
+
+      /* 공통 버튼 스타일 */
+      .modal-actions button {
+        flex: 1;
+        padding: 10px 0;
+        border: none;
+        border-radius: 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      /* “예” 버튼 */
+      .btn-confirm {
+        background-color: #8e79e0;
+        color: #fff;
+      }
+
+      /* “아니요” 버튼 */
+      .btn-cancel {
+        background-color: #8e79e0;
+        color: #fff;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- 헤더 -->
+    <header class="header">
+      <div class="logo">Review_mon</div>
+
+      <!-- 검색창 영역 -->
+      <div class="search_box">
+        <select class="search_category" id="search_category">
+          <option value="movie">영화정보</option>
+          <option value="person">감독/배우</option>
+          <option value="user">유저</option>
+        </select>
+
+        <input
+          type="text"
+          class="search_input"
+          id="search_input"
+          placeholder="검색어를 입력하세요"
+        />
+
+        <button class="search_btn" aria-label="검색">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+
+      <!-- 사용자 액션 -->
+      <div class="user_actions">
+        <button class="btn_mypage">마이페이지</button>
+        <button class="btn_logout">로그아웃</button>
+      </div>
+    </header>
+
+    <main class="my_page">
+      <h1>마이페이지</h1>
+
+      <!-- 프로필 섹션 -->
+      <section class="profile_section">
+        <h2>프로필</h2>
+        <div class="profile_fields">
+          <div class="field">
+            <div class="field">
+              <label for="user_id">아이디</label>
+              <input id="user_id" type="text" value="" readonly />
+            </div>
+            <div class="field">
+              <label for="join_date">가입일자</label>
+              <input id="join_date" type="text" value="" readonly />
+            </div>
+
+            <label for="nickname">닉네임</label>
+            <input id="nickname" type="text" value="현재닉네임" readonly />
+            <button class="btn_edit">수정</button>
+          </div>
+          <div class="field">
+            <label for="password">비밀번호 변경</label>
+            <input id="password" type="password" value="********" readonly />
+            <button class="btn_edit">수정</button>
+          </div>
+          <div class="field">
+            <label for="phone">휴대폰 번호</label>
+            <input id="phone" type="text" value="010-1234-5678" readonly />
+            <button class="btn_edit">수정</button>
+          </div>
+          <div class="field">
+            <label for="email">이메일</label>
+            <input id="email" type="email" value="user@example.com" readonly />
+            <button class="btn_edit">수정</button>
+          </div>
+        </div>
+      </section>
+
+      <hr />
+
+      <!-- 선호조사 섹션 -->
+      <section class="preferences_section">
+        <h2>선호조사</h2>
+        <div class="genre_buttons">
+          <span>내 선호장르</span>
+          <span class="genre_label">액션</span>
+          <span class="genre_label">모험</span>
+          <span class="genre_label">애니메이션</span>
+        </div>
+        <div class="field">
+          <label for="fav_actor">좋아하는 배우</label>
+          <input id="fav_actor" type="text" value="마동석, 황정민" readonly />
+          <button class="btn_add">추가</button>
+        </div>
+        <div class="field">
+          <label for="fav_director">좋아하는 감독</label>
+          <input id="fav_director" type="text" value="봉준호" readonly />
+          <button class="btn_add">추가</button>
+        </div>
+        <button class="btn_edit prefs_edit">수정</button>
+      </section>
+      <div class="withdrawal_section">
+        <button id="btn_withdrawal" class="btn_del_account">회원탈퇴</button>
+      </div>
+    </main>
+
+    <!-- 회원탈퇴 확인 모달 -->
+    <div id="withdrawalModal" class="modal">
+      <div class="modal-content">
+        <p class="modal-text">
+          회원탈퇴를 계속하시겠습니까?<br />
+          (회원탈퇴시 리뷰는 삭제되며 복구가 불가합니다)
+        </p>
+        <div class="modal-actions">
+          <button id="confirmWithdrawalBtn" class="btn-confirm">예</button>
+          <button id="cancelWithdrawalBtn" class="btn-cancel">아니요</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="footer">
+      <p>
+        문의: <a href="mailto:reviewmon@email.com">reviewmon@email.com</a> |
+        <a href="#" id="open_terms">이용약관</a> |
+        <a href="#" id="open_privacy">개인정보처리방침</a>
+      </p>
+    </footer>
+
+    <!-- 약관 오버레이 (회원가입에서 재활용) -->
+    <div class="terms_overlay" id="terms_overlay" style="display: none">
+      <div class="terms_modal">
+        <button class="terms_close" id="terms_close">&times;</button>
+        <h2 id="terms_title">이용약관</h2>
+        <div class="terms_content">
+          <p>
+            본 서비스는 영화 리뷰 제공 및 추천 서비스를 목적으로 하며, 회원은
+            본인의 계정을 통해 자유롭게 콘텐츠를 이용할 수 있습니다.
+          </p>
+          <p>
+            회원은 타인의 개인정보를 침해하거나 부정한 방법으로 서비스를
+            이용해서는 안 되며, 서비스 내의 콘텐츠는 상업적 용도로 무단 이용할
+            수 없습니다.
+          </p>
+          <p>
+            관리자는 예고 없이 서비스의 일부 또는 전부를 수정, 중단할 수 있으며,
+            회원의 부주의로 발생한 피해에 대해서는 책임지지 않습니다.
+          </p>
+          <p>
+            기타 자세한 이용 규정은 회사의 공식 안내 및 고객센터 공지를
+            따릅니다.
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // 약관 팝업 오픈/닫기 처리
+      const termsOverlay = document.getElementById("terms_overlay");
+      const termsTitle = document.getElementById("terms_title");
+
+      document.getElementById("open_terms").onclick = () => {
+        termsOverlay.style.display = "block";
+        termsTitle.textContent = "이용약관";
+      };
+      document.getElementById("open_privacy").onclick = () => {
+        termsOverlay.style.display = "block";
+        termsTitle.textContent = "개인정보처리방침";
+      };
+      document.getElementById("terms_close").onclick = () => {
+        termsOverlay.style.display = "none";
+      };
+
+      document.addEventListener("DOMContentLoaded", () => {
+        const btnWithdrawal = document.getElementById("btn_withdrawal");
+        const modal = document.getElementById("withdrawalModal");
+        const btnConfirm = document.getElementById("confirmWithdrawalBtn");
+        const btnCancel = document.getElementById("cancelWithdrawalBtn");
+
+        // 1) 모달 열기
+        btnWithdrawal.addEventListener("click", () => {
+          modal.classList.add("open");
+        });
+
+        // 2) 모달 닫기 (아니요)
+        btnCancel.addEventListener("click", () => {
+          modal.classList.remove("open");
+        });
+
+        // 3) 모달 바깥 클릭해도 닫히도록 (선택)
+        modal.addEventListener("click", (e) => {
+          if (e.target === modal) modal.classList.remove("open");
+        });
+
+        // 4) “예” 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
+        btnConfirm.addEventListener("click", async () => {
+          try {
+            const res = await fetch("/api/users/me", { method: "DELETE" });
+            if (res.ok) {
+              alert("회원탈퇴가 완료되었습니다.");
+              window.location.href = "/"; // index 페이지로 이동
+            } else {
+              throw new Error(res.status);
+            }
+          } catch (err) {
+            console.error("탈퇴 오류:", err);
+            alert("탈퇴 처리 중 오류가 발생했습니다.");
+          }
+        });
+      });
+    </script>
+
+    <script src="../js/mypage.js" type="module"></script>
+  </body>
+</html>
