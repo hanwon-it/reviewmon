@@ -35,10 +35,4 @@ const genre_schema = new mongoose.Schema({
   name: { type: String, required: true }, // 장르명 (한글 또는 영문)
 });
 
-export const genre_name = mongoose.model("Genre", genre_schema);
-
-const cc_schema = new mongoose.Schema({
-  movie_id: { type: Number, unique: true },
-  crew: { type: String, required: true },
-  cast: { type: Array, required: true },
-});
+export const Genre = mongoose.model("Genre", genre_schema);

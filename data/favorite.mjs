@@ -10,4 +10,4 @@ const favorite_schema = new Mongoose.Schema(
   { versionKey: false }
 );
 
-const favorite = Mongoose.model("favorite", favorite_schema);
+const Favorite = Mongoose.model("favorite", favorite_schema);
