@@ -51,7 +51,7 @@ closeTerms.addEventListener("click", () => {
   termsOverlay.style.display = "none";
 });
 
-// 아이디 중복 확인 (가짜 fetch 예시)
+// ✅ 실제 API 사용: 아이디 중복 확인
 const checkBtn = document.querySelector(".btn_check");
 const userIdInput = document.getElementById("user_id");
 
@@ -62,9 +62,8 @@ checkBtn.addEventListener("click", async () => {
     return;
   }
 
-  // TODO: 실제 서버 API 주소로 변경
   try {
-    const res = await fetch(`/api/check-id?user_id=${userId}`);
+    const res = await fetch(`/api/auth/check-id?user_id=${encodeURIComponent(userId)}`);
     const data = await res.json();
 
     if (data.exists) {
@@ -82,7 +81,15 @@ checkBtn.addEventListener("click", async () => {
 const form = document.querySelector(".signup_form");
 
 form.addEventListener("submit", (e) => {
-  const requiredFields = ["user_id", "password", "password_confirm", "name", "phone", "nickname", "email"];
+  const requiredFields = [
+    "user_id",
+    "password",
+    "password_confirm",
+    "name",
+    "phone",
+    "nickname",
+    "email"
+  ];
   for (let fieldId of requiredFields) {
     const input = document.getElementById(fieldId);
     if (!input.value.trim()) {
@@ -97,4 +104,6 @@ form.addEventListener("submit", (e) => {
     e.preventDefault();
     alert("이용약관에 동의해주세요.");
   }
+
+  // 👉 form의 action은 반드시 /api/auth/signup 으로 설정되어 있어야 합니다.
 });

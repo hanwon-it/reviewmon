@@ -1,4 +1,4 @@
-// 모달 열기
+// 모달 열기 / 닫기
 const openModalBtn = document.getElementById("open_find_modal");
 const closeModalBtn = document.getElementById("close_modal");
 const overlay = document.getElementById("overlay");
@@ -12,7 +12,7 @@ closeModalBtn.addEventListener("click", () => {
   overlay.style.display = "none";
 });
 
-// 아이디 찾기 (가짜 fetch 예시)
+// ✅ 아이디 찾기 (실제 API 경로 사용)
 document.getElementById("btn_find_id").addEventListener("click", async () => {
   const name = document.getElementById("find_id_name").value.trim();
   const email = document.getElementById("find_id_email").value.trim();
@@ -23,7 +23,7 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
   }
 
   try {
-    const res = await fetch(`/api/find-id?name=${name}&email=${email}`);
+    const res = await fetch(`/api/auth/find-id?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
     const data = await res.json();
 
     if (data.user_id) {
@@ -37,7 +37,7 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
   }
 });
 
-// 임시 비밀번호 전송
+// ✅ 임시 비밀번호 전송
 document
   .getElementById("btn_send_temp_pw")
   .addEventListener("click", async () => {
@@ -50,7 +50,7 @@ document
     }
 
     try {
-      const res = await fetch("/api/send-temp-password", {
+      const res = await fetch("/api/auth/find-pw", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
