@@ -13,7 +13,7 @@
 */
 
 import jwt from "jsonwebtoken";
-import * as authRepository from "../data/auth.mjs";
+import * as auth_repository from "../data/auth.mjs";
 import { config } from "../config.mjs";
 
 const AUTH_ERROR = { message: "인증에러" };
@@ -29,20 +29,20 @@ export const isAuth = async (req, res, next) => {
   const token = authHeader.split(" ")[1];
   console.log(token);
 
-  jwt.verify(token, config.jwt.secretKey, async (error, decoded) => {
+  jwt.verify(token, config.jwt.secret_key, async (error, decoded) => {
     if (error) {
       console.log("토큰 에러");
       return res.status(401).json(AUTH_ERROR);
     }
     console.log(decoded.id);
-    const user = await authRepository.findByid(decoded.id);
+    const user = await auth_repository.findByid(decoded.id);
     if (!user) {
       console.log("아이디 없음");
       return res.status(401).json(AUTH_ERROR);
     }
     console.log("user.id: ", user.id);
     console.log("user.userid: ", user.userid);
-    req.userid = user.userid;
+    req.id = user.id; //리퀘 아이디=옵젝 아이디
     next();
   });
 };
