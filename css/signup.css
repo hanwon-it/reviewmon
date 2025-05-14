@@ -7,6 +7,7 @@
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  background-image: url("./image/bg1.png");
   background-color: #121212;
   padding: 2rem;
 }

@@ -138,6 +138,18 @@ textarea {
   background-color: var(--color-primary-dark);
 }
 
+.btn_link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  padding: 0 12px;
+  font-size: 16px;
+  line-height: 1;
+  border: none;
+  cursor: pointer;
+}
+
 /* 리뷰 카드 */
 .reviews_section {
   margin-top: 3rem;
@@ -193,28 +205,49 @@ textarea {
 
 .cast_grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
-  gap: 1rem;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem 3rem;
   margin-top: 1rem;
 }
 
 .cast_item {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  text-align: left;
+  gap: 1.5rem;
+  justify-content: flex-start;
 }
 
 .cast_photo {
-  width: 100%;
+  width: 90px;
   aspect-ratio: 1 / 1;
   background-color: #ccc;
   border-radius: 10px;
-  margin-bottom: 0.5rem;
+  margin: 0;
+  flex-shrink: 0;
 }
 
 .cast_info {
-  font-size: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  font-size: 0.95rem;
   color: var(--color-text-sub);
   line-height: 1.3;
 }
+
+.cast_info .cast_name {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--color-text);
+  margin-bottom: 0.3rem;
+}
+
+.cast_info .cast_role {
+  font-size: 0.95rem;
+  color: var(--color-text-sub);
+}
+
 .terms_overlay {
   display: none; /* 기본 숨김 */
   position: fixed;
