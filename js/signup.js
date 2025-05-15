@@ -42,7 +42,11 @@ const terms_close = document.getElementById("terms_close");
 
 link_terms.addEventListener("click", (e) => {
   e.preventDefault();
+<<<<<<< HEAD
   terms_overlay.style.display = "flex";
+=======
+  terms_overlay.style.display = "block";
+>>>>>>> solbi
 });
 
 terms_close.addEventListener("click", () => {
@@ -58,10 +62,20 @@ check_btn.addEventListener("click", async () => {
   if (!userid) {
     alert("아이디를 입력해주세요.");
     return;
+<<<<<<< HEAD
   }
 
   try {
     const res = await fetch(`/api/auth/check-id?userid=${encodeURIComponent(userid)}`);
+=======
+    698;
+  }
+
+  try {
+    const res = await fetch(
+      `/api/auth/check-id?userid=${encodeURIComponent(userid)}`
+    );
+>>>>>>> solbi
     const data = await res.json();
 
     if (data.exists) {
@@ -88,7 +102,11 @@ signup_form.addEventListener("submit", async (e) => {
     "name",
     "phone",
     "nickname",
+<<<<<<< HEAD
     "email"
+=======
+    "email",
+>>>>>>> solbi
   ];
 
   for (let field_id of required_fields) {
@@ -117,7 +135,13 @@ signup_form.addEventListener("submit", async (e) => {
     hp: document.getElementById("phone").value.trim(),
     nickname: document.getElementById("nickname").value.trim(),
     email: document.getElementById("email").value.trim(),
+<<<<<<< HEAD
     genre: Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(el => el.value),
+=======
+    genre: Array.from(
+      document.querySelectorAll('input[name="genre"]:checked')
+    ).map((el) => el.value),
+>>>>>>> solbi
     actor: document.getElementById("actors").value.trim(),
     director: document.getElementById("directors").value.trim(),
   };
@@ -126,7 +150,11 @@ signup_form.addEventListener("submit", async (e) => {
     const res = await fetch("/api/auth/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
+<<<<<<< HEAD
       body: JSON.stringify(data)
+=======
+      body: JSON.stringify(data),
+>>>>>>> solbi
     });
 
     if (res.status === 201) {

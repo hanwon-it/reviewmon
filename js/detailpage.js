@@ -67,6 +67,10 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> solbi
 // 영화 상세 정보 로딩
 async function load_movie_details(movie_id) {
   try {
@@ -130,6 +134,7 @@ function get_movie_id_from_url() {
   return params.get("movie_id");
 }
 
+<<<<<<< HEAD
 // 약관/개인정보 모달 처리
 document.getElementById("open_terms").onclick = () => {
   document.getElementById("terms_overlay").style.display = "flex";
@@ -140,6 +145,22 @@ document.getElementById("open_privacy").onclick = () => {
   document.getElementById("terms_overlay").style.display = "flex";
   document.getElementById("terms_title").textContent = "개인정보처리방침";
 };
+=======
+const termsOverlay = document.getElementById("terms_overlay");
+const termsTitle = document.getElementById("terms_title");
+
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
+};
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
+};
+
+>>>>>>> solbi
 
 document.getElementById("terms_close").onclick = () => {
   document.getElementById("terms_overlay").style.display = "none";

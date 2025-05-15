@@ -25,7 +25,13 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
       alert("로그인 성공!");
       window.location.href = "/main.html";
     } else {
+<<<<<<< HEAD
       alert(data.message || "로그인 실패: 아이디 또는 비밀번호를 확인해주세요.");
+=======
+      alert(
+        data.message || "로그인 실패: 아이디 또는 비밀번호를 확인해주세요."
+      );
+>>>>>>> solbi
     }
   } catch (err) {
     console.error("로그인 오류:", err);
@@ -58,7 +64,15 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
   }
 
   try {
+<<<<<<< HEAD
     const res = await fetch(`/api/auth/find-id?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
+=======
+    const res = await fetch(
+      `/api/auth/find-id?name=${encodeURIComponent(
+        name
+      )}&email=${encodeURIComponent(email)}`
+    );
+>>>>>>> solbi
     const data = await res.json();
 
     if (data.userid) {
@@ -73,6 +87,7 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
 });
 
 // 임시 비밀번호 전송
+<<<<<<< HEAD
 document.getElementById("btn_send_temp_pw").addEventListener("click", async () => {
   const userid = document.getElementById("find_pw_id").value.trim();
   const email = document.getElementById("find_pw_email").value.trim();
@@ -101,3 +116,35 @@ document.getElementById("btn_send_temp_pw").addEventListener("click", async () =
     alert("서버 오류로 임시 비밀번호 전송에 실패했습니다.");
   }
 });
+=======
+document
+  .getElementById("btn_send_temp_pw")
+  .addEventListener("click", async () => {
+    const userid = document.getElementById("find_pw_id").value.trim();
+    const email = document.getElementById("find_pw_email").value.trim();
+
+    if (!userid || !email) {
+      alert("아이디와 이메일을 모두 입력해주세요.");
+      return;
+    }
+
+    try {
+      const res = await fetch("/api/auth/find-pw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userid, email }),
+      });
+
+      const result = await res.json();
+
+      if (result.success) {
+        alert("임시 비밀번호가 이메일로 전송되었습니다.");
+      } else {
+        alert(result.message || "일치하는 회원 정보가 없습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("서버 오류로 임시 비밀번호 전송에 실패했습니다.");
+    }
+  });
+>>>>>>> solbi

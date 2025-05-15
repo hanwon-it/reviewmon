@@ -95,7 +95,11 @@
   cursor: pointer;
 }
 textarea {
+<<<<<<< HEAD
   width: 100%;
+=======
+  width: 93.5%;
+>>>>>>> solbi
   padding: 1rem;
   border-radius: 10px;
   border: none;
@@ -128,7 +132,11 @@ textarea {
   padding: 0 12px;
   font-size: 16px;
   line-height: 1;
+<<<<<<< HEAD
   background-color: #7f75ff;
+=======
+  background-color: var(--color-primary);
+>>>>>>> solbi
   color: #fff;
   border: none;
   cursor: pointer;
@@ -179,8 +187,13 @@ textarea {
 }
 .cast_grid {
   display: grid;
+<<<<<<< HEAD
   grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
   gap: 3rem;
+=======
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2.5rem 3rem;
+>>>>>>> solbi
   margin-top: 1rem;
 }
 .cast_item {
@@ -216,6 +229,7 @@ textarea {
   font-size: 0.95rem;
   color: var(--color-text-sub);
 }
+<<<<<<< HEAD
 .terms_overlay {
   display: none; /* 기본 숨김 */
   position: fixed;
@@ -304,3 +318,5 @@ textarea {
   line-height: 1;
   padding: 0;
 }
+=======
+>>>>>>> solbi

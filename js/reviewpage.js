@@ -26,6 +26,10 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> solbi
 // 정렬 기반 리뷰 불러오기
 async function load_reviews(sort_type) {
   let endpoint = "";
@@ -116,6 +120,7 @@ function render_reviews(reviews) {
     review_cards.appendChild(card);
   });
 }
+<<<<<<< HEAD
 
 // 약관/개인정보 팝업
 document.getElementById("open_terms").onclick = () => {
@@ -130,6 +135,28 @@ document.getElementById("open_privacy").onclick = () => {
 
 document.getElementById("terms_close").onclick = () => {
   document.getElementById("terms_overlay").style.display = "none";
+=======
+// 약관 팝업 오픈/닫기 처리
+const termsOverlay = document.getElementById("terms_overlay");
+const termsTitle = document.getElementById("terms_title");
+
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
+};
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
+};
+
+document.getElementById("terms_close").onclick = () => {
+
+  termsOverlay.style.display = "none";
+};
+
+>>>>>>> solbi
 };
 
 
@@ -153,4 +180,9 @@ const reviews = [
 ];
 
 
+<<<<<<< HEAD
 render_reviews(reviews); //테스트용 데이터
+=======
+render_reviews(reviews); //테스트용 데이터
+
+>>>>>>> solbi

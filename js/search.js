@@ -3,6 +3,10 @@ document.addEventListener("DOMContentLoaded", () => {
   const category_label = document.getElementById("selected_category_label");
   const keyword_label = document.getElementById("searched_keyword");
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> solbi
   // 1. 쿼리 파라미터에서 category, keyword 추출
   const params = new URLSearchParams(window.location.search);
   const category = params.get("category");
@@ -92,6 +96,7 @@ async function search_data(keyword, category) {
 }
 
 // 약관/개인정보 팝업
+<<<<<<< HEAD
 document.getElementById("open_terms").onclick = () => {
   document.getElementById("terms_overlay").style.display = "flex";
   document.getElementById("terms_title").textContent = "이용약관";
@@ -105,3 +110,20 @@ document.getElementById("open_privacy").onclick = () => {
 document.getElementById("terms_close").onclick = () => {
   document.getElementById("terms_overlay").style.display = "none";
 };
+=======
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
+};
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
+};
+
+document.getElementById("terms_close").onclick = () => {
+  termsOverlay.style.display = "none";
+};
+
+>>>>>>> solbi

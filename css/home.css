@@ -66,7 +66,10 @@
   background: rgba(0, 0, 0, 0.7);
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> solbi
 .banner-indicators {
   position: absolute;
   left: 50%;
@@ -91,7 +94,10 @@
   box-shadow: 0 0 0 2px #888;
 }
 
+<<<<<<< HEAD
 
+=======
+>>>>>>> solbi
 .movie_section,
 .ad_banner {
   width: 80%;
@@ -112,7 +118,11 @@
 
 .movie_section h2 {
   margin-top: 20px;
+<<<<<<< HEAD
   margin-bottom: 32px;
+=======
+  margin-bottom: 24px;
+>>>>>>> solbi
   font-size: 1.3rem;
   color: #fff;
 }
@@ -120,6 +130,7 @@
 .movie_slider_wrapper {
   display: flex;
   align-items: center;
+<<<<<<< HEAD
   justify-content: center; /* 좌우 버튼 정중앙 위치 */
   gap: 1rem;
   position: relative;
@@ -154,20 +165,34 @@
 }
 .arrow_btn:hover {
   background: rgba(255, 255, 255, 0.4);
+=======
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  overflow: visible; /* 핵심 수정: padding 제거, 잘림 방지 */
+>>>>>>> solbi
 }
 
 .movie_carousel {
   display: flex;
+<<<<<<< HEAD
   gap: 2.5rem;
   width: 100%;
   justify-content: center;
   padding: 0 56px;
+=======
+  gap: 2rem;
+  /* padding: 0 3rem; 좌우 여백 확보 (핵심 수정) */
+  flex: 1;
+  justify-content: flex-start; /* 가운데 → 왼쪽 정렬로 변경 */
+>>>>>>> solbi
   box-sizing: border-box;
 }
 
 .movie_card {
   background: none;
   border-radius: 12px;
+<<<<<<< HEAD
   overflow: hidden;
   width: 210px;
   min-width: 210px;
@@ -179,6 +204,21 @@
 .movie_poster {
   width: 210px;
   height: 300px;
+=======
+  overflow: visible; /* ✅ 잘림 방지 */
+  width: 190px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex: 0 0 auto;
+  padding-bottom: 8px; /* ✅ 하단 여유 공간 확보 */
+  box-sizing: border-box;
+}
+
+.movie_poster {
+  width: 200px;
+  height: 280px;
+>>>>>>> solbi
   border-radius: 12px;
   overflow: hidden;
   background: #222;
@@ -199,6 +239,7 @@
   color: #ccc;
 }
 
+<<<<<<< HEAD
 /* 이용약관 팝업 */
 .terms_overlay {
   display: none;
@@ -328,6 +369,8 @@
 }
 
 /* 6. 좌우 화살표 */
+=======
+>>>>>>> solbi
 .arrow_btn {
   position: absolute;
   top: 50%;
@@ -345,6 +388,7 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+<<<<<<< HEAD
 }
 .arrow_btn.prev {
   left: -24px; /* 살짝 바깥으로 */
@@ -356,3 +400,22 @@
   background: rgba(255, 255, 255, 0.4);
 }
 
+=======
+  pointer-events: auto;
+}
+
+/* ✅ 겹치게! */
+.arrow_btn.prev {
+  left: -24px;
+  top: 150px;
+}
+
+.arrow_btn.next {
+  right: 10px;
+  top: 150px;
+}
+
+.arrow_btn:hover {
+  background: rgba(255, 255, 255, 0.4);
+}
+>>>>>>> solbi
