@@ -26,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
+
 // 정렬 기반 리뷰 불러오기
 async function load_reviews(sort_type) {
   let endpoint = "";
@@ -116,20 +117,26 @@ function render_reviews(reviews) {
     review_cards.appendChild(card);
   });
 }
+// 약관 팝업 오픈/닫기 처리
+const termsOverlay = document.getElementById("terms_overlay");
+const termsTitle = document.getElementById("terms_title");
 
-// 약관/개인정보 팝업
-document.getElementById("open_terms").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "이용약관";
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
 };
-
-document.getElementById("open_privacy").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "개인정보처리방침";
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
 };
 
 document.getElementById("terms_close").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "none";
+
+  termsOverlay.style.display = "none";
+};
+
 };
 
 
@@ -154,3 +161,4 @@ const reviews = [
 
 
 render_reviews(reviews); //테스트용 데이터
+

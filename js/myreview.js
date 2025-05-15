@@ -168,7 +168,11 @@ async function delete_review(idx) {
     console.error(err);
     alert("리뷰 삭제 실패");
   }
-}
+});
+
+// 초기 렌더링
+renderReviewCards();
+
 
 async function fetch_nickname(token) {
   try {
@@ -184,17 +188,21 @@ async function fetch_nickname(token) {
   }
 }
 
-// 약관/개인정보 팝업
-document.getElementById("open_terms").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "이용약관";
-};
+// 약관 팝업 오픈/닫기 처리
+const termsOverlay = document.getElementById("terms_overlay");
+const termsTitle = document.getElementById("terms_title");
 
-document.getElementById("open_privacy").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "개인정보처리방침";
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
 };
-
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
+};
 document.getElementById("terms_close").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "none";
+  termsOverlay.style.display = "none";
 };
+
