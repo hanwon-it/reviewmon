@@ -2,6 +2,12 @@ import * as auth_repository from "../data/auth.mjs";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
+import mongoose from "mongoose";
+import { user_schema } from "../data/users.mjs";
+import { movie_schema } from "../data/movies.mjs";
+import { favorite_schema } from "../data/favorite.mjs";
+import { review_schema } from "../data/reviews.mjs";
+import { rating_out_schema } from "../data/rating_out.mjs";
 
 const secret_key = config.jwt.secret_key;
 const bcrypt_salt_rounds = config.bcrypt.salt_rounds;
@@ -14,23 +20,47 @@ async function create_jwt_token(id) {
 export async function signup(req, res, next) {
   const { userid, password, name, email, nickname, hp } = req.body;
 
-  // 회원 중복 체크
-  const found = await auth_repository.find_by_userid(userid);
-  if (found) {
-    return res.status(409).json({ message: `${userid}이 이미 있습니다.` });
+  // id 중복 체크
+  const found_userid = await auth_repository.find_by_userid(userid);
+  if (found_userid) {
+    return res
+      .status(409)
+      .json({ message: `${userid} 아이디가 이미 있습니다.` });
   }
 
   const hashed = bcrypt.hashSync(password, bcrypt_salt_rounds);
   const users = await auth_repository.create_user({
-    userid, password, name, email, nickname, hp
+    userid,
+    password: hashed,
+    name,
+    email,
+    nickname,
+    hp,
   });
+
   const token = await create_jwt_token(users.id);
   console.log(token);
   if (users) {
-    res.status(201).json({ token, userid });
+    res.status(201).json({ userid, token });
   }
 }
 
+// 아이디 중복체크(DB 입력 전 재확인 필요하므로 회원가입 검증은 수정 불요)
+export async function check_userid(req, res, next) {
+  const userid = req.query;
+  const found_userid = await auth_repository.find_by_userid(userid);
+  try {
+    if (found_userid !== null) {
+      res.status(409).json({ exists: user });
+    } else {
+      res.status(200).json(`가입 가능`);
+    }
+  } catch {
+    res.status(400).json(`실패`);
+  }
+}
+
+// 로그인
 export async function login(req, res, next) {
   const { userid, password } = req.body;
   const user = await auth_repository.find_by_userid(userid);
@@ -39,13 +69,14 @@ export async function login(req, res, next) {
   }
   const is_valid_password = await bcrypt.compare(password, user.password);
   if (!is_valid_password) {
-    return res.status(401).json({ message: "아이디 또는 비밀번호 확인" });
+    return res.status(401).json({ message: "아이디 또는 비밀번호 확인 바람" });
   }
 
   const token = await create_jwt_token(user.id);
   res.status(200).json({ token, userid });
 }
 
+/*
 export async function verify(req, res, next) {
   const id = req.id;
   if (id) {
@@ -55,6 +86,7 @@ export async function verify(req, res, next) {
   }
 }
 
+// 사용자 조회
 export async function me(req, res, next) {
   const user = await auth_repository.find_by_id(req.id);
   if (!user) {
@@ -64,12 +96,12 @@ export async function me(req, res, next) {
 }
 
 // 로그아웃
-// 세션에 저장된 유저 정보를 삭제하는 함수
+// 토큰에 저장된 유저 정보를 삭제하는 함수
 export async function logout(req, res, next) {
   const { userid, token } = req.body;
-  //const data = await auth_repository.userCheck(userid);
   const user = await auth_repository.find_by_userid(userid);
   if (user && token !== null) {
+    // 토큰 삭제 / 무효화 로직
     //req.session.destroy(() => {
     res.sendStatus(200); //.json({ message: `로그아웃 되셨습니다.` });
     //});
@@ -81,13 +113,48 @@ export async function logout(req, res, next) {
 }
 
 // 내 회원 정보 가져오기
-
-
-// 이메일로 비번 찾기
-
+export async function logout(req, res, next) {
+  const { userid, token } = req.body;
+  //const data = await auth_repository.userCheck(userid);
+  //user 테이블 내 모든 값 json + review 기준 timestamp 가장 최신순 3개 json
+  const user_and_review = await auth_repository.load_mypage(userid);
+  if (user && token !== null) {
+    //req.session.destroy(() => {
+    res.status(200).json(user_and_review);
+    //});
+  } else {
+    res.status(404).json({
+      message: `현재 로그인 돼 있지 않습니다.`,
+    });
+  }
+}
 
 // 이메일로 아이디 찾기
+export async function find_id_by_email(req, res, next) {
+  const { name, email } = req.body;
+  const found_userid = await auth_repository.find_id_by_email(name, email);
+  if (name && email !== null) {
+    res.status(200).json(found_userid);
+  } else {
+    res.status(404); //.json({
+      //message: `아름과 이메일 정보가 없습니다.`,
+    //});
+    
+  }
+}
 
+// 이메일로 비번 찾기
+export async function find_pw_by_email(req, res, next) {
+  const { userid, email } = req.body;
+  const found_password = await auth_repository.find_pw_by_email(userid, email);
+  if (userid && email !== null) {
+    res.status(200).json(found_password);
+  } else {
+    res.status(404); //.json({
+      //message: `현재 로그인 돼 있지 않습니다.`,
+    //});
+  }
+}
 
 // 내 회원 정보 수정
 export async function update_user(req, res, next) {
@@ -95,11 +162,11 @@ export async function update_user(req, res, next) {
   try {
     // 유효성 검증
     if (!userid) {
-      return res.status(400);//.json({ message: '입력값이 부족합니다.' });
+      return res.status(400); //.json({ message: '입력값이 부족합니다.' });
     }
 
     // 업데이트(mongoose 변경)
-    await db.collection('users').updateOne(
+    await db.collection("users").updateOne(
       { userid: userid },
       {
         $set: {
@@ -113,8 +180,9 @@ export async function update_user(req, res, next) {
       { upsert: true }
     );
 
-    return res.status(200);//.json({ message: '취향 정보가 업데이트되었습니다.' });
-  }
+    return res.status(200); //.json({ message: '취향 정보가 업데이트되었습니다.' });
+  } catch {}
+}
 
 // 탈퇴
 export async function signup(req, res, next) {
@@ -147,11 +215,11 @@ export async function update_favorite(req, res, next) {
   try {
     // 유효성 검증
     if (!userid || (!genre && !cast && !director)) {
-      return res.status(400);//.json({ message: '입력값이 부족합니다.' });
+      return res.status(400); //.json({ message: '입력값이 부족합니다.' });
     }
 
     // 업데이트(mongoose 변경)
-    await db.collection('favorite').updateOne(
+    await db.collection("favorite").updateOne(
       { userid: parseInt(userid) },
       {
         $set: {
@@ -163,10 +231,12 @@ export async function update_favorite(req, res, next) {
       { upsert: true }
     );
 
-    return res.status(200);//.json({ message: '취향 정보가 업데이트되었습니다.' });
-  } /*catch (err) {
+    return res.status(200); //.json({ message: '취향 정보가 업데이트되었습니다.' });
+  } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: '서버 오류' });*/
-
+    return res.status(500); //.json({ message: '서버 오류' });
+  }
+}
 
 // 유저 닉네임 검색
+*/

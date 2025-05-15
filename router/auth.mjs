@@ -30,6 +30,15 @@ const validate_logout = [...validate_login];
 // http://127.0.0.1:8080/auth/signup
 router.post("/auth/signup", validate_signup, auth_controller.signup);
 
+// 1-1. 아이디 중복 체크
+// GET
+// http://127.0.0.1:8080/auth/check-userid
+router.post(
+  "/auth/check-userid",
+  validate_signup,
+  auth_controller.check_userid
+);
+
 // 2. 로그인
 // POST
 // http://{baseUrl}/auth/login

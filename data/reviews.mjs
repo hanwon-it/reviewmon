@@ -34,6 +34,51 @@ export async function getById(id) {
     .then(map_optional_review);
 }
 
+import { client } from "./esClient.mjs"; // Elasticsearch client 연결
+
+// idx 배열을 기준으로 리뷰 불러오고 정렬하는 공통 함수
+async function fetchAndSortBy(field, direction, idxList) {
+  const response = await client.search({
+    index: "reviews",
+    size: idxList.length,
+    body: {
+      query: {
+        terms: {
+          idx: idxList,
+        },
+      },
+      sort: [
+        {
+          [field]: {
+            order: direction, // 'asc' or 'desc'
+          },
+        },
+      ],
+    },
+  });
+
+  return response.hits.hits.map((hit) => hit._source);
+}
+
+// 평점순 정렬
+export async function sortByRating(idxList, up) {
+  return await fetchAndSortBy("rating", up ? "desc" : "asc", idxList);
+}
+
+// 좋아요 수 정렬
+export async function sortByLikes(idxList, up) {
+  return await fetchAndSortBy("like_cnt", up ? "desc" : "asc", idxList);
+}
+
+// 작성일 순 정렬
+export async function sortByDate(idxList, recentFirst = true) {
+  return await fetchAndSortBy(
+    "timestamp",
+    recentFirst ? "desc" : "asc",
+    idxList
+  );
+}
+
 // 리뷰 작성
 export async function create(text, id) {
   console.log("유저 분별용 object id: ", id);
