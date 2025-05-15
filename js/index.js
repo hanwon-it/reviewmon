@@ -21,6 +21,7 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
 
     if (res.status === 200 && data.token) {
       localStorage.setItem("token", data.token);
+      localStorage.setItem("userid", userid);
       alert("로그인 성공!");
       window.location.href = "/main.html";
     } else {
