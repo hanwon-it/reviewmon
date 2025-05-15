@@ -2,18 +2,6 @@ import * as user_repository from "../data/user.mjs";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-import mongoose from "mongoose";
-import { user_schema } from "../data/users.mjs";
-import { movie_schema } from "../data/movies.mjs";
-import { favorite_schema } from "../data/favorite.mjs";
-import { review_schema } from "../data/reviews.mjs";
-import { rating_out_schema } from "../data/rating_out.mjs";
->>>>>>> 3252ad4cee4c47a2cd5708d98dc4400f27784a92
->>>>>>> solbi
 
 const secret_key = config.jwt.secret_key;
 const bcrypt_salt_rounds = config.bcrypt.salt_rounds;
@@ -26,14 +14,8 @@ async function create_jwt_token(id) {
 export async function signup(req, res, next) {
   const { userid, password, name, email, nickname, hp } = req.body;
 
-<<<<<<< HEAD
   console.log(req.body);
-=======
-<<<<<<< HEAD
-  console.log(req.body);
-=======
->>>>>>> 3252ad4cee4c47a2cd5708d98dc4400f27784a92
->>>>>>> solbi
+
   // id 중복 체크
   const found_userid = await user_repository.find_by_userid(userid);
   if (found_userid) {
@@ -77,14 +59,9 @@ export async function check_userid(req, res, next) {
 // 로그인
 export async function login(req, res, next) {
   const { userid, password } = req.body;
-<<<<<<< HEAD
+
   console.log(req.body);
-=======
-<<<<<<< HEAD
-  console.log(req.body);
-=======
->>>>>>> 3252ad4cee4c47a2cd5708d98dc4400f27784a92
->>>>>>> solbi
+
   const user = await user_repository.find_by_userid(userid);
   if (!user) {
     res.status(401).json(`${userid} 아이디를 찾을 수 없음`);
