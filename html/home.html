@@ -54,6 +54,7 @@
     <div class="main-banner-slider">
       <div class="banner-track">
         <a href="https://example.com/1" class="banner-link" target="_blank">
+
           <img
             src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20150203_267%2F1422954366520nmAor_JPEG%2Fmovie_image.jpg"
             alt="배너1"
@@ -73,17 +74,21 @@
             alt="배너3"
             class="banner-img"
           />
+
         </a>
         <!-- 필요하면 배너 추가 -->
       </div>
       <button class="banner-arrow left" aria-label="이전 배너">&#10094;</button>
+
       <button class="banner-arrow right" aria-label="다음 배너">
         &#10095;
       </button>
+
       <div class="banner-indicators">
         <span class="indicator active"></span>
         <span class="indicator"></span>
         <span class="indicator"></span>
+
         <!-- 배너 개수만큼 span 추가 -->
       </div>
     </div>
@@ -334,6 +339,7 @@
     </script>
 
     <script>
+
       const bannerTrack = document.querySelector(".banner-track");
       const banners = document.querySelectorAll(".banner-link");
       const indicators = document.querySelectorAll(
@@ -385,6 +391,7 @@
       // 자동 슬라이드 시작
       showBanner(0);
       autoSlide();
+
     </script>
 
     <script src="../js/home.js"></script>
