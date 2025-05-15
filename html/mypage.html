@@ -1,4 +1,7 @@
+<<<<<<< HEAD \<!DOCTYPE html>
+=======
 <!DOCTYPE html>
+>>>>>>> solbi
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,6 +9,71 @@
     <title>마이 페이지 – review_mon</title>
     <link rel="stylesheet" href="../css/common.css" />
     <link rel="stylesheet" href="../css/mypage.css" />
+    <<<<<<< HEAD
+    <!-- <style>
+      /* --- 모달 오버레이 --- */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.6);
+        justify-content: center;
+        align-items: center;
+        z-index: 1000;
+      }
+      .modal.open {
+        display: flex;
+      }
+
+      /* --- 모달 박스 --- */
+      .modal-content {
+        background: #d1d1d1;
+        padding: 24px;
+        border-radius: 12px;
+        max-width: 400px;
+        text-align: center;
+      }
+
+      /* 안내 문구 */
+      .modal-text {
+        margin-bottom: 20px;
+        line-height: 1.4;
+        color: #000;
+      }
+
+      /* 버튼 그룹 */
+      .modal-actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+      }
+
+      /* 공통 버튼 스타일 */
+      .modal-actions button {
+        flex: 1;
+        padding: 10px 0;
+        border: none;
+        border-radius: 20px;
+        font-size: 16px;
+        cursor: pointer;
+      }
+
+      /* “예” 버튼 */
+      .btn-confirm {
+        background-color: #8e79e0;
+        color: #fff;
+      }
+
+      /* “아니요” 버튼 */
+      .btn-cancel {
+        background-color: #8e79e0;
+        color: #fff;
+      }
+    </style> -->
+    ======= >>>>>>> solbi
   </head>
   <body>
     <!-- 헤더 -->
@@ -192,125 +260,133 @@
     </div>
 
     <script>
-      // 선호장르 수정 팝업 열기 버튼 연결
-      document
-        .querySelector(".btn_prefs_edit")
-        .addEventListener("click", () => {
-          document
-            .getElementById("genre_preferences_modal")
-            .classList.add("open");
-        });
+            // 선호장르 수정 팝업 열기 버튼 연결
+            document
+              .querySelector(".btn_prefs_edit")
+              .addEventListener("click", () => {
+                document
+                  .getElementById("genre_preferences_modal")
+                  .classList.add("open");
+              });
 
-      // 닫기 버튼 연결
-      document
-        .getElementById("genre_preferences_cancel")
-        .addEventListener("click", () => {
-          document
-            .getElementById("genre_preferences_modal")
-            .classList.remove("open");
-        });
+            // 닫기 버튼 연결
+            document
+              .getElementById("genre_preferences_cancel")
+              .addEventListener("click", () => {
+                document
+                  .getElementById("genre_preferences_modal")
+                  .classList.remove("open");
+              });
 
-      // 토글 버튼 처리
-      document.querySelectorAll(".genre-toggle").forEach((button) => {
-        button.addEventListener("click", () => {
-          const selected = document.querySelectorAll(".genre-toggle.selected");
-          if (!button.classList.contains("selected") && selected.length >= 3) {
-            alert("최대 3개까지 선택할 수 있습니다.");
-            return;
-          }
-          button.classList.toggle("selected");
-        });
-      });
-
-      // 저장 버튼 클릭
-      document
-        .getElementById("genre_preferences_confirm")
-        .addEventListener("click", async () => {
-          const selectedGenres = Array.from(
-            document.querySelectorAll(".genre-toggle.selected")
-          ).map((btn) => btn.dataset.genre);
-
-          if (selectedGenres.length === 0) {
-            alert("최소 한 개 이상 선택해주세요.");
-            return;
-          }
-
-          // API 연동 부분 (예시)
-          try {
-            const res = await fetch("/api/favorite/update", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ genres: selectedGenres }),
+            // 토글 버튼 처리
+            document.querySelectorAll(".genre-toggle").forEach((button) => {
+              button.addEventListener("click", () => {
+                const selected = document.querySelectorAll(".genre-toggle.selected");
+                if (!button.classList.contains("selected") && selected.length >= 3) {
+                  alert("최대 3개까지 선택할 수 있습니다.");
+                  return;
+                }
+                button.classList.toggle("selected");
+              });
             });
 
-            const result = await res.json();
-            if (res.ok) {
-              alert("선호 장르가 저장되었습니다.");
-              document
-                .getElementById("genre_preferences_modal")
-                .classList.remove("open");
-            } else {
-              alert("저장 실패: " + result.message);
-            }
-          } catch (err) {
-            console.error(err);
-            alert("오류가 발생했습니다.");
-          }
-        });
+            // 저장 버튼 클릭
+            document
+              .getElementById("genre_preferences_confirm")
+              .addEventListener("click", async () => {
+                const selectedGenres = Array.from(
+                  document.querySelectorAll(".genre-toggle.selected")
+                ).map((btn) => btn.dataset.genre);
 
-      // 약관 팝업 오픈/닫기 처리
-      const termsOverlay = document.getElementById("terms_overlay");
-      const termsTitle = document.getElementById("terms_title");
+                if (selectedGenres.length === 0) {
+                  alert("최소 한 개 이상 선택해주세요.");
+                  return;
+                }
 
-      document.getElementById("open_terms").onclick = () => {
-        termsOverlay.style.display = "flex";
-        termsTitle.textContent = "이용약관";
-      };
-      document.getElementById("open_privacy").onclick = () => {
-        termsOverlay.style.display = "flex";
-        termsTitle.textContent = "개인정보처리방침";
-      };
-      document.getElementById("terms_close").onclick = () => {
-        termsOverlay.style.display = "none";
-      };
+                // API 연동 부분 (예시)
+                try {
+                  const res = await fetch("/api/favorite/update", {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ genres: selectedGenres }),
+                  });
 
-      document.addEventListener("DOMContentLoaded", () => {
-        const btnWithdrawal = document.getElementById("btn_withdrawal");
-        const modal = document.getElementById("withdrawalModal");
-        const btnConfirm = document.getElementById("confirmWithdrawalBtn");
-        const btnCancel = document.getElementById("cancelWithdrawalBtn");
+                  const result = await res.json();
+                  if (res.ok) {
+                    alert("선호 장르가 저장되었습니다.");
+                    document
+                      .getElementById("genre_preferences_modal")
+                      .classList.remove("open");
+                  } else {
+                    alert("저장 실패: " + result.message);
+                  }
+                } catch (err) {
+                  console.error(err);
+                  alert("오류가 발생했습니다.");
+                }
+              });
 
-        // 1) 모달 열기
-        btnWithdrawal.addEventListener("click", () => {
-          modal.classList.add("open");
-        });
+            // 약관 팝업 오픈/닫기 처리
+            const termsOverlay = document.getElementById("terms_overlay");
+            const termsTitle = document.getElementById("terms_title");
 
-        // 2) 모달 닫기 (아니요)
-        btnCancel.addEventListener("click", () => {
-          modal.classList.remove("open");
-        });
+            document.getElementById("open_terms").onclick = () => {
+      <<<<<<< HEAD
+              termsOverlay.style.display = "block";
+              termsTitle.textContent = "이용약관";
+            };
+            document.getElementById("open_privacy").onclick = () => {
+              termsOverlay.style.display = "block";
+      =======
+              termsOverlay.style.display = "flex";
+              termsTitle.textContent = "이용약관";
+            };
+            document.getElementById("open_privacy").onclick = () => {
+              termsOverlay.style.display = "flex";
+      >>>>>>> solbi
+              termsTitle.textContent = "개인정보처리방침";
+            };
+            document.getElementById("terms_close").onclick = () => {
+              termsOverlay.style.display = "none";
+            };
 
-        // 3) 모달 바깥 클릭해도 닫히도록 (선택)
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) modal.classList.remove("open");
-        });
+            document.addEventListener("DOMContentLoaded", () => {
+              const btnWithdrawal = document.getElementById("btn_withdrawal");
+              const modal = document.getElementById("withdrawalModal");
+              const btnConfirm = document.getElementById("confirmWithdrawalBtn");
+              const btnCancel = document.getElementById("cancelWithdrawalBtn");
 
-        // 4) “예” 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
-        btnConfirm.addEventListener("click", async () => {
-          try {
-            const res = await fetch("/api/users/me", { method: "DELETE" });
-            if (res.ok) {
-              alert("회원탈퇴가 완료되었습니다.");
-              window.location.href = "/"; // index 페이지로 이동
-            } else {
-              throw new Error(res.status);
-            }
-          } catch (err) {
-            console.error("탈퇴 오류:", err);
-            alert("탈퇴 처리 중 오류가 발생했습니다.");
-          }
-        });
-      });
+              // 1) 모달 열기
+              btnWithdrawal.addEventListener("click", () => {
+                modal.classList.add("open");
+              });
+
+              // 2) 모달 닫기 (아니요)
+              btnCancel.addEventListener("click", () => {
+                modal.classList.remove("open");
+              });
+
+              // 3) 모달 바깥 클릭해도 닫히도록 (선택)
+              modal.addEventListener("click", (e) => {
+                if (e.target === modal) modal.classList.remove("open");
+              });
+
+              // 4) “예” 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
+              btnConfirm.addEventListener("click", async () => {
+                try {
+                  const res = await fetch("/api/users/me", { method: "DELETE" });
+                  if (res.ok) {
+                    alert("회원탈퇴가 완료되었습니다.");
+                    window.location.href = "/"; // index 페이지로 이동
+                  } else {
+                    throw new Error(res.status);
+                  }
+                } catch (err) {
+                  console.error("탈퇴 오류:", err);
+                  alert("탈퇴 처리 중 오류가 발생했습니다.");
+                }
+              });
+            });
     </script>
 
     <script src="../js/mypage.js" type="module"></script>
