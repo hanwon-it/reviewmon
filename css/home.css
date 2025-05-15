@@ -86,19 +86,6 @@
   background: var(--color-primary-dark, #6c5ce7);
   box-shadow: 0 0 0 2px #888;
 }
-
-.movie_section,
-.ad_banner {
-  width: 80%;
-  max-width: 1400px;
-  margin: 0 auto 2rem auto;
-}
-
-.movie_section h2,
-.ad_banner h2 {
-  margin-top: 20px;
-}
-
 .movie_section {
   width: 80%;
   max-width: 1400px;
@@ -107,7 +94,7 @@
 
 .movie_section h2 {
   margin-top: 20px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   font-size: 1.3rem;
   color: #fff;
 }
@@ -115,65 +102,37 @@
 .movie_slider_wrapper {
   display: flex;
   align-items: center;
-  justify-content: center; /* 좌우 버튼 정중앙 위치 */
-  gap: 1rem;
   position: relative;
   width: 100%;
-  padding: 0 2rem; /* 좌우 여백 확보 */
   box-sizing: border-box;
-}
-
-.arrow_btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.2);
-  color: #222;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-.arrow_btn.prev {
-  left: 0;
-}
-.arrow_btn.next {
-  right: 0;
-}
-.arrow_btn:hover {
-  background: rgba(255, 255, 255, 0.4);
+  overflow: visible; /* 핵심 수정: padding 제거, 잘림 방지 */
 }
 
 .movie_carousel {
   display: flex;
-  gap: 2.5rem;
-  width: 100%;
-  justify-content: center;
-  padding: 0 56px;
+  gap: 2rem;
+  /* padding: 0 3rem; 좌우 여백 확보 (핵심 수정) */
+  flex: 1;
+  justify-content: flex-start; /* 가운데 → 왼쪽 정렬로 변경 */
   box-sizing: border-box;
 }
 
 .movie_card {
   background: none;
   border-radius: 12px;
-  overflow: hidden;
-  width: 210px;
-  min-width: 210px;
+  overflow: visible; /* ✅ 잘림 방지 */
+  width: 190px;
   display: flex;
   flex-direction: column;
-  align-items: flex-start;
+  align-items: center;
+  flex: 0 0 auto;
+  padding-bottom: 8px; /* ✅ 하단 여유 공간 확보 */
+  box-sizing: border-box;
 }
 
 .movie_poster {
-  width: 210px;
-  height: 300px;
+  width: 200px;
+  height: 280px;
   border-radius: 12px;
   overflow: hidden;
   background: #222;
@@ -194,135 +153,6 @@
   color: #ccc;
 }
 
-/* 이용약관 팝업 */
-.terms_overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.terms_modal {
-  background-color: var(--color-bg-secondary);
-  padding: 2rem;
-  border-radius: 16px;
-  max-width: 600px;
-  width: 90%;
-  position: relative;
-  color: var(--color-text);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.terms_modal h2 {
-  color: var(--color-primary);
-  margin-bottom: 1rem;
-}
-
-.terms_modal p {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-
-.terms_group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap; /* 줄바꿈 허용 (모바일 대비) */
-}
-
-.terms_group input[type="checkbox"] {
-  transform: scale(1.1);
-  margin: 0;
-}
-
-.terms_group label {
-  font-size: 0.9rem;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.link_terms {
-  font-size: 0.9rem;
-  color: var(--color-primary);
-  text-decoration: underline;
-  margin-left: auto; /* 오른쪽 끝 정렬 (선택사항) */
-}
-
-.terms_close {
-  position: absolute;
-  top: 0.8rem;
-  right: 0.8rem;
-  background: var(--color-primary);
-  border: none;
-  font-size: 1.1rem;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-}
-
-/* 1. 제목 아래 여백 보정 */
-.movie_section h2 {
-  margin-top: 20px;
-  margin-bottom: 24px; /* 줄여서 더 자연스럽게 */
-  font-size: 1.3rem;
-  color: #fff;
-}
-
-/* 2. 슬라이더 전체를 감싸는 wrapper */
-.movie_slider_wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* 좌우 버튼 정중앙 위치 */
-  gap: 1rem;
-  position: relative;
-  width: 100%;
-  padding: 0 2rem; /* 좌우 여백 확보 */
-  box-sizing: border-box;
-}
-
-/* 3. 영화 리스트 영역 */
-.movie_carousel {
-  display: flex;
-  gap: 2rem; /* 카드 간격을 좀 더 자연스럽게 */
-  overflow: hidden;
-  flex: 1;
-  justify-content: center;
-}
-
-/* 4. 카드 */
-.movie_card {
-  width: 200px;
-  min-width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 5. 포스터 */
-.movie_poster {
-  width: 200px;
-  height: 280px;
-  border-radius: 12px;
-  background: #222;
-  margin-bottom: 10px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 6. 좌우 화살표 */
 .arrow_btn {
   position: absolute;
   top: 50%;
@@ -340,13 +170,20 @@
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
+  pointer-events: auto;
 }
+
+/* ✅ 겹치게! */
 .arrow_btn.prev {
-  left: -24px; /* 살짝 바깥으로 */
+  left: -24px;
+  top: 150px;
 }
+
 .arrow_btn.next {
-  right: -24px;
+  right: 10px;
+  top: 150px;
 }
+
 .arrow_btn:hover {
   background: rgba(255, 255, 255, 0.4);
 }
