@@ -27,8 +27,9 @@ export async function find_by_userid(userid) {
   return User.findOne({ userid });
 }
 
-export async function find_by_id(id) {
-  return User.findById(id);
+// user_idx 찾기
+export async function find_by_idx(user_idx) {
+  return User.findById(user_idx);
 }
 
 // 비밀번호 찾기(email 사용?)
