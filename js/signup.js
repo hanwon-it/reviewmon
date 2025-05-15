@@ -1,34 +1,34 @@
 // 비밀번호 확인 실시간 체크
-const pwInput = document.getElementById("password");
-const pwConfirmInput = document.getElementById("password_confirm");
-const pwMsg = document.getElementById("pw_check_msg");
+const pw_input = document.getElementById("password");
+const pw_confirm_input = document.getElementById("password_confirm");
+const pw_msg = document.getElementById("pw_check_msg");
 
-function checkPasswordMatch() {
-  const pw = pwInput.value;
-  const pwConfirm = pwConfirmInput.value;
+function check_password_match() {
+  const pw = pw_input.value;
+  const pw_confirm = pw_confirm_input.value;
 
-  if (pw && pwConfirm) {
-    if (pw === pwConfirm) {
-      pwMsg.textContent = "비밀번호가 일치합니다.";
+  if (pw && pw_confirm) {
+    if (pw === pw_confirm) {
+      pw_msg.textContent = "비밀번호가 일치합니다.";
     } else {
-      pwMsg.textContent = "비밀번호가 일치하지 않습니다.";
+      pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
     }
   } else {
-    pwMsg.textContent = "";
+    pw_msg.textContent = "";
   }
 }
 
-pwInput.addEventListener("input", checkPasswordMatch);
-pwConfirmInput.addEventListener("input", checkPasswordMatch);
+pw_input.addEventListener("input", check_password_match);
+pw_confirm_input.addEventListener("input", check_password_match);
 
 // 장르 선택 최대 3개 제한
-const genreCheckboxes = document.querySelectorAll('input[name="genre"]');
-genreCheckboxes.forEach((checkbox) => {
+const genre_checkboxes = document.querySelectorAll('input[name="genre"]');
+genre_checkboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
-    const checkedCount = document.querySelectorAll(
+    const checked_count = document.querySelectorAll(
       'input[name="genre"]:checked'
     ).length;
-    if (checkedCount > 3) {
+    if (checked_count > 3) {
       checkbox.checked = false;
       alert("장르는 최대 3개까지만 선택할 수 있습니다.");
     }
@@ -36,32 +36,32 @@ genreCheckboxes.forEach((checkbox) => {
 });
 
 // 약관 모달 열기 / 닫기
-const linkTerms = document.querySelector(".link_terms");
-const termsOverlay = document.getElementById("terms_overlay");
-const closeTerms = document.getElementById("terms_close");
+const link_terms = document.querySelector(".link_terms");
+const terms_overlay = document.getElementById("terms_overlay");
+const terms_close = document.getElementById("terms_close");
 
-linkTerms.addEventListener("click", (e) => {
+link_terms.addEventListener("click", (e) => {
   e.preventDefault();
-  termsOverlay.style.display = "block";
+  terms_overlay.style.display = "block";
 });
 
-closeTerms.addEventListener("click", () => {
-  termsOverlay.style.display = "none";
+terms_close.addEventListener("click", () => {
+  terms_overlay.style.display = "none";
 });
 
 // 아이디 중복 확인
-const checkBtn = document.querySelector(".btn_check");
-const userIdInput = document.getElementById("user_id");
+const check_btn = document.querySelector(".btn_check");
+const user_id_input = document.getElementById("user_id");
 
-checkBtn.addEventListener("click", async () => {
-  const userId = userIdInput.value.trim();
-  if (!userId) {
+check_btn.addEventListener("click", async () => {
+  const user_id = user_id_input.value.trim();
+  if (!user_id) {
     alert("아이디를 입력해주세요.");
     return;
   }
 
   try {
-    const res = await fetch(`/api/auth/check-id?user_id=${encodeURIComponent(userId)}`);
+    const res = await fetch(`/api/auth/check-id?user_id=${encodeURIComponent(user_id)}`);
     const data = await res.json();
 
     if (data.exists) {
@@ -76,12 +76,12 @@ checkBtn.addEventListener("click", async () => {
 });
 
 // fetch 기반 회원가입
-const form = document.querySelector(".signup_form");
+const signup_form = document.querySelector(".signup_form");
 
-form.addEventListener("submit", async (e) => {
+signup_form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const requiredFields = [
+  const required_fields = [
     "user_id",
     "password",
     "password_confirm",
@@ -91,8 +91,8 @@ form.addEventListener("submit", async (e) => {
     "email"
   ];
 
-  for (let fieldId of requiredFields) {
-    const input = document.getElementById(fieldId);
+  for (let field_id of required_fields) {
+    const input = document.getElementById(field_id);
     if (!input.value.trim()) {
       alert(`${input.previousElementSibling.textContent}을(를) 입력해주세요.`);
       input.focus();
@@ -105,7 +105,7 @@ form.addEventListener("submit", async (e) => {
     return;
   }
 
-  if (pwInput.value !== pwConfirmInput.value) {
+  if (pw_input.value !== pw_confirm_input.value) {
     alert("비밀번호가 일치하지 않습니다.");
     return;
   }
