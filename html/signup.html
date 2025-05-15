@@ -1,0 +1,204 @@
+<!-- 예시 파일: signup.html 스네이크 케이스 적용 + style.css 연결 정리 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>review_mon - 회원가입</title>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/signup.css" />
+  </head>
+  <body class="signup_page">
+    <!-- 상단 헤더 -->
+    <header class="signup_header"></header>
+
+    <!-- 회원가입 폼 컨테이너 -->
+    <main class="signup_container">
+      <h1 class="site_title">회원가입</h1>
+      <form class="signup_form">
+        <!-- ID & 중복 확인 -->
+        <div class="form_group id_group">
+          <label for="user_id">아이디</label>
+          <div class="input_with_btn">
+            <input
+              type="text"
+              id="user_id"
+              name="user_id"
+              placeholder="아이디를 입력해주세요"
+            />
+            <button type="button" class="btn_check">중복 확인</button>
+          </div>
+        </div>
+
+        <!-- 비밀번호 -->
+        <div class="form_group">
+          <label for="password">비밀번호</label>
+          <input
+            type="password"
+            id="password"
+            name="password"
+            placeholder="비밀번호를 입력해주세요"
+          />
+        </div>
+
+        <!-- 비밀번호 확인 -->
+        <div class="form_group">
+          <label for="password_confirm">비밀번호 확인</label>
+          <input
+            type="password"
+            id="password_confirm"
+            name="password_confirm"
+            placeholder="비밀번호를 다시 입력해주세요"
+          />
+        </div>
+
+        <p id="pw_check_msg" class="password_match"></p>
+
+        <!-- 이름 -->
+        <div class="form_group">
+          <label for="name">이름</label>
+          <input
+            type="text"
+            id="name"
+            name="name"
+            placeholder="이름을 입력해주세요"
+          />
+        </div>
+
+        <!-- 휴대폰 번호 -->
+        <div class="form_group">
+          <label for="phone">휴대폰 번호</label>
+          <input
+            type="tel"
+            id="phone"
+            name="phone"
+            placeholder="휴대폰 번호를 입력해주세요"
+          />
+        </div>
+
+        <!-- 닉네임 -->
+        <div class="form_group">
+          <label for="nickname">닉네임</label>
+          <input
+            type="text"
+            id="nickname"
+            name="nickname"
+            placeholder="닉네임을 입력해주세요"
+          />
+        </div>
+
+        <!-- 이메일 -->
+        <div class="form_group">
+          <label for="email">이메일</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            placeholder="이메일을 입력해주세요"
+          />
+        </div>
+
+        <!-- 🎯 영화 선호도 조사 영역 -->
+        <fieldset class="form_group">
+          <legend>선호하는 장르 (최대 3개)</legend>
+          <div class="checkbox_group">
+            <label
+              ><input type="checkbox" name="genre" value="28" /> 액션</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="12" /> 모험</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="16" />
+              애니메이션</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="35" /> 코미디</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="80" /> 범죄</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="99" />
+              다큐멘터리</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="18" /> 드라마</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="10751" /> 가족</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="14" /> 판타지</label
+            >
+            <label
+              ><input type="checkbox" name="genre" value="36" /> 역사</label
+            >
+          </div>
+        </fieldset>
+
+        <div class="form_group">
+          <label for="actors">좋아하는 배우 (쉼표로 구분)</label>
+          <input
+            type="text"
+            id="actors"
+            name="actors"
+            placeholder="예: 마동석, Emma Stone"
+          />
+        </div>
+
+        <div class="form_group">
+          <label for="directors">좋아하는 감독 (쉼표로 구분)</label>
+          <input
+            type="text"
+            id="directors"
+            name="directors"
+            placeholder="예: 봉준호, Nolan"
+          />
+        </div>
+
+        <div class="form_group">
+          <div class="terms_group">
+            <label class="terms_check">
+              <input type="checkbox" id="agree_terms" />
+              <span>이용약관 동의하기(필수)</span>
+            </label>
+            <a href="#" class="link_terms">약관 보기</a>
+          </div>
+        </div>
+
+        <!-- 회원가입 버튼 -->
+        <button type="submit" class="btn_submit">회원가입</button>
+      </form>
+
+      <!-- 약관 보기 오버레이 -->
+      <div class="terms_overlay" id="terms_overlay">
+        <div class="terms_modal">
+          <button class="terms_close" id="terms_close">&times;</button>
+          <h2>서비스 이용약관</h2>
+          <div class="terms_content">
+            <p>
+              본 서비스는 영화 리뷰 제공 및 추천 서비스를 목적으로 하며, 회원은
+              본인의 계정을 통해 자유롭게 콘텐츠를 이용할 수 있습니다.
+            </p>
+            <p>
+              회원은 타인의 개인정보를 침해하거나 부정한 방법으로 서비스를
+              이용해서는 안 되며, 서비스 내의 콘텐츠는 상업적 용도로 무단 이용할
+              수 없습니다.
+            </p>
+            <p>
+              관리자는 예고 없이 서비스의 일부 또는 전부를 수정, 중단할 수
+              있으며, 회원의 부주의로 발생한 피해에 대해서는 책임지지 않습니다.
+            </p>
+            <p>
+              기타 자세한 이용 규정은 회사의 공식 안내 및 고객센터 공지를
+              따릅니다!!!!!!!!!!!!!!!!!!
+            </p>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <script src="../js/signup.js"></script>
+  </body>
+</html>

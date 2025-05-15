@@ -1,0 +1,109 @@
+<!-- 예시 파일: index.html 스네이크 케이스 적용 + style.css 연결 정리 -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>review_mon</title>
+    <link rel="stylesheet" href="../css/common.css" />
+    <link rel="stylesheet" href="../css/index.css" />
+  </head>
+  <body class="login_page">
+    <div class="login_container">
+      <header class="login_header">
+        <h1 class="site_title">Review_mon</h1>
+      </header>
+
+      <main class="login_main">
+        <form class="login_form" action="#" method="post">
+          <div class="form_group">
+            <label for="username">아이디</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              placeholder="아이디를 입력하세요"
+              required
+            />
+          </div>
+
+          <div class="form_group">
+            <label for="password">비밀번호</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              placeholder="비밀번호를 입력하세요"
+              required
+            />
+          </div>
+
+          <button type="submit" class="btn btn_login">로그인</button>
+        </form>
+
+        <div class="login_footer">
+          <p class="signup_prompt">
+            첫 방문이신가요? <a href="signup.html">회원가입하기</a>
+          </p>
+          <p class="find_credentials">
+            <a href="#" id="open_find_modal">아이디 / 비밀번호 찾기</a>
+          </p>
+        </div>
+      </main>
+
+      <!-- 팝업 모달 (아이디/비밀번호 찾기) -->
+      <div class="overlay" id="overlay">
+        <div class="modal">
+          <button class="close_btn" id="close_modal">&times;</button>
+
+          <!-- 아이디 찾기 -->
+          <div class="modal_section">
+            <h2>아이디 찾기</h2>
+            <div class="input_group">
+              <input
+                type="text"
+                id="find_id_name"
+                placeholder="이름을 입력해주세요"
+              />
+            </div>
+            <div class="input_group">
+              <input
+                type="email"
+                id="find_id_email"
+                placeholder="이메일을 입력해주세요"
+              />
+              <button type="button" id="btn_find_id">아이디 확인</button>
+            </div>
+            <small>가입 시 등록하신 이름과 이메일을 입력해 주세요.</small>
+          </div>
+
+          <hr />
+
+          <!-- 비밀번호 찾기 -->
+          <div class="modal_section">
+            <h2>비밀번호 찾기</h2>
+            <div class="input_group">
+              <input
+                type="text"
+                id="find_pw_id"
+                placeholder="아이디를 입력해주세요"
+              />
+            </div>
+            <div class="input_group">
+              <input
+                type="email"
+                id="find_pw_email"
+                placeholder="이메일을 입력해주세요"
+              />
+              <button type="button" id="btn_send_temp_pw">
+                임시 비밀번호 전송
+              </button>
+            </div>
+            <small>가입 시 등록하신 이메일로 임시 비밀번호가 전송됩니다.</small>
+          </div>
+        </div>
+      </div>
+    </div>
+    <script src="../js/index.js" type="module"></script>
+  </body>
+</html>
