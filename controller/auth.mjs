@@ -22,7 +22,12 @@ export async function signup(req, res, next) {
 
   const hashed = bcrypt.hashSync(password, bcrypt_salt_rounds);
   const users = await auth_repository.create_user({
-    userid, password, name, email, nickname, hp
+    userid,
+    password,
+    name,
+    email,
+    nickname,
+    hp,
   });
   const token = await create_jwt_token(users.id);
   console.log(token);
@@ -82,39 +87,35 @@ export async function logout(req, res, next) {
 
 // 내 회원 정보 가져오기
 
-
 // 이메일로 비번 찾기
 
-
 // 이메일로 아이디 찾기
-
 
 // 내 회원 정보 수정
 export async function update_user(req, res, next) {
   const { userid, password, name, email, nickname, hp } = req.body;
-  try {
-    // 유효성 검증
-    if (!userid) {
-      return res.status(400);//.json({ message: '입력값이 부족합니다.' });
-    }
-
-    // 업데이트(mongoose 변경)
-    await db.collection('users').updateOne(
-      { userid: userid },
-      {
-        $set: {
-          ...(password && { password }),
-          ...(name && { name }),
-          ...(email && { email }),
-          ...(nickname && { nickname }),
-          ...(hp && { hp }),
-        },
-      },
-      { upsert: true }
-    );
-
-    return res.status(200);//.json({ message: '취향 정보가 업데이트되었습니다.' });
+  // 유효성 검증
+  if (!userid) {
+    return res.status(400); //.json({ message: '입력값이 부족합니다.' });
   }
+
+  // 업데이트(mongoose 변경)
+  await db.collection("users").updateOne(
+    { userid: userid },
+    {
+      $set: {
+        ...(password && { password }),
+        ...(name && { name }),
+        ...(email && { email }),
+        ...(nickname && { nickname }),
+        ...(hp && { hp }),
+      },
+    },
+    { upsert: true }
+  );
+
+  return res.status(200); //.json({ message: '취향 정보가 업데이트되었습니다.' });
+}
 
 // 탈퇴
 export async function signup(req, res, next) {
@@ -147,11 +148,11 @@ export async function update_favorite(req, res, next) {
   try {
     // 유효성 검증
     if (!userid || (!genre && !cast && !director)) {
-      return res.status(400);//.json({ message: '입력값이 부족합니다.' });
+      return res.status(400); //.json({ message: '입력값이 부족합니다.' });
     }
 
     // 업데이트(mongoose 변경)
-    await db.collection('favorite').updateOne(
+    await db.collection("favorite").updateOne(
       { userid: parseInt(userid) },
       {
         $set: {
@@ -163,10 +164,11 @@ export async function update_favorite(req, res, next) {
       { upsert: true }
     );
 
-    return res.status(200);//.json({ message: '취향 정보가 업데이트되었습니다.' });
-  } /*catch (err) {
+    return res.status(200); //.json({ message: '취향 정보가 업데이트되었습니다.' });
+  } catch (err) {
     console.error(err);
-    return res.status(500).json({ message: '서버 오류' });*/
-
+    return res.status(500).json({ message: "서버 오류" });
+  }
+}
 
 // 유저 닉네임 검색
