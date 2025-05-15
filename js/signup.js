@@ -1,36 +1,34 @@
 // 비밀번호 확인 실시간 체크
-const pwInput = document.getElementById("password");
-const pwConfirmInput = document.getElementById("password_confirm");
-const pwMsg = document.getElementById("pw_check_msg");
+const pw_input = document.getElementById("password");
+const pw_confirm_input = document.getElementById("password_confirm");
+const pw_msg = document.getElementById("pw_check_msg");
 
-function checkPasswordMatch() {
-  const pw = pwInput.value;
-  const pwConfirm = pwConfirmInput.value;
+function check_password_match() {
+  const pw = pw_input.value;
+  const pw_confirm = pw_confirm_input.value;
 
-  if (pw && pwConfirm) {
-    if (pw === pwConfirm) {
-      pwMsg.textContent = "비밀번호가 일치합니다.";
-      pwMsg.style.color = "green";
+  if (pw && pw_confirm) {
+    if (pw === pw_confirm) {
+      pw_msg.textContent = "비밀번호가 일치합니다.";
     } else {
-      pwMsg.textContent = "비밀번호가 일치하지 않습니다.";
-      pwMsg.style.color = "red";
+      pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
     }
   } else {
-    pwMsg.textContent = "";
+    pw_msg.textContent = "";
   }
 }
 
-pwInput.addEventListener("input", checkPasswordMatch);
-pwConfirmInput.addEventListener("input", checkPasswordMatch);
+pw_input.addEventListener("input", check_password_match);
+pw_confirm_input.addEventListener("input", check_password_match);
 
 // 장르 선택 최대 3개 제한
-const genreCheckboxes = document.querySelectorAll('input[name="genre"]');
-genreCheckboxes.forEach((checkbox) => {
+const genre_checkboxes = document.querySelectorAll('input[name="genre"]');
+genre_checkboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
-    const checkedCount = document.querySelectorAll(
+    const checked_count = document.querySelectorAll(
       'input[name="genre"]:checked'
     ).length;
-    if (checkedCount > 3) {
+    if (checked_count > 3) {
       checkbox.checked = false;
       alert("장르는 최대 3개까지만 선택할 수 있습니다.");
     }
@@ -38,33 +36,32 @@ genreCheckboxes.forEach((checkbox) => {
 });
 
 // 약관 모달 열기 / 닫기
-const linkTerms = document.querySelector(".link_terms");
-const termsOverlay = document.getElementById("terms_overlay");
-const closeTerms = document.getElementById("terms_close");
+const link_terms = document.querySelector(".link_terms");
+const terms_overlay = document.getElementById("terms_overlay");
+const terms_close = document.getElementById("terms_close");
 
-linkTerms.addEventListener("click", (e) => {
+link_terms.addEventListener("click", (e) => {
   e.preventDefault();
-  termsOverlay.style.display = "flex";
+  terms_overlay.style.display = "block";
 });
 
-closeTerms.addEventListener("click", () => {
-  termsOverlay.style.display = "none";
+terms_close.addEventListener("click", () => {
+  terms_overlay.style.display = "none";
 });
 
-// 아이디 중복 확인 (가짜 fetch 예시)
-const checkBtn = document.querySelector(".btn_check");
-const userIdInput = document.getElementById("user_id");
+// 아이디 중복 확인
+const check_btn = document.querySelector(".btn_check");
+const user_id_input = document.getElementById("user_id");
 
-checkBtn.addEventListener("click", async () => {
-  const userId = userIdInput.value.trim();
-  if (!userId) {
+check_btn.addEventListener("click", async () => {
+  const user_id = user_id_input.value.trim();
+  if (!user_id) {
     alert("아이디를 입력해주세요.");
     return;
   }
 
-  // TODO: 실제 서버 API 주소로 변경
   try {
-    const res = await fetch(`/api/check-id?user_id=${userId}`);
+    const res = await fetch(`/api/auth/check-id?user_id=${encodeURIComponent(user_id)}`);
     const data = await res.json();
 
     if (data.exists) {
@@ -78,15 +75,25 @@ checkBtn.addEventListener("click", async () => {
   }
 });
 
-// 폼 제출 시 필수값 체크
-const form = document.querySelector(".signup_form");
+// fetch 기반 회원가입
+const signup_form = document.querySelector(".signup_form");
 
-form.addEventListener("submit", (e) => {
-  const requiredFields = ["user_id", "password", "password_confirm", "name", "phone", "nickname", "email"];
-  for (let fieldId of requiredFields) {
-    const input = document.getElementById(fieldId);
+signup_form.addEventListener("submit", async (e) => {
+  e.preventDefault();
+
+  const required_fields = [
+    "user_id",
+    "password",
+    "password_confirm",
+    "name",
+    "phone",
+    "nickname",
+    "email"
+  ];
+
+  for (let field_id of required_fields) {
+    const input = document.getElementById(field_id);
     if (!input.value.trim()) {
-      e.preventDefault();
       alert(`${input.previousElementSibling.textContent}을(를) 입력해주세요.`);
       input.focus();
       return;
@@ -94,7 +101,43 @@ form.addEventListener("submit", (e) => {
   }
 
   if (!document.getElementById("agree_terms").checked) {
-    e.preventDefault();
     alert("이용약관에 동의해주세요.");
+    return;
+  }
+
+  if (pw_input.value !== pw_confirm_input.value) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+
+  const data = {
+    user_id: document.getElementById("user_id").value.trim(),
+    password: document.getElementById("password").value.trim(),
+    name: document.getElementById("name").value.trim(),
+    hp: document.getElementById("phone").value.trim(),
+    nickname: document.getElementById("nickname").value.trim(),
+    email: document.getElementById("email").value.trim(),
+    genre: Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(el => el.value),
+    actor: document.getElementById("actors").value.trim(),
+    director: document.getElementById("directors").value.trim(),
+  };
+
+  try {
+    const res = await fetch("/api/auth/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(data)
+    });
+
+    if (res.status === 201) {
+      alert("회원가입이 완료되었습니다. 로그인해주세요.");
+      location.href = "/login.html";
+    } else {
+      const result = await res.json();
+      alert(result.message || "회원가입 실패");
+    }
+  } catch (err) {
+    console.error(err);
+    alert("서버 오류로 회원가입에 실패했습니다.");
   }
 });
