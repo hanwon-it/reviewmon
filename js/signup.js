@@ -44,7 +44,7 @@ const closeTerms = document.getElementById("terms_close");
 
 linkTerms.addEventListener("click", (e) => {
   e.preventDefault();
-  termsOverlay.style.display = "block";
+  termsOverlay.style.display = "flex";
 });
 
 closeTerms.addEventListener("click", () => {
