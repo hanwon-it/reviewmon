@@ -45,7 +45,7 @@ export async function movie_info(req, res) {
     const { movie_id } = req.params.movie_id;
 
     // 1. 영화 기본 정보 + 감독, 배우
-    const movie = await movie.findOne({ movie_id: movie_id });
+    const movie = await movie.findOne({ movie_id: movie_id }); //tmdb api 양식: https://api.themoviedb.org/3/search/person?api_key=1dc4fbac48abb39eeb4fbd6c9d845bd3&query={person}으로 교체 예정
     if (!movie) return res.status(404).json({ message: "영화 없음" });
 
     // 2. 외부 평점 정보
@@ -70,4 +70,4 @@ export async function movie_info(req, res) {
     const movie = await movie_schema.findOne({ movieid });
     return movie._id;
   }
-}
+} // mongoose 양식으로 변환 예정

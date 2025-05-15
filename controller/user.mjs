@@ -1,4 +1,4 @@
-import * as auth_repository from "../data/auth.mjs";
+import * as user_repository from "../data/user.mjs";
 import * as bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
@@ -21,7 +21,7 @@ export async function signup(req, res, next) {
   const { userid, password, name, email, nickname, hp } = req.body;
 
   // id 중복 체크
-  const found_userid = await auth_repository.find_by_userid(userid);
+  const found_userid = await user_repository.find_by_userid(userid);
   if (found_userid) {
     return res
       .status(409)
@@ -29,7 +29,7 @@ export async function signup(req, res, next) {
   }
 
   const hashed = bcrypt.hashSync(password, bcrypt_salt_rounds);
-  const users = await auth_repository.create_user({
+  const users = await user_repository.create_user({
     userid,
     password: hashed,
     name,
@@ -48,7 +48,7 @@ export async function signup(req, res, next) {
 // 아이디 중복체크(DB 입력 전 재확인 필요하므로 회원가입 검증은 수정 불요)
 export async function check_userid(req, res, next) {
   const userid = req.query;
-  const found_userid = await auth_repository.find_by_userid(userid);
+  const found_userid = await user_repository.find_by_userid(userid);
   try {
     if (found_userid !== null) {
       res.status(409).json({ exists: user });
@@ -63,7 +63,7 @@ export async function check_userid(req, res, next) {
 // 로그인
 export async function login(req, res, next) {
   const { userid, password } = req.body;
-  const user = await auth_repository.find_by_userid(userid);
+  const user = await user_repository.find_by_userid(userid);
   if (!user) {
     res.status(401).json(`${userid} 아이디를 찾을 수 없음`);
   }
@@ -88,7 +88,7 @@ export async function verify(req, res, next) {
 
 // 사용자 조회
 export async function me(req, res, next) {
-  const user = await auth_repository.find_by_id(req.id);
+  const user = await user_repository.find_by_id(req.id);
   if (!user) {
     return res.status(404).json({ message: "일치하는 사용자가 없음" });
   }
@@ -99,7 +99,7 @@ export async function me(req, res, next) {
 // 토큰에 저장된 유저 정보를 삭제하는 함수
 export async function logout(req, res, next) {
   const { userid, token } = req.body;
-  const user = await auth_repository.find_by_userid(userid);
+  const user = await user_repository.find_by_userid(userid);
   if (user && token !== null) {
     // 토큰 삭제 / 무효화 로직
     //req.session.destroy(() => {
@@ -115,9 +115,9 @@ export async function logout(req, res, next) {
 // 내 회원 정보 가져오기
 export async function logout(req, res, next) {
   const { userid, token } = req.body;
-  //const data = await auth_repository.userCheck(userid);
+  //const data = await user_repository.userCheck(userid);
   //user 테이블 내 모든 값 json + review 기준 timestamp 가장 최신순 3개 json
-  const user_and_review = await auth_repository.load_mypage(userid);
+  const user_and_review = await user_repository.load_mypage(userid);
   if (user && token !== null) {
     //req.session.destroy(() => {
     res.status(200).json(user_and_review);
@@ -132,7 +132,7 @@ export async function logout(req, res, next) {
 // 이메일로 아이디 찾기
 export async function find_id_by_email(req, res, next) {
   const { name, email } = req.body;
-  const found_userid = await auth_repository.find_id_by_email(name, email);
+  const found_userid = await user_repository.find_id_by_email(name, email);
   if (name && email !== null) {
     res.status(200).json(found_userid);
   } else {
@@ -146,7 +146,7 @@ export async function find_id_by_email(req, res, next) {
 // 이메일로 비번 찾기
 export async function find_pw_by_email(req, res, next) {
   const { userid, email } = req.body;
-  const found_password = await auth_repository.find_pw_by_email(userid, email);
+  const found_password = await user_repository.find_pw_by_email(userid, email);
   if (userid && email !== null) {
     res.status(200).json(found_password);
   } else {
@@ -187,7 +187,7 @@ export async function update_user(req, res, next) {
 // 탈퇴
 export async function signup(req, res, next) {
   const { userid, token } = req.body;
-  const users = await auth_repository.delete_user(userid);
+  const users = await user_repository.delete_user(userid);
   // console.log(token);
   if (users) {
     res.status(200);
@@ -198,7 +198,7 @@ export async function signup(req, res, next) {
 export async function input_favorite(req, res, next) {
   const { genre, cast, director } = req.body;
 
-  const users = await auth_repository.create_favorite({
+  const users = await user_repository.create_favorite({
     genre,
     cast,
     director,

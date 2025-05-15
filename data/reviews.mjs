@@ -1,6 +1,6 @@
 import { get_reviews } from "../db/database.mjs";
 import Mongodb, { ReturnDocument } from "mongodb";
-import * as UserRepository from "./auth.mjs";
+import * as user_repository from "./user.mjs";
 import mongoose from "mongoose";
 const ObjectID = Mongodb.ObjectId;
 
@@ -82,7 +82,7 @@ export async function sortByDate(idxList, recentFirst = true) {
 // 리뷰 작성
 export async function create(text, id) {
   console.log("유저 분별용 object id: ", id);
-  return UserRepository.findByid(id).then((user) =>
+  return user_repository.findByid(id).then((user) =>
     get_reviews()
       .insertOne({
         text,
