@@ -129,19 +129,19 @@ export async function rating_reviews(req, res, next) {
 
 export async function review_sort_by_rating(req, res) {
   const { idxList, up } = req.body;
-  const result = await review_repository.sortByRating(idxList, up);
+  const result = await review_repository.sort_by_rating(idxList, up);
   res.status(200).json(result);
 }
 
 export async function review_sort_by_likes(req, res) {
   const { idxList, up } = req.body;
-  const result = await review_repository.sortByLikes(idxList, up);
+  const result = await review_repository.sort_by_likes(idxList, up);
   res.status(200).json(result);
 }
 
 export async function review_sort_by_date(req, res) {
   const { idxList, recentFirst } = req.body;
-  const result = await review_repository.sortByDate(idxList, recentFirst);
+  const result = await review_repository.sort_by_date(idxList, recentFirst);
   res.status(200).json(result);
 }
 

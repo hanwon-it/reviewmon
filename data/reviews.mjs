@@ -61,17 +61,17 @@ async function fetchAndSortBy(field, direction, idxList) {
 }
 
 // 평점순 정렬
-export async function sortByRating(idxList, up) {
+export async function sort_by_rating(idxList, up) {
   return await fetchAndSortBy("rating", up ? "desc" : "asc", idxList);
 }
 
 // 좋아요 수 정렬
-export async function sortByLikes(idxList, up) {
+export async function sort_by_likes(idxList, up) {
   return await fetchAndSortBy("like_cnt", up ? "desc" : "asc", idxList);
 }
 
 // 작성일 순 정렬
-export async function sortByDate(idxList, recentFirst = true) {
+export async function sort_by_date(idxList, recentFirst = true) {
   return await fetchAndSortBy(
     "timestamp",
     recentFirst ? "desc" : "asc",
@@ -82,7 +82,7 @@ export async function sortByDate(idxList, recentFirst = true) {
 // 리뷰 작성
 export async function create(text, id) {
   console.log("유저 분별용 object id: ", id);
-  return user_repository.findByid(id).then((user) =>
+  return user_repository.find_by_id(id).then((user) =>
     get_reviews()
       .insertOne({
         text,
@@ -115,7 +115,7 @@ export async function remove(idx) {
 }
 
 // 리뷰 평점 정리
-export async function ratings(movieId) {}
+export async function ratings(movie_id) {}
 
 function map_optional_review(review) {
   return review ? { ...review, id: review._id.toString() } : review;
