@@ -2,10 +2,10 @@
 document.querySelector(".login_form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const user_id = document.getElementById("username").value.trim();
+  const userid = document.getElementById("username").value.trim();
   const password = document.getElementById("password").value.trim();
 
-  if (!user_id || !password) {
+  if (!userid || !password) {
     alert("아이디와 비밀번호를 입력해주세요.");
     return;
   }
@@ -14,7 +14,7 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
     const res = await fetch("/api/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id, password }),
+      body: JSON.stringify({ userid, password }),
     });
 
     const data = await res.json();
@@ -60,8 +60,8 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
     const res = await fetch(`/api/auth/find-id?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
     const data = await res.json();
 
-    if (data.user_id) {
-      alert(`회원님의 아이디는 "${data.user_id}" 입니다.`);
+    if (data.userid) {
+      alert(`회원님의 아이디는 "${data.userid}" 입니다.`);
     } else {
       alert("일치하는 회원 정보가 없습니다.");
     }
@@ -73,10 +73,10 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
 
 // 임시 비밀번호 전송
 document.getElementById("btn_send_temp_pw").addEventListener("click", async () => {
-  const user_id = document.getElementById("find_pw_id").value.trim();
+  const userid = document.getElementById("find_pw_id").value.trim();
   const email = document.getElementById("find_pw_email").value.trim();
 
-  if (!user_id || !email) {
+  if (!userid || !email) {
     alert("아이디와 이메일을 모두 입력해주세요.");
     return;
   }
@@ -85,7 +85,7 @@ document.getElementById("btn_send_temp_pw").addEventListener("click", async () =
     const res = await fetch("/api/auth/find-pw", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ user_id, email }),
+      body: JSON.stringify({ userid, email }),
     });
 
     const result = await res.json();

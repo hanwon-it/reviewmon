@@ -42,7 +42,7 @@ const terms_close = document.getElementById("terms_close");
 
 link_terms.addEventListener("click", (e) => {
   e.preventDefault();
-  terms_overlay.style.display = "block";
+  terms_overlay.style.display = "flex";
 });
 
 terms_close.addEventListener("click", () => {
@@ -51,17 +51,17 @@ terms_close.addEventListener("click", () => {
 
 // 아이디 중복 확인
 const check_btn = document.querySelector(".btn_check");
-const user_id_input = document.getElementById("user_id");
+const user_id_input = document.getElementById("userid");
 
 check_btn.addEventListener("click", async () => {
-  const user_id = user_id_input.value.trim();
-  if (!user_id) {
+  const userid = user_id_input.value.trim();
+  if (!userid) {
     alert("아이디를 입력해주세요.");
     return;
   }
 
   try {
-    const res = await fetch(`/api/auth/check-id?user_id=${encodeURIComponent(user_id)}`);
+    const res = await fetch(`/api/auth/check-id?userid=${encodeURIComponent(userid)}`);
     const data = await res.json();
 
     if (data.exists) {
@@ -82,7 +82,7 @@ signup_form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   const required_fields = [
-    "user_id",
+    "userid",
     "password",
     "password_confirm",
     "name",
@@ -111,7 +111,7 @@ signup_form.addEventListener("submit", async (e) => {
   }
 
   const data = {
-    user_id: document.getElementById("user_id").value.trim(),
+    userid: document.getElementById("userid").value.trim(),
     password: document.getElementById("password").value.trim(),
     name: document.getElementById("name").value.trim(),
     hp: document.getElementById("phone").value.trim(),

@@ -36,7 +36,7 @@ export async function post_delete(id) {
 
 // 좋아요 스키마 생성
 const like_schema = new Mongoose.Schema({
-  user_id: { type: Mongoose.Schema.Types.ObjectId, ref: "User" },
+  userid: { type: Mongoose.Schema.Types.ObjectId, ref: "User" },
   review_id: { type: Mongoose.Schema.Types.ObjectId, ref: "Review" },
   created_at: { type: Date, default: Date.now },
 });
@@ -44,13 +44,13 @@ const like_schema = new Mongoose.Schema({
 const Like = Mongoose.model("like", like_schema);
 
 //// 좋아요 추가
-export async function likeReview(user_id, review_id) {
+export async function likeReview(userid, review_id) {
   // 1. 이미 좋아요 눌렀는지 확인
-  const existing = await Like.findOne({ user_id, review_id });
+  const existing = await Like.findOne({ userid, review_id });
   if (existing) return { status: "already liked" };
 
   // 2. 새로 생성
-  await Like.create({ user_id, review_id });
+  await Like.create({ userid, review_id });
 
   // 3. (선택) 리뷰 좋아요 수 업데이트
   await Review.updateOne({ _id: review_id }, { $inc: { like_count: 1 } });
@@ -59,8 +59,8 @@ export async function likeReview(user_id, review_id) {
 }
 
 // 좋아요 취소
-export async function unlikeReview(user_id, review_id) {
-  await Like.deleteOne({ user_id, review_id });
+export async function unlikeReview(userid, review_id) {
+  await Like.deleteOne({ userid, review_id });
   await Review.updateOne({ _id: review_id }, { $inc: { like_count: -1 } });
 
   return { status: "unliked" };

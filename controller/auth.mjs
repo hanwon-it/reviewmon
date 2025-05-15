@@ -1,172 +1,182 @@
-import * as auth_repository from "../data/auth.mjs";
-import * as bcrypt from "bcrypt";
-import jwt from "jsonwebtoken";
-import { config } from "../config.mjs";
+import express from "express";
+import * as auth_controller from "../controller/auth.mjs";
+import { body } from "express-validator";
+import { validate } from "../middleware/validator.mjs";
 
-const secret_key = config.jwt.secret_key;
-const bcrypt_salt_rounds = config.bcrypt.salt_rounds;
-const jwt_expires_in_days = config.jwt.expires_in_sec;
+const router = express.Router();
 
-async function create_jwt_token(id) {
-  return jwt.sign({ id }, secret_key, { expiresIn: jwt_expires_in_days });
-}
+const validate_login = [
+  body("userid")
+    .trim()
+    .isLength({ min: 4 })
+    .withMessage("최소 4자이상 입력")
+    .matches(/^[a-zA-Z0-9]*$/)
+    .withMessage("특수문자는 사용불가"),
+  body("password").trim().isLength({ min: 8 }).withMessage("최소 8자이상 입력"),
+  validate,
+];
 
-export async function signup(req, res, next) {
-  const { userid, password, name, email, nickname, hp } = req.body;
+const validate_signup = [
+  ...validate_login,
+  body("name").trim().notEmpty().withMessage("name을 입력"),
+  body("email").trim().isEmail().withMessage("이메일 형식 확인"),
+  validate,
+];
 
-  // 회원 중복 체크
-  const found = await auth_repository.find_by_userid(userid);
-  if (found) {
-    return res.status(409).json({ message: `${userid}이 이미 있습니다.` });
-  }
+const validate_logout = [...validate_login];
 
-  const hashed = bcrypt.hashSync(password, bcrypt_salt_rounds);
-  const users = await auth_repository.create_user({
-    userid, password, name, email, nickname, hp
-  });
-  const token = await create_jwt_token(users.id);
-  console.log(token);
-  if (users) {
-    res.status(201).json({ token, userid });
-  }
-}
+// 1. 회원가입
+// POST
+// http://127.0.0.1:8080/auth/signup
+router.post("/auth/signup", validate_signup, auth_controller.signup);
 
-export async function login(req, res, next) {
-  const { userid, password } = req.body;
-  const user = await auth_repository.find_by_userid(userid);
-  if (!user) {
-    res.status(401).json(`${userid} 아이디를 찾을 수 없음`);
-  }
-  const is_valid_password = await bcrypt.compare(password, user.password);
-  if (!is_valid_password) {
-    return res.status(401).json({ message: "아이디 또는 비밀번호 확인" });
-  }
+// 1-1. 아이디 중복 체크
+// GET
+// http://127.0.0.1:8080/auth/check-userid
+router.post(
+  "/auth/check-userid",
+  validate_signup,
+  auth_controller.check_userid
+);
 
-  const token = await create_jwt_token(user.id);
-  res.status(200).json({ token, userid });
-}
+// 2. 로그인
+// POST
+// http://{baseUrl}/auth/login
+router.post("/auth/login", validate_login, auth_controller.login);
 
-export async function verify(req, res, next) {
-  const id = req.id;
-  if (id) {
-    res.status(200).json(id);
-  } else {
-    res.status(401).json({ message: "사용자 인증 실패" });
-  }
-}
+// 3. 로그아웃
+// POST
+// http://{baseUrl}/auth/logout
+router.post("/auth/logout", validate_logout, auth_controller.logout); //controller 로그아웃 함수 필요
 
-export async function me(req, res, next) {
-  const user = await auth_repository.find_by_id(req.id);
-  if (!user) {
-    return res.status(404).json({ message: "일치하는 사용자가 없음" });
-  }
-  res.status(200).json({ token: req.token, userid: user.userid });
-}
+// 4. 내 회원 정보 가져오기
+// GET
+// http://{baseUrl}/auth/me
+router.get("/auth/me", auth_controller.my_info); //controller 함수 필요
 
-// 로그아웃
-// 세션에 저장된 유저 정보를 삭제하는 함수
-export async function logout(req, res, next) {
-  const { userid, token } = req.body;
-  //const data = await auth_repository.userCheck(userid);
-  const user = await auth_repository.find_by_userid(userid);
-  if (user && token !== null) {
-    //req.session.destroy(() => {
-    res.sendStatus(200); //.json({ message: `로그아웃 되셨습니다.` });
-    //});
-  } else {
-    res.status(404).json({
-      message: `현재 로그인 돼 있지 않습니다.`,
-    });
-  }
-}
+// 5. 비밀번호 찾기
+// POST
+// http://{baseUrl}/auth/find-pw
+router.post("/auth/find-pw", auth_controller.find_pw_by_email); //controller 함수 필요
 
-// 내 회원 정보 가져오기
+// 6. 아이디 찾기
+// POST
+// http://{baseUrl}/auth/find-id
+router.post("/auth/find-id", auth_controller.find_id_by_email); //controller 함수 필요
 
+// 7. 내 회원 정보 수정
+// PATCH
+// http://{baseUrl}/auth/me
+router.patch("/auth/me", auth_controller.update_user); //controller 함수 필요
 
-// 이메일로 비번 찾기
+// 8. 탈퇴
+// DELETE
+// http://{baseUrl}/auth/signout
+router.delete("/auth/signout", auth_controller.signout); //controller 함수 필요
 
+// 9. 내 취향 정보 입력
+// POST
+// http://{baseUrl}/auth/favorite
+router.post("/auth/favorite", auth_controller.input_favorite); //controller 함수 필요
 
-// 이메일로 아이디 찾기
+// 10. 내 취향 정보 수정
+// PATCH
+// http://{baseUrl}/auth/favorite
+router.patch("/auth/favorite", auth_controller.update_favorite); //controller 함수 필요
 
+// 11. 유저 닉네임 검색
+// GET
+// http://{baseUrl}/auth/search/:nickname
+router.get("/auth/search/:nickname", auth_controller.search_auth); //controller 함수 필요
 
-// 내 회원 정보 수정
-export async function update_user(req, res, next) {
-  const { userid, password, name, email, nickname, hp } = req.body;
-  try {
-    // 유효성 검증
-    if (!userid) {
-      return res.status(400);//.json({ message: '입력값이 부족합니다.' });
-    }
+export default router;
 
-    // 업데이트(mongoose 변경)
-    await db.collection('users').updateOne(
-      { userid: userid },
-      {
-        $set: {
-          ...(password && { password }),
-          ...(name && { name }),
-          ...(email && { email }),
-          ...(nickname && { nickname }),
-          ...(hp && { hp }),
-        },
-      },
-      { upsert: true }
-    );
-
-    return res.status(200);//.json({ message: '취향 정보가 업데이트되었습니다.' });
-  }
-
-// 탈퇴
-export async function signup(req, res, next) {
-  const { userid, token } = req.body;
-  const users = await auth_repository.delete_user(userid);
-  // console.log(token);
-  if (users) {
-    res.status(200);
-  }
-}
-
-// 내 취향 정보 입력
-export async function input_favorite(req, res, next) {
-  const { genre, cast, director } = req.body;
-
-  const users = await auth_repository.create_favorite({
-    genre,
-    cast,
-    director,
-  });
-  if (users) {
-    res.status(201);
-  }
-}
-
-// 내 취향 정보 수정
-export async function update_favorite(req, res, next) {
-  const userid = req.params.userid;
-  const { genre, cast, director } = req.body;
-  try {
-    // 유효성 검증
-    if (!userid || (!genre && !cast && !director)) {
-      return res.status(400);//.json({ message: '입력값이 부족합니다.' });
-    }
-
-    // 업데이트(mongoose 변경)
-    await db.collection('favorite').updateOne(
-      { userid: parseInt(userid) },
-      {
-        $set: {
-          ...(genre && { genre }),
-          ...(cast && { cast }),
-          ...(director && { director }),
-        },
-      },
-      { upsert: true }
-    );
-
-    return res.status(200);//.json({ message: '취향 정보가 업데이트되었습니다.' });
-  } /*catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: '서버 오류' });*/
-
-
-// 유저 닉네임 검색
+/**
+ * @swagger
+ * tags:
+ *   name: auth API
+ *   description: 회원 가입 / 로그인 / 로그아웃 / 내 정보 가져오기(마이페이지) / 내 정보 수정 / 탈퇴 / 이메일로 비밀번호 찾기 / 이메일로 아이디 찾기
+ *
+ * /signup:
+ *   post:
+ *     summary: 회원가입
+ *     tags: [Auth]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *           required:
+ *             - userid
+ *             - userpw
+ *             properties:
+ *               userid:
+ *                 type: string
+ *               userpw:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               userph:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: 회원(정보) 생성 성공
+ *
+ * /login:
+ *   post:
+ *     summary: 로그인
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userid:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *     responses:
+ *       201:
+ *         description: 로그인 성공
+ *
+ * /user:
+ *   put:
+ *     summary: 회원 정보 수정
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userid:
+ *                 type: string
+ *               email:
+ *                 type: string
+ *               name:
+ *                 type: string
+ *               phone:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 수정 성공
+ *
+ *   delete:
+ *     summary: 회원 탈퇴
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               userid:
+ *                 type: string
+ *     responses:
+ *       200:
+ *         description: 탈퇴 성공
+ */
