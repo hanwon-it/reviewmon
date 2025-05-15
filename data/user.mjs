@@ -15,7 +15,7 @@ const user_schema = new Mongoose.Schema(
 
 use_virtual_id(user_schema);
 
-const User = Mongoose.model("user", user_schema);
+export const User = Mongoose.model("user", user_schema);
 
 // 회원 가입(새로운 객체 추가)
 export async function create_user(user) {

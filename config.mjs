@@ -1,8 +1,8 @@
 import dotenv from "dotenv";
 dotenv.config();
 
-function required(key, defaultValue = undefined) {
-  const value = process.env[key] || defaultValue;
+function required(key, default_value = undefined) {
+  const value = process.env[key] || default_value;
   if (value == null) {
     throw new Error(`키 ${key}는(은) undefined 입니다.`);
   }
@@ -11,11 +11,11 @@ function required(key, defaultValue = undefined) {
 
 export const config = {
   jwt: {
-    secretKey: required("JWT_SECRET"),
-    expiresInSec: parseInt(required("JWT_EXPIRES_SEC", 86400)),
+    secret_key: required("JWT_SECRET"),
+    expires_in_sec: parseInt(required("JWT_EXPIRES_SEC", 86400)),
   },
   bcrypt: {
-    saltRounds: parseInt(required("BCRYPT_SALT_ROUNDS"), 10),
+    salt_rounds: parseInt(required("BCRYPT_SALT_ROUNDS"), 10),
   },
   db: {
     host: required("DB_HOST"),
