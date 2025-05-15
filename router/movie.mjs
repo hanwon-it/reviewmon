@@ -16,4 +16,6 @@ router.get("/info/:movieId", movies_controller.movie_info);
 // http://{baseUrl}/movies/recommand
 // router.get("/recommand", movies_controller.movie_recommend);
 
+// 홈에 포스터띄워주기
+
 export default router;
