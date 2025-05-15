@@ -95,7 +95,7 @@
   cursor: pointer;
 }
 textarea {
-  width: 100%;
+  width: 93.5%;
   padding: 1rem;
   border-radius: 10px;
   border: none;
@@ -128,7 +128,7 @@ textarea {
   padding: 0 12px;
   font-size: 16px;
   line-height: 1;
-  background-color: #7f75ff;
+  background-color: var(--color-primary);
   color: #fff;
   border: none;
   cursor: pointer;
