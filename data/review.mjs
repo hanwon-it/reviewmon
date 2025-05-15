@@ -1,7 +1,7 @@
-import mongoose from "mongoose";
+import Mongoose from "mongoose";
 import { use_virtual_id } from "../db/database.mjs";
 
-const review_schema = new mongoose.Schema(
+const review_schema = new Mongoose.Schema(
   {
     content: { type: String, require: true },
     rating: { type: Number, require: true },
@@ -15,7 +15,7 @@ const review_schema = new mongoose.Schema(
 
 use_virtual_id(review_schema);
 
-export const Review = mongoose.model("review", review_schema);
+const Review = Mongoose.model("review", review_schema);
 
 // 새로운 리뷰 등록
 export async function post_review(review_info) {
@@ -35,13 +35,13 @@ export async function post_delete(id) {
 // 좋아요 버튼 작동
 
 // 좋아요 스키마 생성
-const like_schema = new mongoose.Schema({
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-  review_id: { type: mongoose.Schema.Types.ObjectId, ref: "Review" },
+const like_schema = new Mongoose.Schema({
+  user_id: { type: Mongoose.Schema.Types.ObjectId, ref: "User" },
+  review_id: { type: Mongoose.Schema.Types.ObjectId, ref: "Review" },
   created_at: { type: Date, default: Date.now },
 });
 
-const Like = mongoose.model("like", like_schema);
+const Like = Mongoose.model("like", like_schema);
 
 //// 좋아요 추가
 export async function likeReview(user_id, review_id) {

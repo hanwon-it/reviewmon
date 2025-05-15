@@ -1,34 +1,36 @@
 // 비밀번호 확인 실시간 체크
-const pw_input = document.getElementById("password");
-const pw_confirm_input = document.getElementById("password_confirm");
-const pw_msg = document.getElementById("pw_check_msg");
+const pwInput = document.getElementById("password");
+const pwConfirmInput = document.getElementById("password_confirm");
+const pwMsg = document.getElementById("pw_check_msg");
 
-function check_password_match() {
-  const pw = pw_input.value;
-  const pw_confirm = pw_confirm_input.value;
+function checkPasswordMatch() {
+  const pw = pwInput.value;
+  const pwConfirm = pwConfirmInput.value;
 
-  if (pw && pw_confirm) {
-    if (pw === pw_confirm) {
-      pw_msg.textContent = "비밀번호가 일치합니다.";
+  if (pw && pwConfirm) {
+    if (pw === pwConfirm) {
+      pwMsg.textContent = "비밀번호가 일치합니다.";
+      pwMsg.style.color = "green";
     } else {
-      pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
+      pwMsg.textContent = "비밀번호가 일치하지 않습니다.";
+      pwMsg.style.color = "red";
     }
   } else {
-    pw_msg.textContent = "";
+    pwMsg.textContent = "";
   }
 }
 
-pw_input.addEventListener("input", check_password_match);
-pw_confirm_input.addEventListener("input", check_password_match);
+pwInput.addEventListener("input", checkPasswordMatch);
+pwConfirmInput.addEventListener("input", checkPasswordMatch);
 
 // 장르 선택 최대 3개 제한
-const genre_checkboxes = document.querySelectorAll('input[name="genre"]');
-genre_checkboxes.forEach((checkbox) => {
+const genreCheckboxes = document.querySelectorAll('input[name="genre"]');
+genreCheckboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
-    const checked_count = document.querySelectorAll(
+    const checkedCount = document.querySelectorAll(
       'input[name="genre"]:checked'
     ).length;
-    if (checked_count > 3) {
+    if (checkedCount > 3) {
       checkbox.checked = false;
       alert("장르는 최대 3개까지만 선택할 수 있습니다.");
     }
@@ -36,17 +38,17 @@ genre_checkboxes.forEach((checkbox) => {
 });
 
 // 약관 모달 열기 / 닫기
-const link_terms = document.querySelector(".link_terms");
-const terms_overlay = document.getElementById("terms_overlay");
-const terms_close = document.getElementById("terms_close");
+const linkTerms = document.querySelector(".link_terms");
+const termsOverlay = document.getElementById("terms_overlay");
+const closeTerms = document.getElementById("terms_close");
 
-link_terms.addEventListener("click", (e) => {
+linkTerms.addEventListener("click", (e) => {
   e.preventDefault();
-  terms_overlay.style.display = "block";
+  termsOverlay.style.display = "flex";
 });
 
-terms_close.addEventListener("click", () => {
-  terms_overlay.style.display = "none";
+closeTerms.addEventListener("click", () => {
+  termsOverlay.style.display = "none";
 });
 
 // 아이디 중복 확인

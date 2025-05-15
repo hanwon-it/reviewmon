@@ -1,8 +1,11 @@
 import Mongoose from "mongoose";
 import { config } from "../config.mjs";
 
-export async function connectDB() {
-  return Mongoose.connect(config.db.url);
+export async function connetDB() {
+  return Mongoose.connect(config.db.url, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  });
 }
 
 export function use_virtual_id(schema) {

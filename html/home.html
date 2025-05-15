@@ -1,4 +1,4 @@
-<!-- 예시 파일: home.html 스네이크 케이스 적용 + 검색창 개선 + 공지 배너 적용 + 영화 추천 섹션 구조 개선 -->
+<!-- html/home.html -->
 <!DOCTYPE html>
 <html lang="en">
   <head>
@@ -27,20 +27,7 @@
             placeholder="검색어를 입력하세요"
           />
           <button class="search_btn" aria-label="검색">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="20"
-              height="20"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-            >
-              <circle cx="11" cy="11" r="8"></circle>
-              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-            </svg>
+            <!-- 검색 아이콘 -->
           </button>
         </div>
         <div class="user_actions">
@@ -53,43 +40,23 @@
     <!-- 슬라이드 배너 영역 -->
     <div class="main-banner-slider">
       <div class="banner-track">
+        <!-- 외부 URL로 교체할 배너 이미지들 -->
         <a href="https://example.com/1" class="banner-link" target="_blank">
-
-          <img
-            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20150203_267%2F1422954366520nmAor_JPEG%2Fmovie_image.jpg"
-            alt="배너1"
-            class="banner-img"
-          />
+          <img src="https://example.com/banner1.jpg" alt="배너1" class="banner-img" />
         </a>
         <a href="https://example.com/2" class="banner-link" target="_blank">
-          <img
-            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20190130_112%2F15488129298423hBCg_JPEG%2Fmovie_image.jpg"
-            alt="배너2"
-            class="banner-img"
-          />
+          <img src="https://example.com/banner2.jpg" alt="배너2" class="banner-img" />
         </a>
         <a href="https://example.com/3" class="banner-link" target="_blank">
-          <img
-            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20120227_202%2F1330305824670oz4jY_JPEG%2Fmovie_image.jpg"
-            alt="배너3"
-            class="banner-img"
-          />
-
+          <img src="https://example.com/banner3.jpg" alt="배너3" class="banner-img" />
         </a>
-        <!-- 필요하면 배너 추가 -->
       </div>
       <button class="banner-arrow left" aria-label="이전 배너">&#10094;</button>
-
-      <button class="banner-arrow right" aria-label="다음 배너">
-        &#10095;
-      </button>
-
+      <button class="banner-arrow right" aria-label="다음 배너">&#10095;</button>
       <div class="banner-indicators">
         <span class="indicator active"></span>
         <span class="indicator"></span>
         <span class="indicator"></span>
-
-        <!-- 배너 개수만큼 span 추가 -->
       </div>
     </div>
 
@@ -98,89 +65,7 @@
       <h2><span id="user_nickname">사용자</span>님이 좋아할 만한 영화</h2>
       <div class="movie_slider_wrapper">
         <button class="arrow_btn prev" aria-label="이전 영화">&#10094;</button>
-        <div class="movie_carousel" id="recommended_carousel">
-          <!-- 영화 카드 예시 → JS로 동적 생성 예정 -->
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-        </div>
+        <div class="movie_carousel" id="recommended_carousel"></div>
         <button class="arrow_btn next" aria-label="다음 영화">&#10095;</button>
       </div>
     </section>
@@ -190,89 +75,7 @@
       <h2 id="next_month_title">7월 개봉 예정작</h2>
       <div class="movie_slider_wrapper">
         <button class="arrow_btn prev" aria-label="이전 영화">&#10094;</button>
-        <div class="movie_carousel" id="upcoming_carousel">
-          <!-- 영화 카드 예시 → JS로 동적 생성 예정 -->
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-          <div class="movie_card empty">
-            <div
-              class="movie_poster"
-              style="
-                background: #222;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                color: #888;
-              "
-            >
-              포스터
-            </div>
-            <div class="movie_title" style="color: #888">영화 제목</div>
-            <div class="movie_rating" style="color: #aaa">평점</div>
-          </div>
-        </div>
+        <div class="movie_carousel" id="upcoming_carousel"></div>
         <button class="arrow_btn next" aria-label="다음 영화">&#10095;</button>
       </div>
     </section>
@@ -299,103 +102,10 @@
         <button class="terms_close" id="terms_close">&times;</button>
         <h2 id="terms_title">이용약관</h2>
         <div class="terms_content">
-          <p>
-            본 서비스는 영화 리뷰 제공 및 추천 서비스를 목적으로 하며, 회원은
-            본인의 계정을 통해 자유롭게 콘텐츠를 이용할 수 있습니다.
-          </p>
-          <p>
-            회원은 타인의 개인정보를 침해하거나 부정한 방법으로 서비스를
-            이용해서는 안 되며, 서비스 내의 콘텐츠는 상업적 용도로 무단 이용할
-            수 없습니다.
-          </p>
-          <p>
-            관리자는 예고 없이 서비스의 일부 또는 전부를 수정, 중단할 수 있으며,
-            회원의 부주의로 발생한 피해에 대해서는 책임지지 않습니다.
-          </p>
-          <p>
-            기타 자세한 이용 규정은 회사의 공식 안내 및 고객센터 공지를
-            따릅니다.
-          </p>
+          <!-- 약관 내용 -->
         </div>
       </div>
     </div>
-<<<<<<< HEAD
-
-    <script>
-      // 약관 팝업 오픈/닫기 처리
-      const termsOverlay = document.getElementById("terms_overlay");
-      const termsTitle = document.getElementById("terms_title");
-
-      document.getElementById("open_terms").onclick = () => {
-        termsOverlay.style.display = "flex";
-        termsTitle.textContent = "이용약관";
-      };
-      document.getElementById("open_privacy").onclick = () => {
-        termsOverlay.style.display = "flex";
-        termsTitle.textContent = "개인정보처리방침";
-      };
-      document.getElementById("terms_close").onclick = () => {
-        termsOverlay.style.display = "none";
-      };
-    </script>
-
-=======
->>>>>>> solbi
-    <script>
-
-      const bannerTrack = document.querySelector(".banner-track");
-      const banners = document.querySelectorAll(".banner-link");
-      const indicators = document.querySelectorAll(
-        ".banner-indicators .indicator"
-      );
-      const leftBtn = document.querySelector(".banner-arrow.left");
-      const rightBtn = document.querySelector(".banner-arrow.right");
-      let idx = 0;
-      let timer = null;
-
-      function showBanner(i) {
-        idx = i;
-        bannerTrack.style.transform = `translateX(-${i * 100}%)`;
-        indicators.forEach((ind, j) => ind.classList.toggle("active", i === j));
-      }
-
-      function nextBanner() {
-        showBanner((idx + 1) % banners.length);
-      }
-      function prevBanner() {
-        showBanner((idx - 1 + banners.length) % banners.length);
-      }
-      function autoSlide() {
-        timer = setInterval(nextBanner, 5000);
-      }
-      function resetAutoSlide() {
-        clearInterval(timer);
-        autoSlide();
-      }
-
-      // 버튼 이벤트
-      rightBtn.onclick = () => {
-        nextBanner();
-        resetAutoSlide();
-      };
-      leftBtn.onclick = () => {
-        prevBanner();
-        resetAutoSlide();
-      };
-
-      // 인디케이터 클릭 이벤트
-      indicators.forEach((ind, i) => {
-        ind.onclick = () => {
-          showBanner(i);
-          resetAutoSlide();
-        };
-      });
-
-      // 자동 슬라이드 시작
-      showBanner(0);
-      autoSlide();
-
-    </script>
 
     <script src="../js/home.js"></script>
   </body>
