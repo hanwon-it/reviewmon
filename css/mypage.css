@@ -1,0 +1,90 @@
+.my_page {
+  max-width: 600px;
+  margin: 40px auto; /* 위아래 40px, 가로 중앙 */
+  padding: 0 20px;
+}
+.profile_section > h1,
+.preferences_section > h1 {
+  color: var(--color-primary);
+  font-size: 1.8rem;
+  font-weight: bold;
+  text-align: center; /* center???left??? 선택장애와버림 */
+}
+
+/* 프로필·선호조사 필드 */
+.big_field {
+  display: flex;
+  justify-content: flex-start;
+  gap: 32px;
+  margin-bottom: 16px;
+}
+.big_field .field {
+  flex: 0 0 45%; /* flex-grow:0, flex-shrink:0, flex-basis:35% */
+  max-width: 90%; /* 혹은 flex-basis 대신 사용해도 무방 */
+}
+
+.field {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+.field label {
+  width: 120px;
+  margin-right: 8px;
+}
+.field input {
+  flex: 0 0 58%;
+  max-width: 400px;
+  width: 100px;
+  height: 36px;
+  padding: 0 12px;
+  border-radius: 10px;
+  border: none;
+}
+.field button {
+  margin-left: 12px;
+  padding: 0 16px;
+  height: 36px;
+
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+}
+
+/* 회원탈퇴 버튼 별도 중앙 배치 */
+.withdrawal_section {
+  text-align: center;
+  margin: 32px 0;
+}
+.withdrawal_section button {
+  padding: 10px 24px;
+  border: none;
+
+  font-size: 1rem;
+  cursor: pointer;
+}
+/* 선호장르 수정 모달 */
+.genre-toggle-wrap {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.genre-toggle {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 20px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  border: 1px solid #aaa;
+  transition: background-color 0.2s;
+}
+
+.genre-toggle.selected {
+  background-color: #a29bfe;
+  color: white;
+  border-color: #6c5ce7;
+}

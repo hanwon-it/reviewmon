@@ -79,11 +79,35 @@ button:hover {
 .search_input {
   background-color: transparent;
   border: none;
-  color: var(--color-text);
+  /* color: var(--color-text); */
   font-size: 0.9rem;
   padding: 0.5rem 0.8rem;
   border-radius: 6px;
   outline: none;
+}
+
+.search_category {
+  background-color: transparent;
+  color: var(--color-text);
+  font-size: 0.9rem;
+  padding: 0.6rem 2rem 0.6rem 0.8rem;
+  border: none;
+  border-radius: 30px;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg width='10' height='6' viewBox='0 0 10 6' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1L5 5L9 1' stroke='white' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 0.8rem center;
+  background-size: 10px;
+  height: 40px;
+  line-height: 1.2;
+}
+
+/* option 펼쳐진 배경도 깔끔하게 */
+.search_category option {
+  background-color: white;
+  color: #222;
 }
 
 .search_btn {
@@ -141,4 +165,81 @@ button:hover {
 
 .footer a:hover {
   text-decoration: underline;
+}
+
+/* 이용약관 팝업 */
+.terms_overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: rgba(0, 0, 0, 0.7);
+  justify-content: center;
+  align-items: center;
+  z-index: 2000;
+}
+
+.terms_modal {
+  background-color: var(--color-bg-secondary);
+  padding: 2rem;
+  border-radius: 16px;
+  max-width: 600px;
+  width: 90%;
+  position: relative;
+  color: var(--color-text);
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+}
+
+.terms_modal h2 {
+  color: var(--color-primary);
+  margin-bottom: 1rem;
+}
+
+.terms_modal p {
+  font-size: 0.9rem;
+  line-height: 1.5;
+  margin-bottom: 1rem;
+}
+
+.terms_group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  flex-wrap: wrap; /* 줄바꿈 허용 (모바일 대비) */
+}
+
+.terms_group input[type="checkbox"] {
+  transform: scale(1.1);
+  margin: 0;
+}
+
+.terms_group label {
+  font-size: 0.9rem;
+  color: var(--color-text);
+  margin: 0;
+}
+
+.link_terms {
+  font-size: 0.9rem;
+  color: var(--color-primary);
+  text-decoration: underline;
+  margin-left: auto; /* 오른쪽 끝 정렬 (선택사항) */
+}
+
+.terms_close {
+  position: absolute;
+  top: 0.8rem;
+  right: 0.8rem;
+  background: var(--color-primary);
+  border: none;
+  font-size: 1.1rem;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  line-height: 1;
+  padding: 0;
 }
