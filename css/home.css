@@ -1,0 +1,81 @@
+.main-banner-slider {
+  width: 100%;
+  max-width: 1900px;
+  height: 32vw; /* 1900:620 비율 유지 (620/1900 ≈ 0.326) */
+  max-height: 620px;
+  margin: 0 auto 2rem auto;
+  position: relative;
+  overflow: hidden;
+  border-radius: 20px;
+  box-shadow: 0 4px 24px rgba(0,0,0,0.15);
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.banner-track {
+  display: flex;
+  transition: transform 0.7s cubic-bezier(0.4,0,0.2,1);
+  will-change: transform;
+  height: 100%;
+}
+
+.banner-link {
+  min-width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+}
+
+.banner-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 20px;
+}
+
+.banner-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  background: rgba(0,0,0,0.4);
+  color: #fff;
+  border: none;
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  font-size: 2rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+}
+.banner-arrow.left { left: 24px; }
+.banner-arrow.right { right: 24px; }
+.banner-arrow:hover { background: rgba(0,0,0,0.7); }
+
+.banner-indicators {
+  position: absolute;
+  left: 50%;
+  bottom: 24px;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 12px;
+  z-index: 10;
+}
+.banner-indicators .indicator {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.5);
+  transition: background 0.3s, box-shadow 0.3s;
+  cursor: pointer;
+}
+.banner-indicators .indicator.active {
+  background: var(--color-primary-dark, #6c5ce7);
+  box-shadow: 0 0 0 2px #888;
+}
