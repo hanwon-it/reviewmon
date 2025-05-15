@@ -45,7 +45,9 @@ async function load_my_reviews(sort_type, token) {
     if (!res.ok) throw new Error(data.message);
 
     const user_nickname = await fetch_nickname(token);
-    const my_reviews = data.filter((review) => review.nickname === user_nickname);
+    const my_reviews = data.filter(
+      (review) => review.nickname === user_nickname
+    );
     render_my_reviews(my_reviews);
   } catch (err) {
     console.error(err);
@@ -168,15 +170,10 @@ async function delete_review(idx) {
     console.error(err);
     alert("리뷰 삭제 실패");
   }
-<<<<<<< HEAD
 }
-=======
-});
 
 // 초기 렌더링
 renderReviewCards();
-
->>>>>>> solbi
 
 async function fetch_nickname(token) {
   try {
@@ -192,22 +189,6 @@ async function fetch_nickname(token) {
   }
 }
 
-<<<<<<< HEAD
-// 약관/개인정보 팝업
-document.getElementById("open_terms").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "이용약관";
-};
-
-document.getElementById("open_privacy").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "개인정보처리방침";
-};
-
-document.getElementById("terms_close").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "none";
-};
-=======
 // 약관 팝업 오픈/닫기 처리
 const termsOverlay = document.getElementById("terms_overlay");
 const termsTitle = document.getElementById("terms_title");
@@ -225,5 +206,3 @@ document.getElementById("open_privacy").onclick = (e) => {
 document.getElementById("terms_close").onclick = () => {
   termsOverlay.style.display = "none";
 };
-
->>>>>>> solbi

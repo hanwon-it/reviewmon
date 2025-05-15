@@ -17,7 +17,9 @@ document.addEventListener("DOMContentLoaded", async () => {
   const review_form = document.getElementById("review_form");
 
   // 모달 열기/닫기
-  open_review_modal.addEventListener("click", () => review_modal.classList.add("show"));
+  open_review_modal.addEventListener("click", () =>
+    review_modal.classList.add("show")
+  );
   [close_modal, modal_overlay].forEach((el) =>
     el.addEventListener("click", () => review_modal.classList.remove("show"))
   );
@@ -67,10 +69,6 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 });
 
-<<<<<<< HEAD
-=======
-
->>>>>>> solbi
 // 영화 상세 정보 로딩
 async function load_movie_details(movie_id) {
   try {
@@ -81,7 +79,9 @@ async function load_movie_details(movie_id) {
     document.querySelector(".info h1").textContent = data.title;
     document.querySelector(".overview").textContent = data.overview;
     document.querySelector(".poster img").src = data.poster_path;
-    document.querySelector(".rating").textContent = `리뷰몬 평점: ⭐⭐⭐⭐✮ ${data.rating}/5.0`;
+    document.querySelector(
+      ".rating"
+    ).textContent = `리뷰몬 평점: ⭐⭐⭐⭐✮ ${data.rating}/5.0`;
 
     const cast_grid = document.querySelector(".cast_grid");
     cast_grid.innerHTML = "";
@@ -90,8 +90,12 @@ async function load_movie_details(movie_id) {
       const div = document.createElement("div");
       div.className = "cast_item";
       div.innerHTML = `
-        <div class="cast_photo" style="background-image:url(${person.profile_path || "./img/default.png"})"></div>
-        <div class="cast_info">${person.name}<br />${person.character || "감독"}</div>
+        <div class="cast_photo" style="background-image:url(${
+          person.profile_path || "./img/default.png"
+        })"></div>
+        <div class="cast_info">${person.name}<br />${
+        person.character || "감독"
+      }</div>
       `;
       cast_grid.appendChild(div);
     });
@@ -134,18 +138,6 @@ function get_movie_id_from_url() {
   return params.get("movie_id");
 }
 
-<<<<<<< HEAD
-// 약관/개인정보 모달 처리
-document.getElementById("open_terms").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "이용약관";
-};
-
-document.getElementById("open_privacy").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "개인정보처리방침";
-};
-=======
 const termsOverlay = document.getElementById("terms_overlay");
 const termsTitle = document.getElementById("terms_title");
 
@@ -159,8 +151,6 @@ document.getElementById("open_privacy").onclick = (e) => {
   termsOverlay.style.display = "flex";
   termsTitle.textContent = "개인정보처리방침";
 };
-
->>>>>>> solbi
 
 document.getElementById("terms_close").onclick = () => {
   document.getElementById("terms_overlay").style.display = "none";

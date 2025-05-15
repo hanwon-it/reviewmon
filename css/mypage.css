@@ -8,10 +8,7 @@
   color: var(--color-primary);
   font-size: 1.8rem;
   font-weight: bold;
-  text-align: center; /* center???left??? 선택장애와버림 */
-=======
   text-align: left; /* center???left??? 선택장애와버림 */
->>>>>>> solbi
 }
 
 /* 프로필·선호조사 필드 */
@@ -92,8 +89,6 @@
   color: white;
   border-color: #6c5ce7;
 }
-<<<<<<< HEAD
-=======
 
 /* === 모달 공통 오버레이 === */
 .modal {
@@ -156,7 +151,6 @@
   background-color: var(--color-primary);
   color: #fff;
 }
->>>>>>> solbi
 
 /* === 모달 공통 오버레이 === */
 .modal {

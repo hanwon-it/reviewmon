@@ -1,21 +1,5 @@
-<<<<<<< HEAD
 import { Movie } from "../data/movie.mjs";
 import { Review } from "../data/review.mjs";
-=======
-<<<<<<< HEAD
-import { Movie } from "../data/movie.mjs";
-import { Review } from "../data/review.mjs";
-=======
-import { config } from "../config.mjs";
-import mongoose from "mongoose";
-import { user_schema } from "../data/users.mjs";
-import { movie_schema } from "../data/movies.mjs";
-import { favorite_schema } from "../data/favorite.mjs";
-import { review_schema } from "../data/reviews.mjs";
-import { rating_out_schema } from "../data/rating_out.mjs";
-import movie_repository from "../data/movies.mjs";
->>>>>>> 3252ad4cee4c47a2cd5708d98dc4400f27784a92
->>>>>>> solbi
 
 // ✅ 1. 영화 검색 결과
 export async function search_movie(req, res) {
@@ -41,23 +25,10 @@ export async function search_movie(req, res) {
 export async function movie_review_list(req, res) {
   const { movie_id } = req.id;
   try {
-<<<<<<< HEAD
     const reviews = await Review.find({
       movie: await getMovieObjectId(movie_id),
     }).populate("user", "username");
-=======
-<<<<<<< HEAD
-    const reviews = await Review.find({
-      movie: await getMovieObjectId(movie_id),
-    }).populate("user", "username");
-=======
-    const reviews = await review_schema
-      .find({
-        movie: await getMovieObjectId(movie_id),
-      })
-      .populate("user", "username");
->>>>>>> 3252ad4cee4c47a2cd5708d98dc4400f27784a92
->>>>>>> solbi
+
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ error: "리뷰 조회 실패" });
@@ -92,15 +63,7 @@ export async function movie_info(req, res) {
 
   // 🔧 유틸 함수: movieid로 ObjectId 찾기
   async function getMovieObjectId(movieid) {
-<<<<<<< HEAD
     const movie = await Movie.findOne({ movieid });
-=======
-<<<<<<< HEAD
-    const movie = await Movie.findOne({ movieid });
-=======
-    const movie = await movie_schema.findOne({ movieid });
->>>>>>> 3252ad4cee4c47a2cd5708d98dc4400f27784a92
->>>>>>> solbi
     return movie._id;
   }
 } // mongoose 양식으로 변환 예정
