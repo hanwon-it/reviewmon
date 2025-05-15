@@ -8,9 +8,9 @@ const review_schema = new Mongoose.Schema(
     nickname: { type: String, require: true },
     movie_title: { type: String, require: true },
     like_cnt: { type: Number, require: true },
+    user_idx: { type: String },
   },
-  { versionKey: false },
-  { timestamps: true }
+  { versionKey: false, timestamps: true }
 );
 
 use_virtual_id(review_schema);

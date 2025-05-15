@@ -9,6 +9,7 @@ const movie_schema = new mongoose.Schema(
     poster_path: String,
     original_title: String,
     genre_ids: [Number],
+    genre_names: [String],
     popularity: Number,
     original_language: String,
     cast: [
@@ -31,8 +32,8 @@ const movie_schema = new mongoose.Schema(
 export const Movie = mongoose.model("movie", movie_schema);
 
 const genre_schema = new mongoose.Schema({
-  genre_ids: { type: Number, unique: true }, // TMDb genre_id
-  name: { type: String, required: true }, // 장르명 (한글 또는 영문)
+  genreId: Number, // ✅ 반드시 포함
+  name: String,
 });
 
-export const Genre = mongoose.model("Genre", genre_schema);
+export const Genre = mongoose.model("Genre", genre_schema, "genres");
