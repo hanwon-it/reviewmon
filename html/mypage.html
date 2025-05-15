@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+\<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
@@ -6,7 +6,7 @@
     <title>마이 페이지 – review_mon</title>
     <link rel="stylesheet" href="../css/common.css" />
     <link rel="stylesheet" href="../css/mypage.css" />
-    <!-- <style>
+    <style>
       /* --- 모달 오버레이 --- */
       .modal {
         display: none;
@@ -68,61 +68,61 @@
         background-color: #8e79e0;
         color: #fff;
       }
-    </style> -->
+    </style>
   </head>
   <body>
     <!-- 헤더 -->
     <header class="header">
-      <div class="logo">Review_mon</div>
+      <div class="header_inner">
+        <div class="logo">Review_mon</div>
 
-      <!-- 검색창 영역 -->
-      <div class="search_box">
-        <select class="search_category" id="search_category">
-          <option value="movie">영화정보</option>
-          <option value="person">감독/배우</option>
-          <option value="user">유저</option>
-        </select>
+        <!-- 검색창 영역 -->
+        <div class="search_box">
+          <select class="search_category" id="search_category">
+            <option value="movie">영화정보</option>
+            <option value="person">감독/배우</option>
+            <option value="user">유저</option>
+          </select>
 
-        <input
-          type="text"
-          class="search_input"
-          id="search_input"
-          placeholder="검색어를 입력하세요"
-        />
+          <input
+            type="text"
+            class="search_input"
+            id="search_input"
+            placeholder="검색어를 입력하세요"
+          />
 
-        <button class="search_btn" aria-label="검색">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-          >
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-        </button>
-      </div>
+          <button class="search_btn" aria-label="검색">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
+        </div>
 
-      <!-- 사용자 액션 -->
-      <div class="user_actions">
-        <button class="btn_mypage">마이페이지</button>
-        <button class="btn_logout">로그아웃</button>
+        <!-- 사용자 액션 -->
+        <div class="user_actions">
+          <button class="btn_mypage">마이페이지</button>
+          <button class="btn_logout">로그아웃</button>
+        </div>
       </div>
     </header>
 
     <main class="my_page">
-      <h1>마이페이지</h1>
-
       <!-- 프로필 섹션 -->
       <section class="profile_section">
-        <h2>프로필</h2>
+        <h1>프로필</h1>
         <div class="profile_fields">
-          <div class="field">
+          <div class="big_field">
             <div class="field">
               <label for="user_id">아이디</label>
               <input id="user_id" type="text" value="" readonly />
@@ -131,7 +131,8 @@
               <label for="join_date">가입일자</label>
               <input id="join_date" type="text" value="" readonly />
             </div>
-
+          </div>
+          <div class="field">
             <label for="nickname">닉네임</label>
             <input id="nickname" type="text" value="현재닉네임" readonly />
             <button class="btn_edit">수정</button>
@@ -158,12 +159,12 @@
 
       <!-- 선호조사 섹션 -->
       <section class="preferences_section">
-        <h2>선호조사</h2>
-        <div class="genre_buttons">
-          <span>내 선호장르</span>
-          <span class="genre_label">액션</span>
-          <span class="genre_label">모험</span>
-          <span class="genre_label">애니메이션</span>
+        <h1>선호조사</h1>
+        <!-- <div class="genre_buttons"> -->
+        <div class="field">
+          <label for="genre_buttons">선호 장르</label>
+          <input id="genre_buttons" type="text" />
+          <button class="btn_prefs_edit">수정</button>
         </div>
         <div class="field">
           <label for="fav_actor">좋아하는 배우</label>
@@ -175,12 +176,33 @@
           <input id="fav_director" type="text" value="봉준호" readonly />
           <button class="btn_add">추가</button>
         </div>
-        <button class="btn_edit prefs_edit">수정</button>
       </section>
       <div class="withdrawal_section">
         <button id="btn_withdrawal" class="btn_del_account">회원탈퇴</button>
       </div>
     </main>
+    <!-- 장르 선택 모달 (genre_preferences_modal) -->
+    <div id="genre_preferences_modal" class="modal">
+      <div class="modal-content">
+        <p class="modal-text">선호하는 장르를 선택해주세요 (최대 3개)</p>
+        <div class="genre-toggle-wrap">
+          <button class="genre-toggle" data-genre="액션">액션</button>
+          <button class="genre-toggle" data-genre="로맨스">로맨스</button>
+          <button class="genre-toggle" data-genre="스릴러">스릴러</button>
+          <button class="genre-toggle" data-genre="코미디">코미디</button>
+          <button class="genre-toggle" data-genre="SF">SF</button>
+          <button class="genre-toggle" data-genre="판타지">판타지</button>
+          <button class="genre-toggle" data-genre="공포">공포</button>
+          <button class="genre-toggle" data-genre="미스터리">미스터리</button>
+        </div>
+        <div class="modal-actions">
+          <button id="genre_preferences_confirm" class="btn-confirm">
+            저장
+          </button>
+          <button id="genre_preferences_cancel" class="btn-cancel">취소</button>
+        </div>
+      </div>
+    </div>
 
     <!-- 회원탈퇴 확인 모달 -->
     <div id="withdrawalModal" class="modal">
@@ -233,6 +255,72 @@
     </div>
 
     <script>
+      // 선호장르 수정 팝업 열기 버튼 연결
+      document
+        .querySelector(".btn_prefs_edit")
+        .addEventListener("click", () => {
+          document
+            .getElementById("genre_preferences_modal")
+            .classList.add("open");
+        });
+
+      // 닫기 버튼 연결
+      document
+        .getElementById("genre_preferences_cancel")
+        .addEventListener("click", () => {
+          document
+            .getElementById("genre_preferences_modal")
+            .classList.remove("open");
+        });
+
+      // 토글 버튼 처리
+      document.querySelectorAll(".genre-toggle").forEach((button) => {
+        button.addEventListener("click", () => {
+          const selected = document.querySelectorAll(".genre-toggle.selected");
+          if (!button.classList.contains("selected") && selected.length >= 3) {
+            alert("최대 3개까지 선택할 수 있습니다.");
+            return;
+          }
+          button.classList.toggle("selected");
+        });
+      });
+
+      // 저장 버튼 클릭
+      document
+        .getElementById("genre_preferences_confirm")
+        .addEventListener("click", async () => {
+          const selectedGenres = Array.from(
+            document.querySelectorAll(".genre-toggle.selected")
+          ).map((btn) => btn.dataset.genre);
+
+          if (selectedGenres.length === 0) {
+            alert("최소 한 개 이상 선택해주세요.");
+            return;
+          }
+
+          // API 연동 부분 (예시)
+          try {
+            const res = await fetch("/api/favorite/update", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ genres: selectedGenres }),
+            });
+
+            const result = await res.json();
+            if (res.ok) {
+              alert("선호 장르가 저장되었습니다.");
+              document
+                .getElementById("genre_preferences_modal")
+                .classList.remove("open");
+            } else {
+              alert("저장 실패: " + result.message);
+            }
+          } catch (err) {
+            console.error(err);
+            alert("오류가 발생했습니다.");
+          }
+        });
+
       // 약관 팝업 오픈/닫기 처리
       const termsOverlay = document.getElementById("terms_overlay");
       const termsTitle = document.getElementById("terms_title");

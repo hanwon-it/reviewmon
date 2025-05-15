@@ -54,24 +54,36 @@
     <div class="main-banner-slider">
       <div class="banner-track">
         <a href="https://example.com/1" class="banner-link" target="_blank">
-          <img src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20150203_267%2F1422954366520nmAor_JPEG%2Fmovie_image.jpg" alt="배너1" class="banner-img" />
+          <img
+            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20150203_267%2F1422954366520nmAor_JPEG%2Fmovie_image.jpg"
+            alt="배너1"
+            class="banner-img"
+          />
         </a>
         <a href="https://example.com/2" class="banner-link" target="_blank">
-          <img src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20190130_112%2F15488129298423hBCg_JPEG%2Fmovie_image.jpg" alt="배너2" class="banner-img" />
+          <img
+            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20190130_112%2F15488129298423hBCg_JPEG%2Fmovie_image.jpg"
+            alt="배너2"
+            class="banner-img"
+          />
         </a>
-        <a href="https://example.com/3" class="banner-link" target="_blank" >
-          <img src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20120227_202%2F1330305824670oz4jY_JPEG%2Fmovie_image.jpg" alt="배너3" class="banner-img" />
+        <a href="https://example.com/3" class="banner-link" target="_blank">
+          <img
+            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20120227_202%2F1330305824670oz4jY_JPEG%2Fmovie_image.jpg"
+            alt="배너3"
+            class="banner-img"
+          />
         </a>
         <!-- 필요하면 배너 추가 -->
       </div>
       <button class="banner-arrow left" aria-label="이전 배너">&#10094;</button>
-      <button class="banner-arrow right" aria-label="다음 배너">&#10095;</button>
+      <button class="banner-arrow right" aria-label="다음 배너">
+        &#10095;
+      </button>
       <div class="banner-indicators">
         <span class="indicator active"></span>
         <span class="indicator"></span>
         <span class="indicator"></span>
-        
-      
         <!-- 배너 개수만큼 span 추가 -->
       </div>
     </div>
@@ -309,11 +321,11 @@
       const termsTitle = document.getElementById("terms_title");
 
       document.getElementById("open_terms").onclick = () => {
-        termsOverlay.style.display = "block";
+        termsOverlay.style.display = "flex";
         termsTitle.textContent = "이용약관";
       };
       document.getElementById("open_privacy").onclick = () => {
-        termsOverlay.style.display = "block";
+        termsOverlay.style.display = "flex";
         termsTitle.textContent = "개인정보처리방침";
       };
       document.getElementById("terms_close").onclick = () => {
@@ -322,46 +334,57 @@
     </script>
 
     <script>
-    const bannerTrack = document.querySelector('.banner-track');
-    const banners = document.querySelectorAll('.banner-link');
-    const indicators = document.querySelectorAll('.banner-indicators .indicator');
-    const leftBtn = document.querySelector('.banner-arrow.left');
-    const rightBtn = document.querySelector('.banner-arrow.right');
-    let idx = 0;
-    let timer = null;
+      const bannerTrack = document.querySelector(".banner-track");
+      const banners = document.querySelectorAll(".banner-link");
+      const indicators = document.querySelectorAll(
+        ".banner-indicators .indicator"
+      );
+      const leftBtn = document.querySelector(".banner-arrow.left");
+      const rightBtn = document.querySelector(".banner-arrow.right");
+      let idx = 0;
+      let timer = null;
 
-    function showBanner(i) {
-      idx = i;
-      bannerTrack.style.transform = `translateX(-${i * 100}%)`;
-      indicators.forEach((ind, j) => ind.classList.toggle('active', i === j));
-    }
+      function showBanner(i) {
+        idx = i;
+        bannerTrack.style.transform = `translateX(-${i * 100}%)`;
+        indicators.forEach((ind, j) => ind.classList.toggle("active", i === j));
+      }
 
-    function nextBanner() {
-      showBanner((idx + 1) % banners.length);
-    }
-    function prevBanner() {
-      showBanner((idx - 1 + banners.length) % banners.length);
-    }
-    function autoSlide() {
-      timer = setInterval(nextBanner, 5000);
-    }
-    function resetAutoSlide() {
-      clearInterval(timer);
+      function nextBanner() {
+        showBanner((idx + 1) % banners.length);
+      }
+      function prevBanner() {
+        showBanner((idx - 1 + banners.length) % banners.length);
+      }
+      function autoSlide() {
+        timer = setInterval(nextBanner, 5000);
+      }
+      function resetAutoSlide() {
+        clearInterval(timer);
+        autoSlide();
+      }
+
+      // 버튼 이벤트
+      rightBtn.onclick = () => {
+        nextBanner();
+        resetAutoSlide();
+      };
+      leftBtn.onclick = () => {
+        prevBanner();
+        resetAutoSlide();
+      };
+
+      // 인디케이터 클릭 이벤트
+      indicators.forEach((ind, i) => {
+        ind.onclick = () => {
+          showBanner(i);
+          resetAutoSlide();
+        };
+      });
+
+      // 자동 슬라이드 시작
+      showBanner(0);
       autoSlide();
-    }
-
-    // 버튼 이벤트
-    rightBtn.onclick = () => { nextBanner(); resetAutoSlide(); };
-    leftBtn.onclick = () => { prevBanner(); resetAutoSlide(); };
-
-    // 인디케이터 클릭 이벤트
-    indicators.forEach((ind, i) => {
-      ind.onclick = () => { showBanner(i); resetAutoSlide(); };
-    });
-
-    // 자동 슬라이드 시작
-    showBanner(0);
-    autoSlide();
     </script>
 
     <script src="../js/home.js"></script>
