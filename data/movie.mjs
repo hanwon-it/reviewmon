@@ -9,6 +9,7 @@ const movie_schema = new mongoose.Schema(
     poster_path: String,
     original_title: String,
     genre_ids: [Number],
+    genre_names: [String],
     popularity: Number,
     original_language: String,
     cast: [

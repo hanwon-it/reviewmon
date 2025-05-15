@@ -13,7 +13,7 @@
 */
 
 import jwt from "jsonwebtoken";
-import * as auth_repository from "../data/auth.mjs";
+import * as auth_repository from "../data/user.mjs";
 import { config } from "../config.mjs";
 
 const AUTH_ERROR = { message: "인증에러" };
