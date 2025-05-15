@@ -44,25 +44,20 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// 약관 / 개인정보 팝업 처리
-
-// 요소 가져오기
+// 약관 팝업 오픈/닫기 처리
 const termsOverlay = document.getElementById("terms_overlay");
 const termsTitle = document.getElementById("terms_title");
 
-// 이용약관 열기
-document.getElementById("open_terms").onclick = () => {
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
   termsOverlay.style.display = "flex";
   termsTitle.textContent = "이용약관";
 };
-
-// 개인정보처리방침 열기
-document.getElementById("open_privacy").onclick = () => {
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
   termsOverlay.style.display = "flex";
   termsTitle.textContent = "개인정보처리방침";
 };
-
-// 팝업 닫기 버튼
 document.getElementById("terms_close").onclick = () => {
   termsOverlay.style.display = "none";
 };
