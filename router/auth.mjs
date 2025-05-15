@@ -52,8 +52,8 @@ router.post("/auth/find-pw", auth_controller.find_pw_by_email); //controller 함
 
 // 6. 아이디 찾기
 // POST
-// http://{baseUrl}/auth/find-id
-router.post("/auth/find-id", auth_controller.find_id_by_email); //controller 함수 필요
+// http://{baseUrl}/auth/find-userid
+router.post("/auth/find-userid", auth_controller.find_id_by_email); //controller 함수 필요
 
 // 7. 내 회원 정보 수정
 // PATCH
