@@ -140,7 +140,7 @@ try {
 
   if (res.status === 201) {
     alert("회원가입이 완료되었습니다. 로그인해주세요.");
-    location.href = "/login.html";
+    location.href = "/index.html";
   } else {
     alert(result.message || "회원가입 실패");
   }
