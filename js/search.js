@@ -115,21 +115,18 @@ async function search_data(keyword, category) {
         return showNoResults();
       }
 
-      data.forEach((item) => {
-        const posterUrl = item.poster_path
-          ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-          : "/img/default_poster.jpg";
-
-        const card = createCard({
-          image: posterUrl,
-          title: item.title || "제목 없음",
-          onClick: () => {
-            window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
-          },
-        });
-
-        search_grid.appendChild(card);
-      });
+      data.slice(0, 25).forEach((item) => {
+  const card = createCard({
+    image: item.poster_path
+      ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+      : "/img/default_poster.jpg",
+    title: item.title || "제목 없음",
+    onClick: () => {
+      window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
+    },
+  });
+  search_grid.appendChild(card);
+});
 
     } else {
       return showNoResults("지원하지 않는 검색 유형입니다.");
