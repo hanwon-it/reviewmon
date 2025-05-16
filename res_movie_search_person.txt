@@ -1,0 +1,89 @@
+/*
+//req.body
+{
+    "type": "person",
+    "text": "라이언 고슬링"
+}
+*/
+{
+    "page": 1,
+    "results": [
+        {
+            "adult": false,
+            "gender": 2,
+            "id": 30614,
+            "known_for_department": "Acting",
+            "name": "Ryan Gosling",
+            "original_name": "Ryan Gosling",
+            "popularity": 9.4881,
+            "profile_path": "/asoKC7CLCqpZKZDL6iovNurQUdf.jpg",
+            "known_for": [
+                {
+                    "backdrop_path": "/nlPCdZlHtRNcF6C9hzUH4ebmV1w.jpg",
+                    "id": 313369,
+                    "title": "La La Land",
+                    "original_title": "La La Land",
+                    "overview": "Mia, an aspiring actress, serves lattes to movie stars in between auditions and Sebastian, a jazz musician, scrapes by playing cocktail party gigs in dingy bars, but as success mounts they are faced with decisions that begin to fray the fragile fabric of their love affair, and the dreams they worked so hard to maintain in each other threaten to rip them apart.",
+                    "poster_path": "/uDO8zWDhfWwoFdKS4fzkUJt0Rf0.jpg",
+                    "media_type": "movie",
+                    "adult": false,
+                    "original_language": "en",
+                    "genre_ids": [
+                        35,
+                        18,
+                        10749,
+                        10402
+                    ],
+                    "popularity": 21.2918,
+                    "release_date": "2016-12-01",
+                    "video": false,
+                    "vote_average": 7.9,
+                    "vote_count": 17276
+                },
+                {
+                    "backdrop_path": "/bMdSmfI0qwpAkvhAL7sqpjmwgf4.jpg",
+                    "id": 335984,
+                    "title": "Blade Runner 2049",
+                    "original_title": "Blade Runner 2049",
+                    "overview": "Thirty years after the events of the first film, a new blade runner, LAPD Officer K, unearths a long-buried secret that has the potential to plunge what's left of society into chaos. K's discovery leads him on a quest to find Rick Deckard, a former LAPD blade runner who has been missing for 30 years.",
+                    "poster_path": "/gajva2L0rPYkEWjzgFlBXCAVBE5.jpg",
+                    "media_type": "movie",
+                    "adult": false,
+                    "original_language": "en",
+                    "genre_ids": [
+                        878,
+                        18
+                    ],
+                    "popularity": 20.4441,
+                    "release_date": "2017-10-04",
+                    "video": false,
+                    "vote_average": 7.58,
+                    "vote_count": 14115
+                },
+                {
+                    "backdrop_path": "/9ly9pxGwiB6g5lIZXou2HKXl7ua.jpg",
+                    "id": 64690,
+                    "title": "Drive",
+                    "original_title": "Drive",
+                    "overview": "Driver is a skilled Hollywood stuntman who moonlights as a getaway driver for criminals. Though he projects an icy exterior, lately he's been warming up to a pretty neighbor named Irene and her young son, Benicio. When Irene's husband gets out of jail, he enlists Driver's help in a million-dollar heist. The job goes horribly wrong, and Driver must risk his life to protect Irene and Benicio from the vengeful masterminds behind the robbery.",
+                    "poster_path": "/602vevIURmpDfzbnv5Ubi6wIkQm.jpg",
+                    "media_type": "movie",
+                    "adult": false,
+                    "original_language": "en",
+                    "genre_ids": [
+                        18,
+                        53,
+                        80
+                    ],
+                    "popularity": 9.355,
+                    "release_date": "2011-09-15",
+                    "video": false,
+                    "vote_average": 7.581,
+                    "vote_count": 12870
+                }
+            ]
+        }
+    ],
+    "total_pages": 1,
+    "total_results": 1
+}
