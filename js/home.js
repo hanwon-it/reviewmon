@@ -62,7 +62,7 @@ fetch("/api/recommendations/1")
   });
 
 // 🔥 인기 영화 캐러셀
-fetch("/api/popular")
+fetch("/api/movies/popular")
   .then((res) => res.json())
   .then((data) => {
     setupCarousel("carouselTrack2", "prevBtn2", "nextBtn2", data);
@@ -146,3 +146,20 @@ document.getElementById("open_privacy").onclick = (e) => {
 document.getElementById("terms_close").onclick = () => {
   termsOverlay.style.display = "none";
 };
+
+
+document.querySelector(".search_btn").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const category = document.getElementById("search_category").value;
+  const keyword = document.getElementById("search_input").value.trim();
+
+  if (!keyword) {
+    alert("검색어를 입력해주세요.");
+    return;
+  }
+
+  // search.html로 이동하면서 파라미터 전달
+  const url = `/search.html?category=${encodeURIComponent(category)}&keyword=${encodeURIComponent(keyword)}`;
+  window.location.href = url;
+});
