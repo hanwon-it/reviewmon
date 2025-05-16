@@ -1,0 +1,84 @@
+/*
+//req.body
+{
+    "type": "title",
+    "text": "라라랜드"
+}
+*/
+
+[
+    {
+        "_id": "682361302437e8f53eadbcba",
+        "movie_id": 313369,
+        "cast": [
+            {
+                "name": "Ryan Gosling",
+                "character": "Sebastian",
+                "profile_path": "/asoKC7CLCqpZKZDL6iovNurQUdf.jpg",
+                "_id": "68248b52fdff989352352035"
+            },
+            {
+                "name": "Emma Stone",
+                "character": "Mia",
+                "profile_path": "/cZ8a3QvAnj2cgcgVL6g4XaqPzpL.jpg",
+                "_id": "68248b52fdff989352352036"
+            },
+            {
+                "name": "John Legend",
+                "character": "Keith",
+                "profile_path": "/5HUGMf3Lf88IisKr2Av3kSdVoLL.jpg",
+                "_id": "68248b52fdff989352352037"
+            },
+            {
+                "name": "Rosemarie DeWitt",
+                "character": "Laura",
+                "profile_path": "/44sxIdGtYN24R14OmnZbCpcd8J8.jpg",
+                "_id": "68248b52fdff989352352038"
+            },
+            {
+                "name": "J.K. Simmons",
+                "character": "Bill",
+                "profile_path": "/ScmKoJ9eiSUOthAt1PDNLi8Fkw.jpg",
+                "_id": "68248b52fdff989352352039"
+            },
+            {
+                "name": "Amiée Conn",
+                "character": "Famous Actress",
+                "profile_path": "/wAcmKIkZOfuS3gKnUTUW9Epu6Yy.jpg",
+                "_id": "68248b52fdff98935235203a"
+            },
+            {
+                "name": "Terry Walters",
+                "character": "Linda",
+                "profile_path": "/ixN4VkUNqy2xObaddCW68rhFbyA.jpg",
+                "_id": "68248b52fdff98935235203b"
+            }
+        ],
+        "director": [
+            {
+                "name": "Damien Chazelle",
+                "profile_path": "/14kRZ3XxNMyBv717YQSXr3wCucy.jpg",
+                "_id": "68248b52fdff989352352034"
+            }
+        ],
+        "genre_ids": [
+            35,
+            18,
+            10749,
+            10402
+        ],
+        "original_language": "en",
+        "original_title": "La La Land",
+        "overview": "차들로 빽빽이 들어찬 LA의 고속도로. 거북이 걸음이던 도로가 뚫리기 시작하지만 미아 지금 손에 든 연기 오디션 대본을 놓지 못한다. 세바스찬은 경적을 누르며 미아를 노려보고는 사라진다. 악연의 시작. 이후 미아는 감미로운 피아노 선율에 이끌려 재즈바로 향하는데, 연주자가 바로 세바스찬이다. 미아가 세바스찬에게 인사를 건네려고 다가가던 순간은 하필 그가 재즈바의 레퍼토리를 무시하고 연주한 탓에 해고된 직후. 세바스찬은 인사를 건네려 다가온 미아를 쌩하니 스쳐 지나가버린다. 세 번째로 두 사람은 파티에 온 손님과 출장 밴드의 키보드 연주자로 다시 만나는데...",
+        "popularity": 29.9854,
+        "poster_path": "/ad9ndytwOckyShSc0A6tx1rZRkW.jpg",
+        "release_date": "2016-12-01",
+        "title": "라라랜드",
+        "genre_names": [
+            "코미디",
+            "드라마",
+            "로맨스",
+            "음악"
+        ]
+    }
+]
