@@ -1,3 +1,5 @@
+const TMDB_API_KEY = "sgpdDJ2sVjnzGI2VBS0k+XTBvC8XeJY3p2HS0L0bYfpBEC6UFQLgEtEfRQHiUXvAaMbpiAxDCyhXBYcEcQmXWw==";
+
 document.addEventListener("DOMContentLoaded", () => {
   const search_grid = document.getElementById("search_grid");
   const category_label = document.getElementById("selected_category_label");
@@ -24,7 +26,6 @@ document.addEventListener("DOMContentLoaded", () => {
   search_data(keyword, category);
 });
 
-// ✅ 돋보기(검색) 버튼 클릭 시 재검색
 document.querySelector(".search_btn").addEventListener("click", (e) => {
   e.preventDefault();
 
@@ -36,13 +37,11 @@ document.querySelector(".search_btn").addEventListener("click", (e) => {
     return;
   }
 
-  // ✅ URL 변경 (뒤로 가기 등 브라우저 이력 반영)
   const url = new URL(window.location.href);
   url.searchParams.set("category", category);
   url.searchParams.set("keyword", keyword);
   history.pushState({}, "", url);
 
-  // ✅ 카테고리와 키워드 라벨 업데이트
   const category_label = document.getElementById("selected_category_label");
   const keyword_label = document.getElementById("searched_keyword");
 
@@ -55,17 +54,14 @@ document.querySelector(".search_btn").addEventListener("click", (e) => {
   category_label.textContent = `[${category_text_map[category] || "기타"}]`;
   keyword_label.textContent = `"${keyword}"`;
 
-  // ✅ 실제 검색 실행
   search_data(keyword, category);
 });
 
-// ✅ 공통: 결과 없음 출력 함수
 function showNoResults(message = "검색 결과가 없습니다.") {
   const grid = document.getElementById("search_grid");
   grid.innerHTML = `<p>${message}</p>`;
 }
 
-// ✅ 공통: 카드 생성 함수
 function createCard({ image, title, onClick }) {
   const card = document.createElement("div");
   card.className = "movie_item";
@@ -77,7 +73,6 @@ function createCard({ image, title, onClick }) {
   return card;
 }
 
-// ✅ 검색 데이터 처리
 async function search_data(keyword, category) {
   const search_grid = document.getElementById("search_grid");
   search_grid.innerHTML = "";
@@ -94,7 +89,7 @@ async function search_data(keyword, category) {
         return showNoResults();
       }
 
-      data.forEach((user) => {
+      data.slice(0, 25).forEach((user) => {
         const card = createCard({
           image: user.profile_image_url || "/img/default_user.png",
           title: user.nickname,
@@ -116,17 +111,24 @@ async function search_data(keyword, category) {
       }
 
       data.slice(0, 25).forEach((item) => {
-  const card = createCard({
-    image: item.poster_path
-      ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-      : "/img/default_poster.jpg",
-    title: item.title || "제목 없음",
-    onClick: () => {
-      window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
-    },
-  });
-  search_grid.appendChild(card);
-});
+        const posterUrl = item.poster_path
+          ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
+          : "/img/default_poster.jpg";
+
+        const card = createCard({
+          image: posterUrl,
+          title: item.title || "제목 없음",
+          onClick: () => {
+          if (category === "person") {
+             openPersonModal(item.id, item.title || "이름 없음"); // ✅ 수정 완료
+               } else {
+               window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
+        }
+      },
+        });
+
+        search_grid.appendChild(card);
+      });
 
     } else {
       return showNoResults("지원하지 않는 검색 유형입니다.");
@@ -136,6 +138,57 @@ async function search_data(keyword, category) {
     showNoResults("검색 중 오류가 발생했습니다.");
   }
 }
+
+// 🎬 출연작 모달 함수
+async function openPersonModal(personId, personName) {
+  const modal = document.getElementById("person_modal");
+  const modalTitle = document.getElementById("person_modal_title");
+  const modalBody = document.getElementById("person_modal_body");
+
+  modalTitle.textContent = `${personName}의 출연작`;
+  modalBody.innerHTML = `<p>출연작 불러오는 중...</p>`;
+  modal.style.display = "flex";
+
+  try {
+    const res = await fetch(`https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}&language=ko-KR`);
+    const data = await res.json();
+
+    if (!data.cast || data.cast.length === 0) {
+      modalBody.innerHTML = `<p>출연작이 없습니다.</p>`;
+      return;
+    }
+
+    modalBody.innerHTML = "";
+    data.cast.slice(0, 25).forEach((movie) => {
+      const div = document.createElement("div");
+      div.className = "movie_item";
+
+      const img = document.createElement("img");
+      img.src = movie.poster_path
+        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
+        : "/img/default_poster.jpg";
+      img.alt = movie.title;
+
+      const title = document.createElement("div");
+      title.className = "movie_title";
+      title.textContent = movie.title;
+
+      div.appendChild(img);
+      div.appendChild(title);
+      modalBody.appendChild(div);
+    });
+    console.log("열린 사람 ID:", personId); // → undefined면 무조건 ID 잘못 넘긴 것
+
+
+  } catch (err) {
+    console.error("출연작 조회 실패:", err);
+    modalBody.innerHTML = `<p>출연작을 불러오는 데 실패했습니다.</p>`;
+  }
+}
+
+document.getElementById("person_modal_close").onclick = () => {
+  document.getElementById("person_modal").style.display = "none";
+};
 
 // ✅ 약관/개인정보처리방침 팝업
 const termsOverlay = document.getElementById("terms_overlay");
