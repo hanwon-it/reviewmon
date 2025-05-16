@@ -60,7 +60,6 @@ export async function movie_review_list(req, res) {
     const reviews = await Review.find({
       movie: await getMovieObjectId(movie_id),
     }).populate("user", "username");
-
     res.json(reviews);
   } catch (err) {
     res.status(500).json({ error: "리뷰 조회 실패" });

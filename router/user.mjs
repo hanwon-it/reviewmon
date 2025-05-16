@@ -34,9 +34,9 @@ router.post("/signup", validate_signup, user_controller.signup);
 // GET
 // http://127.0.0.1:8080/auth/check-userid
 // router.post(
-// "/check-userid",
-// validate_signup,
-// user_controller.check_userid
+  // "/check-userid",
+  // validate_signup,
+  // user_controller.check_userid
 // );
 const validate_userid_only = [
   body("userid")
@@ -49,11 +49,7 @@ const validate_userid_only = [
 ];
 
 // ✅ 수정된 라우터 등록
-router.post(
-  "/check-userid",
-  validate_userid_only,
-  user_controller.check_userid
-);
+router.post("/check-userid", validate_userid_only, user_controller.check_userid);
 
 // 2. 로그인
 // POST

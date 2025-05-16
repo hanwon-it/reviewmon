@@ -95,7 +95,11 @@
   cursor: pointer;
 }
 textarea {
+<<<<<<< HEAD
+  width: 100%;
+=======
   width: 93.5%;
+>>>>>>> 09b0c7dbc33e29424a74776f16ea3c8e3d106fef
   padding: 1rem;
   border-radius: 10px;
   border: none;
