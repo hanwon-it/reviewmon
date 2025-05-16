@@ -1,78 +1,40 @@
 import express from "express";
-import postsRouter from "./router/posts.mjs";
-import authRouter from "./router/auth.mjs";
-import { config } from "./config.mjs";
+import path from "path";
+import { fileURLToPath } from "url";
 import { connectDB } from "./db/database.mjs";
-import axios from "axios";
-import dotenv from "dotenv";
-import authRouter from "./router/auth.mjs";
-
-
-
+import userRouter from "./router/user.mjs";
+import movieRouter from "./router/movie.mjs";
 
 const app = express();
-
-// TMDB 기본 설정 저장용
-let IMAGE_BASE_URL = "";
-let POSTER_SIZE = "w500"; // 원하는 사이즈 선택
 app.use(express.json());
 
-app.use("/posts", postsRouter);
-//app.use("/auth", authRouter);
-app.use("/api/auth", authRouter); // ✅ 이렇게 되어야 클라이언트에서 /api/auth/signup이 동작
-// 서버 시작 시 TMDB configuration 불러오기
-const fetchTMDBConfig = async () => {
-  try {
-    const res = await axios.get("https://api.themoviedb.org/3/configuration", {
-      params: {
-        api_key: process.env.TMDB_API_KEY,
-      },
-    });
+// 🔧 현재 디렉토리 경로 처리 (ESM 환경에서 __dirname 대체)
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
-    IMAGE_BASE_URL = res.data.images.secure_base_url;
-    console.log("[TMDB 설정 완료]", IMAGE_BASE_URL);
-  } catch (error) {
-    console.error("TMDB 설정 로딩 실패:", error.message);
-  }
-};
+// ✅ 정적 파일 제공 (public 폴더 안에 HTML, CSS, JS 넣어야 함)
+// ✅ 정적 파일 제공 (html, css, js)
+app.use(express.static(path.join(__dirname, "html")));
+app.use("/css", express.static(path.join(__dirname, "css")));
+app.use("/js", express.static(path.join(__dirname, "js")));
 
-// 샘플 영화 데이터 (보통은 DB에서 불러옴)
-const movie_list = [
-  {
-    id: 1,
-    title: "Inception",
-    poster_path: "/dDlfjR7gllmr8HTeN6rfrYhTdwX.jpg",
-  },
-  {
-    id: 2,
-    title: "Interstellar",
-    poster_path: "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-  },
-];
 
-// 라우트: 영화 리스트 + 이미지 URL 반환
-app.get("/api/movies", (req, res) => {
-  const moviesWithImage = movie_list.map((movie) => ({
-    ...movie,
-    poster_url: `${IMAGE_BASE_URL}${POSTER_SIZE}${movie.poster_path}`,
-  }));
-
-  res.json(moviesWithImage);
+// ✅ 기본 라우팅 - index.html 반환
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "index.html"));
 });
 
-// 서버 시작
-app.listen(PORT, async () => {
-  console.log(`Server running on http://localhost:${PORT}`);
-  await fetchTMDBConfig(); // 서버 시작 시 config 받아오기
-});
-/*
-app.use((req, res, next) => {
-  res.sendStatus(404);
-});
+// ✅ API 라우팅
+app.use("/auth", userRouter);
+app.use("/movies", movieRouter);
 
+// ✅ DB 연결 및 서버 실행
 connectDB()
   .then(() => {
-    app.listen(config.host.port);
+    app.listen(8080, () => {
+      console.log("✅ Server running at http://localhost:8080");
+    });
   })
-  .catch(console.error);
-*/
+  .catch((err) => {
+    console.error("❌ DB 연결 실패:", err);
+  });

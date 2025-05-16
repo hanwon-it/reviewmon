@@ -19,8 +19,9 @@ export const User = Mongoose.model("user", user_schema);
 
 // 회원 가입(새로운 객체 추가)
 export async function create_user(user) {
-  return new User(user).save().then((data) => data.id);
+  return new User(user).save(); // 👉 전체 유저 문서 반환
 }
+
 
 // 아이디 찾기(중복방지)
 export async function find_by_userid(userid) {
