@@ -25,4 +25,7 @@ export const config = {
   host: {
     port: parseInt(required("HOST_PORT"), 8080),
   },
+  tmdb: {
+    api_key: required("TMDB_API_KEY"),
+  },
 };

@@ -63,7 +63,7 @@
   right: 24px;
 }
 .banner-arrow:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(255, 255, 255, 0.7); /* 호버 시 밝게 */
 }
 
 .banner-indicators {
@@ -115,91 +115,132 @@
   color: #fff;
 }
 
-.movie_slider_wrapper {
+/* 추천영화구역 */
+
+.carousel-container {
   display: flex;
   align-items: center;
-  position: relative;
   width: 100%;
-  box-sizing: border-box;
-  overflow: visible; /* 핵심 수정: padding 제거, 잘림 방지 */
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
 }
 
-.movie_carousel {
+.carousel-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
   display: flex;
-  gap: 2rem;
-  /* padding: 0 3rem; 좌우 여백 확보 (핵심 수정) */
-  flex: 1;
-  justify-content: flex-start; /* 가운데 → 왼쪽 정렬로 변경 */
-  box-sizing: border-box;
+  transition: transform 0.5s ease;
+  padding: 0; /* ✅ padding 없음 */
+  margin: 0;
 }
 
-.movie_card {
-  background: none;
-  border-radius: 12px;
-  overflow: visible; /* ✅ 잘림 방지 */
-  width: 190px;
+.carousel-track li {
+  min-width: calc(100% / 6);
+  list-style: none;
+  padding: 0.5rem;
+}
+
+.carousel-track img {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.carousel-track li {
   display: flex;
   flex-direction: column;
   align-items: center;
-  flex: 0 0 auto;
-  padding-bottom: 8px; /* ✅ 하단 여유 공간 확보 */
-  box-sizing: border-box;
+  justify-content: flex-start;
+  min-width: calc(100% / 6); /* 정확히 6개가 한 화면에 */
+  box-sizing: border-box; /* padding 포함 계산 */
+  padding: 0 8px;
+  text-align: center;
+  color: var(--color-text);
+}
+.movie-carousel button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
 }
 
-.movie_poster {
-  width: 200px;
-  height: 280px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #222;
-  margin-bottom: 12px;
+.movie-info {
+  margin-top: 0.5rem;
+  min-height: 50px; /* 높이 맞춰서 들쭉날쭉 방지 */
   display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
   align-items: center;
-  justify-content: center;
 }
 
-.movie_title {
-  font-size: 1.1rem;
-  color: #fff;
-  margin-bottom: 4px;
+.movie-title {
+  /* font-weight: bold; */
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
 }
 
-.movie_rating {
-  font-size: 1rem;
-  color: #ccc;
+.movie-rating {
+  font-size: 0.85rem;
+  color: #f1c40f; /* 노란 별 느낌 */
 }
 
-.arrow_btn {
+/*  캐러샐 버튼  */
+#prevBtn,
+#nextBtn,
+#prevBtn2,
+#nextBtn2 {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.4);
+  color: #222;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 2rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  pointer-events: auto;
+  line-height: 1; /* 줄 높이 오차 제거 */
+  padding: 0;
 }
 
-/* ✅ 겹치게! */
-.arrow_btn.prev {
-  left: -24px;
-  top: 150px;
+/* 좌우 위치 */
+#prevBtn,
+#prevBtn2 {
+  left: -50px; /* 포스터와 안 겹치게 약간 안쪽으로 */
+}
+#nextBtn,
+#nextBtn2 {
+  right: -50px;
 }
 
-.arrow_btn.next {
-  right: 10px;
-  top: 150px;
+#prevBtn:hover,
+#nextBtn:hover,
+#prevBtn2:hover,
+#nextBtn2:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) scale(1.1);
 }
 
-.arrow_btn:hover {
-  background: rgba(255, 255, 255, 0.4);
+/* 클릭: 눌리는 듯한 효과 */
+#prevBtn:active,
+#nextBtn:active,
+#prevBtn2:active,
+#nextBtn2:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.movie-carousel h2 {
+  text-align: left;
+  margin: 2rem; /* 오른쪽으로 살짝 띄우기 */
 }

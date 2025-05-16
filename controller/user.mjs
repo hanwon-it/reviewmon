@@ -1,5 +1,5 @@
 import * as user_repository from "../data/user.mjs";
-import * as bcrypt from "bcrypt";
+import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
 
@@ -11,68 +11,83 @@ async function create_jwt_token(id) {
   return jwt.sign({ id }, secret_key, { expiresIn: jwt_expires_in_days });
 }
 
-export async function signup(req, res, next) {
-  const { userid, password, name, email, nickname, hp } = req.body;
-
-  console.log(req.body);
-
-  // id 중복 체크
-  const found_userid = await user_repository.find_by_userid(userid);
-  if (found_userid) {
-    return res
-      .status(409)
-      .json({ message: `${userid} 아이디가 이미 있습니다.` });
-  }
-
-  const hashed = bcrypt.hashSync(password, bcrypt_salt_rounds);
-  const users = await user_repository.create_user({
-    userid,
-    password: hashed,
-    name,
-    email,
-    nickname,
-    hp,
-  });
-
-  const token = await create_jwt_token(users.id);
-  console.log(token);
-  if (users) {
-    res.status(201).json({ userid, token });
-  }
-}
-
-// 아이디 중복체크(DB 입력 전 재확인 필요하므로 회원가입 검증은 수정 불요)
-export async function check_userid(req, res, next) {
-  const userid = req.query;
-  const found_userid = await user_repository.find_by_userid(userid);
+// 회원가입
+export async function signup(req, res) {
   try {
-    if (found_userid !== null) {
-      res.status(409).json({ exists: user });
-    } else {
-      res.status(200).json(`가입 가능`);
+    const { userid, password, name, email, nickname, hp } = req.body;
+    console.log("[회원가입 요청]", req.body);
+
+    const found_user = await user_repository.find_by_userid(userid);
+    if (found_user) {
+      return res
+        .status(409)
+        .json({ message: `${userid} 아이디가 이미 존재합니다.` });
     }
-  } catch {
-    res.status(400).json(`실패`);
+
+    const hashed_pw = await bcrypt.hash(password, bcrypt_salt_rounds);
+
+    const new_user = await user_repository.create_user({
+      userid,
+      password: hashed_pw,
+      name,
+      email,
+      nickname,
+      hp,
+    });
+
+    if (!new_user || !new_user._id) {
+      return res.status(500).json({ message: "유저 생성 실패: _id 없음" });
+    }
+
+    const token = create_jwt_token(new_user._id.toString());
+    return res.status(201).json({ userid: new_user.userid, token });
+  } catch (err) {
+    if (err.code === 11000 && err.keyPattern?.email) {
+      return res.status(409).json({ message: "이미 등록된 이메일입니다." });
+    }
+    console.error("[회원가입 에러]", err);
+    return res.status(500).json({ message: "회원가입 처리 중 서버 오류" });
   }
 }
 
-// 로그인
-export async function login(req, res, next) {
-  const { userid, password } = req.body;
+// 회원가입 시 id 중복 체크
+export async function check_userid(req, res) {
+  try {
+    const { userid } = req.body;
+    if (!userid)
+      return res.status(400).json({ message: "아이디를 입력해주세요." });
 
-  console.log(req.body);
-
-  const user = await user_repository.find_by_userid(userid);
-  if (!user) {
-    res.status(401).json(`${userid} 아이디를 찾을 수 없음`);
+    const exists = await user_repository.find_by_userid(userid);
+    res.status(200).json({ exists: !!exists });
+  } catch (err) {
+    console.error("check_userid error:", err);
+    res.status(500).json({ message: "서버 오류로 중복 확인 실패" });
   }
-  const is_valid_password = await bcrypt.compare(password, user.password);
-  if (!is_valid_password) {
-    return res.status(401).json({ message: "아이디 또는 비밀번호 확인 바람" });
-  }
+}
 
-  const token = await create_jwt_token(user.id);
-  res.status(200).json({ token, userid });
+// ✅ 로그인
+export async function login(req, res) {
+  try {
+    const { userid, password } = req.body;
+    const user = await user_repository.find_by_userid(userid);
+
+    if (!user) {
+      return res.status(401).json({ message: "존재하지 않는 아이디입니다." });
+    }
+
+    const is_valid_password = await bcrypt.compare(password, user.password);
+    if (!is_valid_password) {
+      return res
+        .status(401)
+        .json({ message: "아이디 또는 비밀번호가 틀립니다." });
+    }
+
+    const token = create_jwt_token(user._id.toString());
+    res.status(200).json({ token, userid: user.userid });
+  } catch (err) {
+    console.error("로그인 오류:", err);
+    res.status(500).json({ message: "로그인 처리 중 서버 오류" });
+  }
 }
 
 /*

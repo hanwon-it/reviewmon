@@ -10,4 +10,4 @@ const favorite_schema = new mongoose.Schema(
   { versionKey: false }
 );
 
-const Favorite = mongoose.model("favorite", favorite_schema);
+export const Favorite = mongoose.model("favorite", favorite_schema);
