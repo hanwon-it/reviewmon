@@ -9,17 +9,16 @@ router.get("/search", movies_controller.search_movie);
 // 해당 영화 상세 정보
 // GET
 // http://{baseUrl}/movies/info/:movieid
-router.get("/info/:movieId", movies_controller.movie_info);
+router.get("/info/:movi_id", movies_controller.movie_info);
+
+// 인기 영화 목록
+router.get("/popular", movies_controller.get_popular_movies);
 
 // 추천 영화 정보
 // GET
 // http://{baseUrl}/movies/recommand
 // router.get("/recommand", movies_controller.movie_recommend);
 
-// 홈에 포스트 띄우기
-// GET
-// http://{baseUrl}/movies/poster
-// router.get("")
-
+// 홈에 포스터띄워주기
 
 export default router;

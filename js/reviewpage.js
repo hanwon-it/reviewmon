@@ -71,7 +71,11 @@ async function search_reviews(keyword, category) {
       render_reviews(data);
     } else if (category === "movie" || category === "person") {
       const type_param = category === "movie" ? "title" : "person";
-      res = await fetch(`/api/movies/search?query=${encodeURIComponent(keyword)}&type=${type_param}`);
+      res = await fetch(
+        `/api/movies/search?query=${encodeURIComponent(
+          keyword
+        )}&type=${type_param}`
+      );
       data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
@@ -116,23 +120,24 @@ function render_reviews(reviews) {
     review_cards.appendChild(card);
   });
 }
+// 약관 팝업 오픈/닫기 처리
+const termsOverlay = document.getElementById("terms_overlay");
+const termsTitle = document.getElementById("terms_title");
 
-// 약관/개인정보 팝업
-document.getElementById("open_terms").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "이용약관";
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
 };
-
-document.getElementById("open_privacy").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "개인정보처리방침";
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
 };
 
 document.getElementById("terms_close").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "none";
+  termsOverlay.style.display = "none";
 };
-
-
 
 // 테스트용 샘플 데이터 (API 없어도 화면 테스트 가능)
 const reviews = [
@@ -151,6 +156,5 @@ const reviews = [
     like_cnt: 7,
   },
 ];
-
 
 render_reviews(reviews); //테스트용 데이터

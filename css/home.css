@@ -63,9 +63,8 @@
   right: 24px;
 }
 .banner-arrow:hover {
-  background: rgba(0, 0, 0, 0.7);
+  background-color: rgba(255, 255, 255, 0.7); /* 호버 시 밝게 */
 }
-
 
 .banner-indicators {
   position: absolute;
@@ -91,7 +90,6 @@
   box-shadow: 0 0 0 2px #888;
 }
 
-
 .movie_section,
 .ad_banner {
   width: 80%;
@@ -112,247 +110,137 @@
 
 .movie_section h2 {
   margin-top: 20px;
-  margin-bottom: 32px;
+  margin-bottom: 24px;
   font-size: 1.3rem;
   color: #fff;
 }
 
-.movie_slider_wrapper {
+/* 추천영화구역 */
+
+.carousel-container {
   display: flex;
   align-items: center;
-  justify-content: center; /* 좌우 버튼 정중앙 위치 */
-  gap: 1rem;
-  position: relative;
   width: 100%;
-  padding: 0 2rem; /* 좌우 여백 확보 */
-  box-sizing: border-box;
+  max-width: 1200px;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
 }
 
-.arrow_btn {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 2;
-  background: rgba(255, 255, 255, 0.2);
+.carousel-wrapper {
+  overflow: hidden;
+  width: 100%;
+}
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  padding: 0; /* ✅ padding 없음 */
+  margin: 0;
+}
+
+.carousel-track li {
+  min-width: calc(100% / 6);
+  list-style: none;
+  padding: 0.5rem;
+}
+
+.carousel-track img {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.carousel-track li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: calc(100% / 6); /* 정확히 6개가 한 화면에 */
+  box-sizing: border-box; /* padding 포함 계산 */
+  padding: 0 8px;
+  text-align: center;
+  color: var(--color-text);
+}
+.movie-carousel button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.movie-info {
+  margin-top: 0.5rem;
+  min-height: 50px; /* 높이 맞춰서 들쭉날쭉 방지 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.movie-title {
+  /* font-weight: bold; */
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.movie-rating {
+  font-size: 0.85rem;
+  color: #f1c40f; /* 노란 별 느낌 */
+}
+
+/*  캐러샐 버튼  */
+#prevBtn,
+#nextBtn,
+#prevBtn2,
+#nextBtn2 {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.4);
   color: #222;
   border: none;
   border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-.arrow_btn.prev {
-  left: 0;
-}
-.arrow_btn.next {
-  right: 0;
-}
-.arrow_btn:hover {
-  background: rgba(255, 255, 255, 0.4);
-}
-
-.movie_carousel {
-  display: flex;
-  gap: 2.5rem;
-  width: 100%;
-  justify-content: center;
-  padding: 0 56px;
-  box-sizing: border-box;
-}
-
-.movie_card {
-  background: none;
-  border-radius: 12px;
-  overflow: hidden;
-  width: 210px;
-  min-width: 210px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.movie_poster {
-  width: 210px;
-  height: 300px;
-  border-radius: 12px;
-  overflow: hidden;
-  background: #222;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.movie_title {
-  font-size: 1.1rem;
-  color: #fff;
-  margin-bottom: 4px;
-}
-
-.movie_rating {
-  font-size: 1rem;
-  color: #ccc;
-}
-
-/* 이용약관 팝업 */
-.terms_overlay {
-  display: none;
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100vw;
-  height: 100vh;
-  background-color: rgba(0, 0, 0, 0.7);
-  justify-content: center;
-  align-items: center;
-  z-index: 2000;
-}
-
-.terms_modal {
-  background-color: var(--color-bg-secondary);
-  padding: 2rem;
-  border-radius: 16px;
-  max-width: 600px;
-  width: 90%;
-  position: relative;
-  color: var(--color-text);
-  box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
-}
-
-.terms_modal h2 {
-  color: var(--color-primary);
-  margin-bottom: 1rem;
-}
-
-.terms_modal p {
-  font-size: 0.9rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-}
-
-.terms_group {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  flex-wrap: wrap; /* 줄바꿈 허용 (모바일 대비) */
-}
-
-.terms_group input[type="checkbox"] {
-  transform: scale(1.1);
-  margin: 0;
-}
-
-.terms_group label {
-  font-size: 0.9rem;
-  color: var(--color-text);
-  margin: 0;
-}
-
-.link_terms {
-  font-size: 0.9rem;
-  color: var(--color-primary);
-  text-decoration: underline;
-  margin-left: auto; /* 오른쪽 끝 정렬 (선택사항) */
-}
-
-.terms_close {
-  position: absolute;
-  top: 0.8rem;
-  right: 0.8rem;
-  background: var(--color-primary);
-  border: none;
-  font-size: 1.1rem;
-  width: 28px;
-  height: 28px;
-  border-radius: 6px;
-  color: white;
-  cursor: pointer;
-  line-height: 1;
-  padding: 0;
-}
-
-/* 1. 제목 아래 여백 보정 */
-.movie_section h2 {
-  margin-top: 20px;
-  margin-bottom: 24px; /* 줄여서 더 자연스럽게 */
-  font-size: 1.3rem;
-  color: #fff;
-}
-
-/* 2. 슬라이더 전체를 감싸는 wrapper */
-.movie_slider_wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: center; /* 좌우 버튼 정중앙 위치 */
-  gap: 1rem;
-  position: relative;
-  width: 100%;
-  padding: 0 2rem; /* 좌우 여백 확보 */
-  box-sizing: border-box;
-}
-
-/* 3. 영화 리스트 영역 */
-.movie_carousel {
-  display: flex;
-  gap: 2rem; /* 카드 간격을 좀 더 자연스럽게 */
-  overflow: hidden;
-  flex: 1;
-  justify-content: center;
-}
-
-/* 4. 카드 */
-.movie_card {
-  width: 200px;
-  min-width: 200px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-/* 5. 포스터 */
-.movie_poster {
-  width: 200px;
-  height: 280px;
-  border-radius: 12px;
-  background: #222;
-  margin-bottom: 10px;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-/* 6. 좌우 화살표 */
-.arrow_btn {
+  font-size: 1.5rem;
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
   z-index: 10;
-  background: rgba(255, 255, 255, 0.2);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 2rem;
   cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-.arrow_btn.prev {
-  left: -24px; /* 살짝 바깥으로 */
-}
-.arrow_btn.next {
-  right: -24px;
-}
-.arrow_btn:hover {
-  background: rgba(255, 255, 255, 0.4);
+  line-height: 1; /* 줄 높이 오차 제거 */
+  padding: 0;
 }
 
+/* 좌우 위치 */
+#prevBtn,
+#prevBtn2 {
+  left: -50px; /* 포스터와 안 겹치게 약간 안쪽으로 */
+}
+#nextBtn,
+#nextBtn2 {
+  right: -50px;
+}
+
+#prevBtn:hover,
+#nextBtn:hover,
+#prevBtn2:hover,
+#nextBtn2:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* 클릭: 눌리는 듯한 효과 */
+#prevBtn:active,
+#nextBtn:active,
+#prevBtn2:active,
+#nextBtn2:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.movie-carousel h2 {
+  text-align: left;
+  margin: 2rem; /* 오른쪽으로 살짝 띄우기 */
+}

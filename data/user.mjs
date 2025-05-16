@@ -1,7 +1,7 @@
-import Mongoose from "mongoose";
+import mongoose from "mongoose";
 import { use_virtual_id } from "../db/database.mjs";
 
-const user_schema = new Mongoose.Schema(
+const user_schema = new mongoose.Schema(
   {
     userid: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -15,7 +15,7 @@ const user_schema = new Mongoose.Schema(
 
 use_virtual_id(user_schema);
 
-export const User = Mongoose.model("user", user_schema);
+export const User = mongoose.model("user", user_schema);
 
 // 회원 가입(새로운 객체 추가)
 export async function create_user(user) {
@@ -28,8 +28,9 @@ export async function find_by_userid(userid) {
   return User.findOne({ userid });
 }
 
-export async function find_by_id(id) {
-  return User.findById(id);
+// user_idx 찾기
+export async function find_by_idx(user_idx) {
+  return User.findById(user_idx);
 }
 
 // 비밀번호 찾기(email 사용?)

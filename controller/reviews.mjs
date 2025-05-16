@@ -1,37 +1,40 @@
-import * as review_repository from "../data/reviews.mjs";
+import * as review_repository from "../data/review.mjs";
+import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
-import mongoose from "mongoose";
-import { user_schema } from "../data/users.mjs";
-import { movie_schema } from "../data/movies.mjs";
-import { favorite_schema } from "../data/favorite.mjs";
-import { review_schema } from "../data/reviews.mjs";
-import { rating_out_schema } from "../data/rating_out.mjs";
+import { Review } from "../data/review.mjs";
 
-// 1. 해당 userid에 대한 리뷰를 가져오는 함수
-export async function get_reviews(req, res, next) {
-  const userid = req.query.userid;
-  const data = await (userid
-    ? review_repository.getAllByUserid(userid)
-    : review_repository.getAll());
-  res.status(200).json(data);
-}
+const secret_key = config.jwt.secret_key;
 
-// 1-1. 해당 nickname에 대한 리뷰를 가져오는 함수
-export async function get_reviews_by_nickname(req, res) {
+// 1. 해당 nickname에 대한 리뷰를 가져오는 함수
+export async function get_reviews(req, res) {
   try {
-    const { nickname } = req.params;
+    const { nickname } = req.query; // 또는 req.params.nickname
 
-    const reviews = await reviews.find({ nickname });
-
-    if (!reviews.length) {
-      return res
-        .status(404)
-        .json({ message: "해당 닉네임의 리뷰가 없습니다." });
+    if (!nickname) {
+      return res.status(400).json({ error: "nickname is required" });
     }
 
-    return res.status(200).json({ reviews });
-  } catch (err) {
-    return res.status(500).json({ message: "서버 오류", error: err.message });
+    const reviews = await Review.find({ nickname }).sort({ createdAt: -1 });
+
+    const user_map = {};
+    for (const review of reviews) {
+      const { user_idx } = review;
+      if (!user_map[user_idx]) {
+        user_map[user_idx] = {
+          user_idx,
+          nickname,
+          review_count: 0,
+          reviews: [],
+        };
+      }
+      user_map[user_idx].reviews.push(review);
+      user_map[user_idx].review_count++;
+    }
+
+    return res.json(Object.values(user_map));
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    return res.status(500).json({ error: "Internal server error" });
   }
 }
 
@@ -46,16 +49,33 @@ export async function get_movie_reviews(req, res, next) {
 
 // 3. 리뷰를 생성하는 함수
 export async function create_review(req, res, next) {
-  const { content, rating, nickname, movie_title } = req.body;
-  const like_cnt = 0; // 좋아요 초기값 설정
-  const review = await review_repository.create(
-    content,
-    rating,
-    nickname,
-    movie_title,
-    like_cnt
-  );
-  res.status(201).json(review);
+  try {
+    const { content, rating, nickname, movie_title } = req.body;
+
+    // 토큰 파싱
+    const auth_header = req.headers.authorization;
+    if (!auth_header || !auth_header.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "토큰 없음 또는 잘못된 형식" });
+    }
+
+    const token = auth_header.split(" ")[1];
+    const decoded = jwt.verify(token, secret_key);
+    const user_idx = decoded.id; // JWT에서 user의 ObjectId 추출
+
+    const like_cnt = 0; // 좋아요 초기값 설정
+    const review = await review_repository.post_review(
+      content,
+      rating,
+      nickname,
+      movie_title,
+      like_cnt,
+      user_idx
+    );
+    res.status(201).json(review);
+  } catch (error) {
+    console.error("리뷰 생성 오류:", error);
+    res.status(500).json({ message: "서버 오류로 인해 리뷰 생성 실패" });
+  }
 }
 
 // 4. 리뷰를 변경하는 함수
@@ -70,14 +90,14 @@ export async function update_review(req, res, next) {
     return res.sendStatus(403);
   }
   await review_repository.remove();
-  const updated = await review_repository.update(id, text);
+  const updated = await review_repository.post_update(id, text);
   res.status(200).json(updated);
 }
 
 // 5. 리뷰를 삭제하는 함수
 export async function delete_review(req, res, next) {
   const id = req.params.id;
-  await review_repository.remove(id);
+  await review_repository.post_delete(id);
   res.sendStatus(204);
 }
 

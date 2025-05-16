@@ -53,14 +53,19 @@ async function search_data(keyword, category) {
           <div class="movie_title">"${review.title}"</div>
           <p class="review_author">작성자: ${review.nickname}</p>
           <p class="review_content">${review.content}</p>
-          <p class="review_rating">⭐ ${"⭐".repeat(Math.round(review.rating))}</p>
+          <p class="review_rating">⭐ ${"⭐".repeat(
+            Math.round(review.rating)
+          )}</p>
         `;
         search_grid.appendChild(card);
       });
-
     } else if (category === "movie" || category === "person") {
       const type_param = category === "movie" ? "title" : "person";
-      res = await fetch(`/api/movies/search?query=${encodeURIComponent(keyword)}&type=${type_param}`);
+      res = await fetch(
+        `/api/movies/search?query=${encodeURIComponent(
+          keyword
+        )}&type=${type_param}`
+      );
       data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
@@ -74,7 +79,9 @@ async function search_data(keyword, category) {
         const card = document.createElement("div");
         card.className = "movie_item";
         card.innerHTML = `
-          <img src="${item.poster_path || '/img/default_poster.jpg'}" alt="${item.title}" class="movie_poster" />
+          <img src="${item.poster_path || "/img/default_poster.jpg"}" alt="${
+          item.title
+        }" class="movie_poster" />
           <div class="movie_title">${item.title}</div>
         `;
         card.addEventListener("click", () => {
@@ -92,16 +99,17 @@ async function search_data(keyword, category) {
 }
 
 // 약관/개인정보 팝업
-document.getElementById("open_terms").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "이용약관";
+document.getElementById("open_terms").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "이용약관";
 };
-
-document.getElementById("open_privacy").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "flex";
-  document.getElementById("terms_title").textContent = "개인정보처리방침";
+document.getElementById("open_privacy").onclick = (e) => {
+  e.preventDefault();
+  termsOverlay.style.display = "flex";
+  termsTitle.textContent = "개인정보처리방침";
 };
 
 document.getElementById("terms_close").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "none";
+  termsOverlay.style.display = "none";
 };

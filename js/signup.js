@@ -91,7 +91,7 @@ signup_form.addEventListener("submit", async (e) => {
     "name",
     "phone",
     "nickname",
-    "email"
+    "email",
   ];
 
   for (let field_id of required_fields) {
@@ -120,23 +120,25 @@ signup_form.addEventListener("submit", async (e) => {
     hp: document.getElementById("phone").value.trim(),
     nickname: document.getElementById("nickname").value.trim(),
     email: document.getElementById("email").value.trim(),
-    genre: Array.from(document.querySelectorAll('input[name="genre"]:checked')).map(el => el.value),
+    genre: Array.from(
+      document.querySelectorAll('input[name="genre"]:checked')
+    ).map((el) => el.value),
     actor: document.getElementById("actors").value.trim(),
     director: document.getElementById("directors").value.trim(),
   };
-const res = await fetch("/auth/signup", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify(data),
-});
+  const res = await fetch("/auth/signup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  });
 
-let resultText = "";
-try {
-  // 먼저 응답 본문을 텍스트로 받음 (한 번만)
-  resultText = await res.text();
+  let resultText = "";
+  try {
+    // 먼저 응답 본문을 텍스트로 받음 (한 번만)
+    resultText = await res.text();
 
-  // JSON 파싱 시도
-  const result = JSON.parse(resultText);
+    // JSON 파싱 시도
+    const result = JSON.parse(resultText);
 
   if (res.status === 201) {
     alert("회원가입이 완료되었습니다. 로그인해주세요.");

@@ -8,6 +8,7 @@ const review_schema = new mongoose.Schema(
     nickname: { type: String, require: true },
     movie_title: { type: String, require: true },
     like_cnt: { type: Number, require: true },
+    user_idx: { type: String, require: true },
   },
   { versionKey: false },
   { timestamps: true }
@@ -65,3 +66,5 @@ export async function unlikeReview(user_id, review_id) {
 
   return { status: "unliked" };
 }
+
+export async function get_all_by_title(movie_title) {}
