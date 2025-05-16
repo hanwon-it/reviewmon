@@ -1,6 +1,6 @@
 // 비밀번호 확인 실시간 체크
-const pwInput = document.getElementById("password");
-const pwConfirmInput = document.getElementById("password_confirm");
+const pw_input = document.getElementById("password");
+const pw_confirm_input = document.getElementById("password_confirm");
 const pwMsg = document.getElementById("pw_check_msg");
 
 function checkPasswordMatch() {
@@ -20,8 +20,8 @@ function checkPasswordMatch() {
   }
 }
 
-pwInput.addEventListener("input", checkPasswordMatch);
-pwConfirmInput.addEventListener("input", checkPasswordMatch);
+pw_input.addEventListener("input", checkPasswordMatch);
+pw_confirm_input.addEventListener("input", checkPasswordMatch);
 
 // 장르 선택 최대 3개 제한
 const genreCheckboxes = document.querySelectorAll('input[name="genre"]');
