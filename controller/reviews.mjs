@@ -1,12 +1,41 @@
-import * as review_repository from "../data/reviews.mjs";
+import * as review_repository from "../data/review.mjs";
+import jwt from "jsonwebtoken";
+import { config } from "../config.mjs";
+import { Review } from "../data/review.mjs";
 
-// 1. 해당 userid에 대한 리뷰를 가져오는 함수
-export async function get_reviews(req, res, next) {
-  const userid = req.query.userid;
-  const data = await (userid
-    ? review_repository.getAllByUserid(userid)
-    : review_repository.getAll());
-  res.status(200).json(data);
+const secret_key = config.jwt.secret_key;
+
+// 1. 해당 nickname에 대한 리뷰를 가져오는 함수
+export async function get_reviews(req, res) {
+  try {
+    const { nickname } = req.query; // 또는 req.params.nickname
+
+    if (!nickname) {
+      return res.status(400).json({ error: "nickname is required" });
+    }
+
+    const reviews = await Review.find({ nickname }).sort({ createdAt: -1 });
+
+    const user_map = {};
+    for (const review of reviews) {
+      const { user_idx } = review;
+      if (!user_map[user_idx]) {
+        user_map[user_idx] = {
+          user_idx,
+          nickname,
+          review_count: 0,
+          reviews: [],
+        };
+      }
+      user_map[user_idx].reviews.push(review);
+      user_map[user_idx].review_count++;
+    }
+
+    return res.json(Object.values(user_map));
+  } catch (error) {
+    console.error("Error getting reviews:", error);
+    return res.status(500).json({ error: "Internal server error" });
+  }
 }
 
 // 2. 해당 movie_id에 대한 리뷰를 가져오는 함수
@@ -20,9 +49,33 @@ export async function get_movie_reviews(req, res, next) {
 
 // 3. 리뷰를 생성하는 함수
 export async function create_review(req, res, next) {
-  const { text } = req.body;
-  const reviews = await review_repository.create(text, req.id);
-  res.status(201).json(reviews);
+  try {
+    const { content, rating, nickname, movie_title } = req.body;
+
+    // 토큰 파싱
+    const auth_header = req.headers.authorization;
+    if (!auth_header || !auth_header.startsWith("Bearer ")) {
+      return res.status(401).json({ message: "토큰 없음 또는 잘못된 형식" });
+    }
+
+    const token = auth_header.split(" ")[1];
+    const decoded = jwt.verify(token, secret_key);
+    const user_idx = decoded.id; // JWT에서 user의 ObjectId 추출
+
+    const like_cnt = 0; // 좋아요 초기값 설정
+    const review = await review_repository.post_review(
+      content,
+      rating,
+      nickname,
+      movie_title,
+      like_cnt,
+      user_idx
+    );
+    res.status(201).json(review);
+  } catch (error) {
+    console.error("리뷰 생성 오류:", error);
+    res.status(500).json({ message: "서버 오류로 인해 리뷰 생성 실패" });
+  }
 }
 
 // 4. 리뷰를 변경하는 함수
@@ -37,14 +90,14 @@ export async function update_review(req, res, next) {
     return res.sendStatus(403);
   }
   await review_repository.remove();
-  const updated = await review_repository.update(id, text);
+  const updated = await review_repository.post_update(id, text);
   res.status(200).json(updated);
 }
 
 // 5. 리뷰를 삭제하는 함수
 export async function delete_review(req, res, next) {
   const id = req.params.id;
-  await review_repository.remove(id);
+  await review_repository.post_delete(id);
   res.sendStatus(204);
 }
 
@@ -70,10 +123,46 @@ export async function latest_reviews(req, res, next) {
 
 // 8. 리뷰를 rating 순으로 정렬하는 함수
 export async function rating_reviews(req, res, next) {
-  const updown = req.params.updown;
-  const { idx } = req.body;
-  const rated_review = await review_repository.rating_sort(updown, idx);
-  res.status(200).json(rated_review);
+  // GET /api/reviews/rate/:updown?idxList=1,2,3
+  try {
+    const updown = req.params.updown === "true"; // 문자열 → 불리언
+    const idxList = req.query.idxList?.split(",").map(Number);
+
+    if (!Array.isArray(idxList) || idxList.some(isNaN)) {
+      return res
+        .status(400)
+        .json({ message: "유효한 idx 배열을 제공해야 합니다." });
+    }
+
+    const reviews = await reviews.find({ idx: { $in: idxList } });
+
+    const sorted = reviews.sort((a, b) => {
+      return updown ? b.rating - a.rating : a.rating - b.rating;
+    });
+
+    return res.status(200).json({ sortedReviews: sorted });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ message: "서버 오류 발생" });
+  }
+}
+
+export async function review_sort_by_rating(req, res) {
+  const { idxList, up } = req.body;
+  const result = await review_repository.sortByRating(idxList, up);
+  res.status(200).json(result);
+}
+
+export async function review_sort_by_likes(req, res) {
+  const { idxList, up } = req.body;
+  const result = await review_repository.sortByLikes(idxList, up);
+  res.status(200).json(result);
+}
+
+export async function review_sort_by_date(req, res) {
+  const { idxList, recentFirst } = req.body;
+  const result = await review_repository.sortByDate(idxList, recentFirst);
+  res.status(200).json(result);
 }
 
 // 평점을 요약해 전송하는 함수
@@ -84,3 +173,68 @@ export async function reviewRatings(req, res, next) {
   res.status(200).json(ratings);
 }
 */
+
+// Swagger JSDoc
+/**
+ * @swagger
+ * /auth/search/{nickname}:
+ *   get:
+ *     summary: 해당 닉네임의 리뷰 목록 조회
+ *     tags: [Reviews]
+ *     parameters:
+ *       - in: path
+ *         name: nickname
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: 조회할 유저의 닉네임 (URI 인코딩 필요)
+ *         example: %EC%9D%B4%EB%AF%B8%EC%A7%80
+ *     responses:
+ *       200:
+ *         description: 리뷰 목록 조회 성공
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 reviews:
+ *                   type: array
+ *                   items:
+ *                     type: object
+ *       400:
+ *         description: 유효하지 않은 닉네임
+ *       404:
+ *         description: 해당 닉네임의 리뷰 없음
+ *       500:
+ *         description: 서버 오류
+ * /api/reviews/rate/{updown}:
+ *   get:
+ *     summary: 리뷰 평점 정렬
+ *     description: idx 배열을 받아 updown 기준으로 평점순 정렬
+ *     parameters:
+ *       - in: path
+ *         name: updown
+ *         required: true
+ *         schema:
+ *           type: boolean
+ *         description: true → 높은 순, false → 낮은 순
+ *       - in: query
+ *         name: idxList
+ *         required: true
+ *         schema:
+ *           type: string
+ *           example: 1,3,7
+ *         description: 쉼표(,)로 구분된 리뷰 idx 목록
+ *     responses:
+ *       200:
+ *         description: 정렬된 리뷰 반환
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 sortedReviews:
+ *                   type: array
+ *                   items:
+ *                     $ref: '#/components/schemas/Review'
+ */

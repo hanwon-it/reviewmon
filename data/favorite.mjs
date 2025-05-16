@@ -1,6 +1,6 @@
-import Mongoose from "mongoose";
+import mongoose from "mongoose";
 
-const favorite_schema = new Mongoose.Schema(
+const favorite_schema = new mongoose.Schema(
   {
     userid: { type: String, require: true },
     gerne: { type: String, require: true },
@@ -10,4 +10,4 @@ const favorite_schema = new Mongoose.Schema(
   { versionKey: false }
 );
 
-const Favorite = Mongoose.model("favorite", favorite_schema);
+const Favorite = mongoose.model("favorite", favorite_schema);
