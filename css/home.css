@@ -1,33 +1,47 @@
-/* css/home.css */
-/* 공통 스타일은 common.css에 정의 */
-
-/* Banner Slider Style */
 .main-banner-slider {
   width: 100%;
   max-width: 1900px;
-  height: 32vw;
+  height: 32vw; /* 1900:620 비율 유지 (620/1900 ≈ 0.326) */
   max-height: 620px;
-  margin: 0 auto 2rem;
+  margin: 0 auto 2rem auto;
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
+  background: #222;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
+
 .banner-track {
   display: flex;
-  transition: transform 0.5s ease;
+  transition: transform 0.7s cubic-bezier(0.4, 0, 0.2, 1);
   will-change: transform;
+  height: 100%;
 }
+
+.banner-link {
+  min-width: 100%;
+  height: 100%;
+  display: block;
+  position: relative;
+}
+
 .banner-img {
-  flex-shrink: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
+  position: relative;
+  top: 10px;
 }
+
 .banner-arrow {
   position: absolute;
   top: 50%;
   transform: translateY(-50%);
+  z-index: 10;
+
   background: rgba(0, 0, 0, 0.4);
   color: #fff;
   border: none;
@@ -39,15 +53,23 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 10;
+  transition: background 0.2s;
 }
-.banner-arrow.left { left: 24px; }
-.banner-arrow.right { right: 24px; }
-.banner-arrow:hover { background: rgba(0, 0, 0, 0.7); }
+
+.banner-arrow.left {
+  left: 24px;
+}
+.banner-arrow.right {
+  right: 24px;
+}
+.banner-arrow:hover {
+  background-color: rgba(255, 255, 255, 0.7); /* 호버 시 밝게 */
+}
+
 .banner-indicators {
   position: absolute;
-  bottom: 24px;
   left: 50%;
+  bottom: 24px;
   transform: translateX(-50%);
   display: flex;
   gap: 12px;
@@ -57,61 +79,168 @@
   width: 14px;
   height: 14px;
   border-radius: 50%;
+
   background: rgba(255, 255, 255, 0.5);
+
+  transition: background 0.3s, box-shadow 0.3s;
   cursor: pointer;
-  transition: background 0.3s;
 }
 .banner-indicators .indicator.active {
-  background: var(--color-primary-dark);
+  background: var(--color-primary-dark, #6c5ce7);
   box-shadow: 0 0 0 2px #888;
 }
 
-/* Movie Carousel */
-.movie_slider_wrapper {
-  overflow: hidden;
-  position: relative;
+.movie_section,
+.ad_banner {
+  width: 80%;
+  max-width: 1400px;
+  margin: 0 auto 2rem auto;
+}
+
+.movie_section h2,
+.ad_banner h2 {
+  margin-top: 20px;
+}
+
+.movie_section {
+  width: 80%;
+  max-width: 1400px;
+  margin: 0 auto 2rem auto;
+}
+
+.movie_section h2 {
+  margin-top: 20px;
+  margin-bottom: 24px;
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+/* 추천영화구역 */
+
+.carousel-container {
+  display: flex;
+  align-items: center;
   width: 100%;
   max-width: 1200px;
-  margin: 0 auto 2rem;
+  margin: 0 auto;
+  position: relative;
+  overflow: visible;
+  z-index: 1;
 }
-.movie_carousel {
-  display: flex;
-  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-}
-.movie_card {
-  flex: 0 0 calc(100% / 6);
-  max-width: calc(100% / 6);
-  box-sizing: border-box;
-  padding: 10px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
-  border-radius: 12px;
-  background: var(--color-bg-secondary);
-  transition: transform 0.3s, box-shadow 0.3s;
-}
-.movie_card:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-}
-.movie_poster {
+
+.carousel-wrapper {
+  overflow: hidden;
   width: 100%;
-  height: 280px;
-  border-radius: 12px;
-  background-size: cover;
-  background-position: center;
-  margin-bottom: 12px;
 }
-.movie_title {
-  font-size: 1.1rem;
-  color: #fff;
-  margin-bottom: 4px;
+
+.carousel-track {
+  display: flex;
+  transition: transform 0.5s ease;
+  padding: 0; /* ✅ padding 없음 */
+  margin: 0;
 }
-.movie_rating {
-  font-size: 1rem;
-  color: #ccc;
+
+.carousel-track li {
+  min-width: calc(100% / 6);
+  list-style: none;
+  padding: 0.5rem;
 }
-@media (max-width: 600px) {
-  .movie_card {
-    flex: 0 0 100%;
-    max-width: 100%;
-  }
+
+.carousel-track img {
+  width: 100%;
+  height: 300px;
+  border-radius: 10px;
+  object-fit: cover;
+}
+
+.carousel-track li {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  min-width: calc(100% / 6); /* 정확히 6개가 한 화면에 */
+  box-sizing: border-box; /* padding 포함 계산 */
+  padding: 0 8px;
+  text-align: center;
+  color: var(--color-text);
+}
+.movie-carousel button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.movie-info {
+  margin-top: 0.5rem;
+  min-height: 50px; /* 높이 맞춰서 들쭉날쭉 방지 */
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+}
+
+.movie-title {
+  /* font-weight: bold; */
+  font-size: 0.95rem;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 100%;
+}
+
+.movie-rating {
+  font-size: 0.85rem;
+  color: #f1c40f; /* 노란 별 느낌 */
+}
+
+/*  캐러샐 버튼  */
+#prevBtn,
+#nextBtn,
+#prevBtn2,
+#nextBtn2 {
+  width: 40px;
+  height: 40px;
+  background-color: rgba(255, 255, 255, 0.4);
+  color: #222;
+  border: none;
+  border-radius: 50%;
+  font-size: 1.5rem;
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+  cursor: pointer;
+  line-height: 1; /* 줄 높이 오차 제거 */
+  padding: 0;
+}
+
+/* 좌우 위치 */
+#prevBtn,
+#prevBtn2 {
+  left: -50px; /* 포스터와 안 겹치게 약간 안쪽으로 */
+}
+#nextBtn,
+#nextBtn2 {
+  right: -50px;
+}
+
+#prevBtn:hover,
+#nextBtn:hover,
+#prevBtn2:hover,
+#nextBtn2:hover {
+  background-color: rgba(255, 255, 255, 0.8);
+  transform: translateY(-50%) scale(1.1);
+}
+
+/* 클릭: 눌리는 듯한 효과 */
+#prevBtn:active,
+#nextBtn:active,
+#prevBtn2:active,
+#nextBtn2:active {
+  transform: translateY(-50%) scale(0.95);
+}
+
+.movie-carousel h2 {
+  text-align: left;
+  margin: 2rem; /* 오른쪽으로 살짝 띄우기 */
 }

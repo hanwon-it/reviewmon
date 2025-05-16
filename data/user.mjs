@@ -1,7 +1,7 @@
-import Mongoose from "mongoose";
+import mongoose from "mongoose";
 import { use_virtual_id } from "../db/database.mjs";
 
-const user_schema = new Mongoose.Schema(
+const user_schema = new mongoose.Schema(
   {
     userid: { type: String, required: true, unique: true },
     password: { type: String, required: true },
@@ -15,11 +15,11 @@ const user_schema = new Mongoose.Schema(
 
 use_virtual_id(user_schema);
 
-export const User = Mongoose.model("user", user_schema);
+export const User = mongoose.model("user", user_schema);
 
 // 회원 가입(새로운 객체 추가)
 export async function create_user(user) {
-  return new User(user).save().then((data) => data.id);
+  return new User(user).save(); // 👉 전체 유저 문서 반환
 }
 
 // 아이디 찾기(중복방지)

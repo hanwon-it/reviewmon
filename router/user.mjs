@@ -33,9 +33,25 @@ router.post("/signup", validate_signup, user_controller.signup);
 // 1-1. 아이디 중복 체크
 // GET
 // http://127.0.0.1:8080/auth/check-userid
+// router.post(
+// "/check-userid",
+// validate_signup,
+// user_controller.check_userid
+// );
+const validate_userid_only = [
+  body("userid")
+    .trim()
+    .isLength({ min: 4 })
+    .withMessage("최소 4자 이상 입력")
+    .matches(/^[a-zA-Z0-9]*$/)
+    .withMessage("특수문자는 사용 불가"),
+  validate,
+];
+
+// ✅ 수정된 라우터 등록
 router.post(
-  "/auth/check-userid",
-  validate_signup,
+  "/check-userid",
+  validate_userid_only,
   user_controller.check_userid
 );
 
