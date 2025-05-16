@@ -2,6 +2,7 @@ import express from "express";
 import * as user_controller from "../controller/user.mjs";
 import { body } from "express-validator";
 import { validate } from "../middleware/validator.mjs";
+import { is_auth } from "../middleware/auth.mjs";
 
 const router = express.Router();
 
@@ -65,10 +66,10 @@ router.post("/login", validate_login, user_controller.login);
 // // http://{baseUrl}/auth/logout
 // router.post("/auth/logout", validate_logout, user_controller.logout); //controller 로그아웃 함수 필요
 
-// // 4. 내 회원 정보 가져오기
-// // GET
-// // http://{baseUrl}/auth/me
-// router.get("/auth/me", user_controller.my_info); //controller 함수 필요
+// 4. 내 회원 정보 가져오기
+// GET
+// http://{baseUrl}/auth/me
+router.get("/me", is_auth, user_controller.my_info); //controller 함수 필요
 
 // // 5. 비밀번호 찾기
 // // POST

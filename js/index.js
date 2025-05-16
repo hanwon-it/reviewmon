@@ -11,7 +11,7 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
   }
 
   try {
-    const res = await fetch("/api/auth/login", {
+    const res = await fetch("/auth/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ userid, password }),
@@ -23,7 +23,7 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userid", userid);
       alert("로그인 성공!");
-      window.location.href = "/main.html";
+      window.location.href = "/home.html";
     } else {
       alert(
         data.message || "로그인 실패: 아이디 또는 비밀번호를 확인해주세요."

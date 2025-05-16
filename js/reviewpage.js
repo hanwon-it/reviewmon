@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const review_cards = document.getElementById("review_cards");
   const sort_option = document.getElementById("sort_option");

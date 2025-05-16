@@ -2,13 +2,12 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./db/database.mjs";
-import userRouter from "./router/user.mjs";
-import movieRouter from "./router/movie.mjs";
-import reviewRouter from "./router/review.mjs";
 import { getRecommendations } from "./controller/movies.mjs";
+import userRouter from "./router/user.mjs";
+import reviewRouter from "./router/review.mjs";
+import movieRouter from "./router/movie.mjs";
 
 const app = express();
-
 app.use(express.json());
 
 // 현재 디렉토리 경로 처리 (ESM 환경에서 __dirname 대체)
@@ -28,8 +27,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "html", "index.html"));
 });
 
+app.use("/movie", movieRouter);
 app.use("/auth", userRouter);
-app.use("/movies", movieRouter);
 app.use("/reviews", reviewRouter);
 app.use("/api", movieRouter);
 

@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 document.addEventListener("DOMContentLoaded", () => {
   const search_grid = document.getElementById("search_grid");
   const category_label = document.getElementById("selected_category_label");

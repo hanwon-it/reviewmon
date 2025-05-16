@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 // 비밀번호 확인 실시간 체크
 const pw_input = document.getElementById("password");
 const pw_confirm_input = document.getElementById("password_confirm");

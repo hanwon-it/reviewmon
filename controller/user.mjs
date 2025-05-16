@@ -82,33 +82,47 @@ export async function login(req, res) {
         .json({ message: "아이디 또는 비밀번호가 틀립니다." });
     }
 
-    const token = create_jwt_token(user._id.toString());
-    res.status(200).json({ token, userid: user.userid });
+    const token = await create_jwt_token(user._id.toString());
+    console.log(token);
+    res.status(200).json({ token: token, userid: user.userid });
   } catch (err) {
     console.error("로그인 오류:", err);
     res.status(500).json({ message: "로그인 처리 중 서버 오류" });
   }
 }
 
-/*
-export async function verify(req, res, next) {
-  const id = req.id;
-  if (id) {
-    res.status(200).json(id);
-  } else {
-    res.status(401).json({ message: "사용자 인증 실패" });
-  }
-}
+// 사용자 인증 함수
+// export async function verify(req, res, next) {
+//   const id = req.id;
+//   if (id) {
+//     res.status(200).json(id);
+//   } else {
+//     res.status(401).json({ message: "사용자 인증 실패" });
+//   }
+// }
 
 // 사용자 조회
-export async function me(req, res, next) {
-  const user = await user_repository.find_by_id(req.id);
-  if (!user) {
-    return res.status(404).json({ message: "일치하는 사용자가 없음" });
+export async function my_info(req, res) {
+  try {
+    const user = await user_repository.find_by_userid(req.userid);
+    if (!user) {
+      return res.status(404).json({ message: "사용자를 찾을 수 없음" });
+    }
+
+    res.status(200).json({
+      userid: user.userid,
+      nickname: user.nickname,
+      email: user.email,
+      hp: user.hp,
+      createdAt: user.createdAt,
+    });
+  } catch (err) {
+    console.error("my_info 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
   }
-  res.status(200).json({ token: req.token, userid: user.userid });
 }
 
+/*
 // 로그아웃
 // 토큰에 저장된 유저 정보를 삭제하는 함수
 export async function logout(req, res, next) {

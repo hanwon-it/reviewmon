@@ -9,7 +9,7 @@ router.get("/search", movies_controller.search_movie);
 // 해당 영화 상세 정보
 // GET
 // http://{baseUrl}/movies/info/:movieid
-router.get("/info/:movi_id", movies_controller.movie_info);
+router.get("/info/:movie_id", movies_controller.movie_info);
 
 // 인기 영화 목록
 router.get("/popular", movies_controller.get_popular_movies);

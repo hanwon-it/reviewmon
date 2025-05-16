@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 // 배너 슬라이드
 const bannerTrack = document.querySelector(".banner-track");
 const banners = document.querySelectorAll(".banner-link");

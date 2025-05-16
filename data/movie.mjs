@@ -37,3 +37,25 @@ const genre_schema = new mongoose.Schema({
 });
 
 export const Genre = mongoose.model("Genre", genre_schema);
+
+// movie_id로 Movie를 뽑아 주는 함수
+export async function get_movie_by_id(movie_id) {
+  try {
+    return Movie.findOne({ movie_id });
+  } catch (error) {
+    console.error("get_movie_by_id error:", error);
+    return null;
+  }
+}
+
+// movie_id로 movie_title를 뽑아 주는 함수
+export async function get_title_by_id(movie_id) {
+  try {
+    // return Movie.findOne({ movie_id }).select("movie_title");
+    const doc = await Movie.findOne({ movie_id }).select("title");
+    return doc?.title;
+  } catch (error) {
+    console.error("get_title_by_id error:", error);
+    return null;
+  }
+}
