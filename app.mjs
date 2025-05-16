@@ -29,9 +29,8 @@ app.get("/", (req, res) => {
 
 // ✅ API 라우팅
 app.use("/auth", userRouter);
-app.use("/movies", movieRouter);
+app.use("/api/movies", movieRouter);
 app.use("/reviews", reviewRouter);
-app.use("/api", movieRouter);
 
 // 서버 연결 확인 및 에러확인
 connectDB()
