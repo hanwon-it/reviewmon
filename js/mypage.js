@@ -49,6 +49,56 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
+// 프로필 수정 기능 활성화
+document.addEventListener("DOMContentLoaded", () => {
+  const edit_buttons = document.querySelectorAll(".btn_edit");
+
+  edit_buttons.forEach((btn) => {
+    btn.addEventListener("click", () => {
+      const field = btn.previousElementSibling;
+
+      // ✅ 이전 값 백업
+      const original_value = field.value;
+
+      if (field.hasAttribute("readonly")) {
+        // 수정 모드 진입
+        field.removeAttribute("readonly");
+        field.focus();
+        btn.textContent = "저장";
+      } else {
+        // 저장 요청
+        field.setAttribute("readonly", true);
+        btn.textContent = "수정";
+
+        const field_id = field.id;
+        const updated_value = field.value;
+
+        fetch("/auth/update", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ [field_id]: updated_value }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (!data.success) throw new Error(data.message);
+            console.log("업데이트 성공:", data);
+
+            // ✅ 성공 알림
+            alert("수정에 성공했습니다.");
+          })
+          .catch((err) => {
+            // ❌ 실패 시 이전 값 복구
+            field.value = original_value;
+            alert("수정 실패: " + err.message);
+          });
+      }
+    });
+  });
+});
+
 // 선호장르 수정 팝업 열기 버튼 연결
 document.querySelector(".btn_prefs_edit").addEventListener("click", () => {
   document.getElementById("genre_preferences_modal").classList.add("open");

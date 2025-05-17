@@ -244,3 +244,9 @@
   text-align: left;
   margin: 2rem; /* 오른쪽으로 살짝 띄우기 */
 }
+header.header .logo img {
+  height: 35px;
+  width: auto;
+  margin-top: 8px;
+  display: block;
+}

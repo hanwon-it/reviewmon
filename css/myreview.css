@@ -115,3 +115,10 @@
   background-color: #e74c3c;
   color: white;
 }
+
+header.header .logo img {
+  height: 35px;
+  width: auto;
+  margin-top: 8px;
+  display: block;
+}

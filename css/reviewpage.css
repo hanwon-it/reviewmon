@@ -116,3 +116,10 @@
 .review_date {
   opacity: 0.75;
 }
+
+header.header .logo img {
+  height: 35px;
+  width: auto;
+  margin-top: 8px;
+  display: block;
+}

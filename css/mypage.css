@@ -213,3 +213,10 @@
   background-color: var(--color-primary);
   color: #fff;
 }
+
+header.header .logo img {
+  height: 35px;
+  width: auto;
+  margin-top: 8px;
+  display: block;
+}

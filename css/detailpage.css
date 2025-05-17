@@ -95,11 +95,7 @@
   cursor: pointer;
 }
 textarea {
-<<<<<<< HEAD
-  width: 100%;
-=======
   width: 93.5%;
->>>>>>> 09b0c7dbc33e29424a74776f16ea3c8e3d106fef
   padding: 1rem;
   border-radius: 10px;
   border: none;
@@ -219,4 +215,11 @@ textarea {
 .cast_info .cast_role {
   font-size: 0.95rem;
   color: var(--color-text-sub);
+}
+
+header.header .logo img {
+  height: 35px;
+  width: auto;
+  margin-top: 8px;
+  display: block;
 }

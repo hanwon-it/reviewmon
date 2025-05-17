@@ -91,20 +91,10 @@ export async function login(req, res) {
   }
 }
 
-// 사용자 인증 함수
-// export async function verify(req, res, next) {
-//   const id = req.id;
-//   if (id) {
-//     res.status(200).json(id);
-//   } else {
-//     res.status(401).json({ message: "사용자 인증 실패" });
-//   }
-// }
-
 // 사용자 조회
 export async function my_info(req, res) {
   try {
-    const user = await user_repository.find_by_userid(req.userid);
+    user_repository.find_by_idx(req.id);
     if (!user) {
       return res.status(404).json({ message: "사용자를 찾을 수 없음" });
     }
@@ -119,24 +109,6 @@ export async function my_info(req, res) {
   } catch (err) {
     console.error("my_info 오류:", err);
     res.status(500).json({ message: "서버 오류" });
-  }
-}
-
-/*
-// 로그아웃
-// 토큰에 저장된 유저 정보를 삭제하는 함수
-export async function logout(req, res, next) {
-  const { userid, token } = req.body;
-  const user = await user_repository.find_by_userid(userid);
-  if (user && token !== null) {
-    // 토큰 삭제 / 무효화 로직
-    //req.session.destroy(() => {
-    res.sendStatus(200); //.json({ message: `로그아웃 되셨습니다.` });
-    //});
-  } else {
-    res.status(404).json({
-      message: `현재 로그인 돼 있지 않습니다.`,
-    });
   }
 }
 
@@ -158,39 +130,18 @@ export async function logout(req, res, next) {
 }
 
 // 이메일로 아이디 찾기
-export async function find_id_by_email(req, res, next) {
-  const { name, email } = req.body;
-  const found_userid = await user_repository.find_id_by_email(name, email);
-  if (name && email !== null) {
-    res.status(200).json(found_userid);
-  } else {
-    res.status(404); //.json({
-      //message: `아름과 이메일 정보가 없습니다.`,
-    //});
-    
-  }
-}
 
 // 이메일로 비번 찾기
-export async function find_pw_by_email(req, res, next) {
-  const { userid, email } = req.body;
-  const found_password = await user_repository.find_pw_by_email(userid, email);
-  if (userid && email !== null) {
-    res.status(200).json(found_password);
-  } else {
-    res.status(404); //.json({
-      //message: `현재 로그인 돼 있지 않습니다.`,
-    //});
-  }
-}
 
 // 내 회원 정보 수정
-export async function update_user(req, res, next) {
-  const { userid, password, name, email, nickname, hp } = req.body;
+export async function update_user_info(req, res) {
   try {
-    // 유효성 검증
-    if (!userid) {
-      return res.status(400); //.json({ message: '입력값이 부족합니다.' });
+    const id = req.id;
+    const updates = req.body;
+
+    if (updates.password) {
+      const hashed_pw = await bcrypt.hash(updates.password, bcrypt_salt_rounds);
+      updates.password = hashed_pw;
     }
 
     // 업데이트(mongoose 변경)
@@ -210,16 +161,6 @@ export async function update_user(req, res, next) {
 
     return res.status(200); //.json({ message: '취향 정보가 업데이트되었습니다.' });
   } catch {}
-}
-
-// 탈퇴
-export async function signup(req, res, next) {
-  const { userid, token } = req.body;
-  const users = await user_repository.delete_user(userid);
-  // console.log(token);
-  if (users) {
-    res.status(200);
-  }
 }
 
 // 내 취향 정보 입력
@@ -245,26 +186,18 @@ export async function update_favorite(req, res, next) {
     if (!userid || (!genre && !cast && !director)) {
       return res.status(400); //.json({ message: '입력값이 부족합니다.' });
     }
+    const result = await user_repository.update_user_by_id(id, updates);
 
-    // 업데이트(mongoose 변경)
-    await db.collection("favorite").updateOne(
-      { userid: parseInt(userid) },
-      {
-        $set: {
-          ...(genre && { genre }),
-          ...(cast && { cast }),
-          ...(director && { director }),
-        },
-      },
-      { upsert: true }
-    );
-
-    return res.status(200); //.json({ message: '취향 정보가 업데이트되었습니다.' });
+    if (result.modifiedCount === 0) {
+      return res
+        .status(400)
+        .json({ success: false, message: "변경된 내용 없음" });
+    }
+    // 탈퇴
+    res.status(200).json({ success: true, message: "업데이트 완료" });
   } catch (err) {
-    console.error(err);
-    return res.status(500); //.json({ message: '서버 오류' });
+    console.error("업데이트 오류:", err);
+    res.status(500).json({ success: false, message: "서버 내부 오류" });
   }
 }
-
 // 유저 닉네임 검색
-*/
