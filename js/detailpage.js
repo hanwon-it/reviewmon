@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 document.addEventListener("DOMContentLoaded", async () => {
   const movie_id = get_movie_id_from_url();
   if (!movie_id) {

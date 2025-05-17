@@ -4,6 +4,7 @@ go_mypage.addEventListener("click", function () {
   window.location.href = "/mypage.html";
 });
 
+//마이 리뷰 페이지 활성화
 document.addEventListener("DOMContentLoaded", () => {
   const review_list = document.getElementById("review_list");
   const sort_option = document.getElementById("sort_option");

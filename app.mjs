@@ -40,6 +40,6 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("❌ DB 연결 실패:", err);
+    console.error("DB 연결 실패:", err);
   });
 // app.listen(config.host.port);

@@ -4,6 +4,7 @@ go_mypage.addEventListener("click", function () {
   window.location.href = "/mypage.html";
 });
 
+//리뷰 상세 페이지 활성화
 document.addEventListener("DOMContentLoaded", () => {
   const review_cards = document.getElementById("review_cards");
   const sort_option = document.getElementById("sort_option");

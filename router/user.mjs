@@ -24,21 +24,10 @@ const validate_signup = [
   validate,
 ];
 
-const validate_logout = [...validate_login];
-
 // 1. 회원가입
-// POST
-// http://127.0.0.1:8080/auth/signup
 router.post("/signup", validate_signup, user_controller.signup);
 
 // 1-1. 아이디 중복 체크
-// GET
-// http://127.0.0.1:8080/auth/check-userid
-// router.post(
-// "/check-userid",
-// validate_signup,
-// user_controller.check_userid
-// );
 const validate_userid_only = [
   body("userid")
     .trim()
@@ -49,7 +38,6 @@ const validate_userid_only = [
   validate,
 ];
 
-// ✅ 수정된 라우터 등록
 router.post(
   "/check-userid",
   validate_userid_only,
@@ -57,8 +45,6 @@ router.post(
 );
 
 // 2. 로그인
-// POST
-// http://{baseUrl}/auth/login
 router.post("/login", validate_login, user_controller.login);
 
 // // 3. 로그아웃
@@ -81,10 +67,10 @@ router.get("/me", is_auth, user_controller.my_info); //controller 함수 필요
 // // http://{baseUrl}/auth/find-id
 // router.post("/auth/find-id", user_controller.find_id_by_email); //controller 함수 필요
 
-// // 7. 내 회원 정보 수정
-// // PATCH
-// // http://{baseUrl}/auth/me
-// router.patch("/auth/me", user_controller.update_user); //controller 함수 필요
+// 7. 내 회원 정보 수정
+// PATCH
+// http://{baseUrl}/auth/me
+router.patch("/update", is_auth, user_controller.update_user_info); //controller 함수 필요
 
 // // 8. 탈퇴
 // // DELETE
@@ -107,93 +93,3 @@ router.get("/me", is_auth, user_controller.my_info); //controller 함수 필요
 // router.get("/auth/search/:nickname", user_controller.search_auth); //controller 함수 필요
 
 export default router;
-
-/**
- * @swagger
- * tags:
- *   name: auth API
- *   description: 회원 가입 / 로그인 / 로그아웃 / 내 정보 가져오기(마이페이지) / 내 정보 수정 / 탈퇴 / 이메일로 비밀번호 찾기 / 이메일로 아이디 찾기
- *
- * /signup:
- *   post:
- *     summary: 회원가입
- *     tags: [Auth]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *           required:
- *             - userid
- *             - userpw
- *             properties:
- *               userid:
- *                 type: string
- *               userpw:
- *                 type: string
- *               email:
- *                 type: string
- *               name:
- *                 type: string
- *               userph:
- *                 type: string
- *     responses:
- *       201:
- *         description: 회원(정보) 생성 성공
- *
- * /login:
- *   post:
- *     summary: 로그인
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userid:
- *                 type: string
- *               password:
- *                 type: string
- *     responses:
- *       201:
- *         description: 로그인 성공
- *
- * /user:
- *   put:
- *     summary: 회원 정보 수정
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userid:
- *                 type: string
- *               email:
- *                 type: string
- *               name:
- *                 type: string
- *               phone:
- *                 type: string
- *     responses:
- *       200:
- *         description: 수정 성공
- *
- *   delete:
- *     summary: 회원 탈퇴
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               userid:
- *                 type: string
- *     responses:
- *       200:
- *         description: 탈퇴 성공
- */

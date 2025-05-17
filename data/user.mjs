@@ -28,8 +28,8 @@ export async function find_by_userid(userid) {
 }
 
 // user_idx 찾기
-export async function find_by_idx(user_idx) {
-  return User.findById(user_idx);
+export async function find_by_idx(id) {
+  return User.findById(id);
 }
 
 // unique값인 param1으로 특정한 유저의 필드인 param2, 1개만 반환
@@ -44,31 +44,7 @@ export async function find_email(email) {
   return User.findOne(email);
 }
 
-// 정보 수정(닉네임)
-export async function post_update_user(id, update_data) {
-  const filtered_data = {};
-
-  // 필드 중 null/undefined 아닌 값만 필터링
-  if (update_data.password != null) {
-    filtered_data.password = update_data.password;
-  }
-  if (update_data.nickname != null) {
-    filtered_data.nickname = update_data.nickname;
-  }
-  if (update_data.hp != null) {
-    filtered_data.hp = update_data.hp;
-  }
-  if (update_data.email != null) {
-    filtered_data.email = update_data.email;
-  }
-  // 아무 필드도 수정할 게 없다면 null 반환
-  if (Object.keys(filtered_data).length === 0) {
-    return null;
-  }
-  // 업데이트 수행
-  return User.findByIdAndUpdate(
-    id,
-    { $set: filtered_data },
-    { returnDocument: "after" }
-  );
+// 업데이트 수행
+export async function update_user_by_id(id, updates) {
+  return User.updateOne({ _id: id }, { $set: updates });
 }

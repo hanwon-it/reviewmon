@@ -18,15 +18,17 @@ export const is_auth = async (req, res, next) => {
 
   try {
     const decoded = jwt.verify(token, config.jwt.secret_key);
-    console.log("decoded.userid:", decoded.userid);
+    console.log("decoded.id:", decoded.id);
 
-    const user = await auth_repository.find_by_userid(decoded.userid);
+    const user = await auth_repository.find_by_idx(decoded.id);
     if (!user) {
       console.log("등록된 적 없음");
       return res.status(401).json(AUTH_ERROR);
     }
 
+    req.id = user._id; // _id를 저장
     req.userid = user.userid; // userid를 저장
+
     next();
   } catch (error) {
     console.log("토큰 에러", error);
