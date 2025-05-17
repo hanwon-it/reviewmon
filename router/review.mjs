@@ -13,6 +13,7 @@ const validate_review = [
     .withMessage("최소 5자 이상 입력해 주세요."),
   validate,
 ];
+
 // 리뷰 API
 // http://{baseUrl}/reviews/
 

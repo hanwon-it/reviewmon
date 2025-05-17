@@ -42,10 +42,19 @@ export async function get_reviews(req, res) {
 
 // 2. 해당 movie_id에 대한 리뷰를 가져오는 함수
 export async function get_movie_reviews(req, res, next) {
-  const movie_id = req.params;
-  const data = await (movie_id
-    ? review_repository.getAllByUserid(userid)
-    : review_repository.getAll());
+  // URL 파라미터에서 movie_id 가져오기
+  const { movie_id } = req.params;
+  // 숫자형으로 변환
+  const mId = Number(movie_id);
+  if (Number.isNaN(mId)) {
+    return res
+      .status(400)
+      .json({ message: "movie_id가 유효한 숫자가 아닙니다." });
+  }
+  // MongoDB에서 movie_id로 필터링
+  const data = await review_repository.Review.find({ movie_id: mId }).sort({
+    create_at: -1,
+  });
   res.status(200).json(data);
 }
 
