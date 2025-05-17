@@ -90,7 +90,7 @@ document.addEventListener("DOMContentLoaded", () => {
             alert("수정에 성공했습니다.");
           })
           .catch((err) => {
-            // ❌ 실패 시 이전 값 복구
+            // 실패 시 이전 값 복구
             field.value = original_value;
             alert("수정 실패: " + err.message);
           });

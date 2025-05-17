@@ -38,6 +38,18 @@ export async function get_post(params) {
   return Review.findOne(params);
 }
 
+// 닉네임 키워드로 검색해서 가져오기
+export async function get_posts_by_nickname(keyword) {
+  return Review.find({
+    nickname: { $regex: keyword, $options: "i" }, // 대소문자 구분 없이 포함 검색
+  });
+}
+
+// idx로 검색해서 가져오기
+export async function get_posts_by_idx({ user_idx }) {
+  return Review.find({ user_idx });
+}
+
 // 좋아요 버튼 작동
 
 // 좋아요 스키마 생성

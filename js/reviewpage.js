@@ -31,6 +31,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     search_reviews(keyword, category);
   });
+
+  // URL에서 nickname 파라미터 추출
+  const params = new URLSearchParams(window.location.search);
+  const nickname = params.get("nickname");
+
+  if (nickname) {
+    fetch(`/api/reviews/search/${encodeURIComponent(nickname)}`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token") || ""}`,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        // data를 이용해 리뷰 렌더링
+      });
+  }
 });
 
 // 정렬 기반 리뷰 불러오기

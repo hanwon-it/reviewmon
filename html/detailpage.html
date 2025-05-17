@@ -23,7 +23,7 @@
             class="search_input"
             placeholder="검색어를 입력하세요"
           />
-          <button class="search_btn" aria-label="검색">
+          <button class="search_btn" id="search_btn" aria-label="검색">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -56,8 +56,8 @@
         <div class="info">
           <h1>영화 제목</h1>
           <div class="ratings">
-            <div class="rating">리뷰몬 평점: ⭐⭐⭐⭐✮ 4.5/5.0</div>
-            <div class="rating">토마토 평점: ⭐⭐⭐⭐✮ 4.5/5.0</div>
+            <div class="rating"></div>
+            <!-- <div class="rating"></div> -->
           </div>
           <p class="overview">
             이 영화는 00년대 배경의 스릴러 작품으로, 한 남자가 거대한 비밀을
@@ -146,5 +146,6 @@
     </div>
 
     <script src="../js/detailpage.js" type="module"></script>
+    <script src="../js/activate_search.js"></script>
   </body>
 </html>

@@ -41,7 +41,12 @@ router.post(
 // PATCH
 // http://{baseUrl}/reviews/:idx
 // json 형태로 입력 후 저장
-router.put("/:idx", validate_review, is_auth, review_controller.update_review);
+router.patch(
+  "/:idx",
+  validate_review, // content 최소 5자 등 검증
+  is_auth, // req.id 세팅됨
+  review_controller.update_review
+);
 
 // 5. 리뷰 삭제하기
 // DELETE
@@ -62,5 +67,12 @@ router.get("/latest", review_controller.latest_reviews);
 // GET
 // http://{baseUrl}/reviews/rated/:params
 router.get("/rate/:updown", review_controller.rating_reviews);
+
+// 9. 키워드로 리뷰 작성자 검색
+router.get("/search_nickname", review_controller.review_search_nickname);
+
+// 10. nickname의 idx로 작성한 리뷰 가져오기
+// GET
+router.get("/user_reviews", review_controller.get_reviews_by_user_idx);
 
 export default router;

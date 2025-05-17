@@ -4,6 +4,7 @@ go_mypage.addEventListener("click", function () {
   window.location.href = "/mypage.html";
 });
 
+// 영화 상세 페이지 활성화
 document.addEventListener("DOMContentLoaded", async () => {
   const movie_id = get_movie_id_from_url();
   if (!movie_id) {
@@ -13,7 +14,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   // 영화 상세 정보 로드
   await load_movie_details(movie_id);
-  await load_reviews(movie_id);
 
   // 모달 요소
   const review_modal = document.getElementById("review_modal");
@@ -64,7 +64,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         alert("리뷰가 등록되었습니다.");
         review_form.reset();
         review_modal.classList.remove("show");
-        await load_reviews(movie_id);
+        await load_movie_details(movie_id);
       } else {
         alert(data.message || "리뷰 등록에 실패했습니다.");
       }
@@ -78,16 +78,48 @@ document.addEventListener("DOMContentLoaded", async () => {
 // 영화 상세 정보 로딩
 async function load_movie_details(movie_id) {
   try {
-    const res = await fetch(`/api/movies/${movie_id}`);
+    const res = await fetch(`/movie/${movie_id}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
+    console.log("영화 상세 응답", data);
+
     document.querySelector(".info h1").textContent = data.title;
     document.querySelector(".overview").textContent = data.overview;
-    document.querySelector(".poster img").src = data.poster_path;
-    document.querySelector(
-      ".rating"
-    ).textContent = `리뷰몬 평점: ⭐⭐⭐⭐✮ ${data.rating}/5.0`;
+    document.querySelector(".poster img").src = data.poster_path
+      ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
+      : "./img/default_poster.jpg";
+    // 별점 SVG 생성 함수
+    function getStarSVG(rating) {
+      let stars = "";
+      for (let i = 1; i <= 5; i++) {
+        if (rating >= i) {
+          // 꽉 찬 별
+          stars += `<svg width="24" height="24" viewBox="0 0 24 24" fill="#FFD700" stroke="#FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><polygon points="12,2 15,9 22,9.3 17,14.1 18.5,21 12,17.5 5.5,21 7,14.1 2,9.3 9,9"/></svg>`;
+        } else if (rating >= i - 0.5) {
+          // 반 별 (비채워진 부분을 투명하게)
+          stars += `<svg width="24" height="24" viewBox="0 0 24 24" style="vertical-align:middle;"><defs><linearGradient id="half"><stop offset="50%" stop-color="#FFD700"/><stop offset="50%" stop-color="transparent"/></linearGradient></defs><polygon points="12,2 15,9 22,9.3 17,14.1 18.5,21 12,17.5 5.5,21 7,14.1 2,9.3 9,9" fill="url(#half)" stroke="#FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+        } else {
+          // 빈 별 (투명)
+          stars += `<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD700" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="vertical-align:middle;"><polygon points="12,2 15,9 22,9.3 17,14.1 18.5,21 12,17.5 5.5,21 7,14.1 2,9.3 9,9"/></svg>`;
+        }
+      }
+      return stars;
+    }
+    // 별점 SVG와 평점 숫자 표시 (수평 정렬)
+    const ratingElem = document.querySelector(".rating");
+    ratingElem.style.display = "flex";
+    ratingElem.style.alignItems = "center";
+    ratingElem.style.justifyContent = "center";
+    let ratingText =
+      typeof data.rating === "number" && !isNaN(data.rating)
+        ? data.rating.toFixed(1)
+        : "-";
+    let starsSVG =
+      typeof data.rating === "number" && !isNaN(data.rating)
+        ? getStarSVG(data.rating)
+        : "-";
+    ratingElem.innerHTML = `리뷰몬 평점 : <span style='display:flex;align-items:center;gap:2px;'>${starsSVG}</span> ( ${ratingText} / 5.0 )`;
 
     const cast_grid = document.querySelector(".cast_grid");
     cast_grid.innerHTML = "";
@@ -96,37 +128,35 @@ async function load_movie_details(movie_id) {
       const div = document.createElement("div");
       div.className = "cast_item";
       div.innerHTML = `
-        <div class="cast_photo" style="background-image:url(${
-          person.profile_path || "./img/default.png"
-        })"></div>
+        <div class="cast_photo" style="background-image:url('${
+          person.profile_path
+            ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
+            : "./img/default.png"
+        }')"></div>
         <div class="cast_info">${person.name}<br />${
         person.character || "감독"
       }</div>
       `;
       cast_grid.appendChild(div);
     });
-  } catch (err) {
-    console.error(err);
-    alert("영화 정보를 불러오지 못했습니다.");
-  }
-}
 
-// 리뷰 리스트 로딩
-async function load_reviews(movie_id) {
-  try {
-    const res = await fetch(`/api/reviews/movies/${movie_id}`);
-    const data = await res.json();
-    if (!res.ok) throw new Error(data.message);
-
+    // 리뷰 렌더링
     const review_cards = document.querySelector(".review_cards");
     review_cards.innerHTML = "";
-
-    data.forEach((review) => {
+    // 추천 수 내림차순 정렬 후 상위 3개만
+    const topReviews = (data.reviews || [])
+      .sort((a, b) => (b.like_cnt || 0) - (a.like_cnt || 0))
+      .slice(0, 3);
+    topReviews.forEach((review) => {
       const card = document.createElement("div");
       card.className = "review_card";
       card.innerHTML = `
-        <p class="review_author">${review.nickname}</p>
-        <p class="review_rating">⭐ ${review.rating.toFixed(1)}</p>
+        <p class="review_author">
+          <a href="/reviewpage.html?nickname=${encodeURIComponent(
+            review.nickname
+          )}" class="review_nickname_link">${review.nickname}</a>
+        </p>
+        <p class="review_rating">⭐ ${review.rating?.toFixed(1) ?? "-"}</p>
         <p class="review_content">${review.content}</p>
         <p class="like_count">❤ ${review.like_cnt || 0}</p>
       `;
@@ -134,7 +164,7 @@ async function load_reviews(movie_id) {
     });
   } catch (err) {
     console.error(err);
-    alert("리뷰를 불러오는 데 실패했습니다.");
+    alert("영화 정보를 불러오지 못했습니다.");
   }
 }
 

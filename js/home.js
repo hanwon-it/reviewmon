@@ -68,9 +68,10 @@ fetch("/api/recommendations/1")
   });
 
 // 🔥 인기 영화 캐러셀
-fetch("/api/popular")
+fetch("/movie/popular")
   .then((res) => res.json())
   .then((data) => {
+    console.log("인기영화 응답", data);
     setupCarousel("carouselTrack2", "prevBtn2", "nextBtn2", data);
   })
   .catch((err) => {
@@ -109,6 +110,12 @@ function setupCarousel(trackId, prevBtnId, nextBtnId, movies) {
     infoDiv.appendChild(ratingDiv);
     li.appendChild(img);
     li.appendChild(infoDiv);
+
+    // 영화 카드 클릭 시 detailpage로 이동
+    li.style.cursor = "pointer";
+    li.addEventListener("click", () => {
+      window.location.href = `/detailpage.html?movie_id=${movie.movie_id}`;
+    });
 
     track.appendChild(li);
   });
@@ -152,3 +159,21 @@ document.getElementById("open_privacy").onclick = (e) => {
 document.getElementById("terms_close").onclick = () => {
   termsOverlay.style.display = "none";
 };
+
+document.querySelector(".search_btn").addEventListener("click", (e) => {
+  e.preventDefault();
+
+  const category = document.getElementById("search_category").value;
+  const keyword = document.getElementById("search_input").value.trim();
+
+  if (!keyword) {
+    alert("검색어를 입력해주세요.");
+    return;
+  }
+
+  // search.html로 이동하면서 파라미터 전달
+  const url = `/search.html?category=${encodeURIComponent(
+    category
+  )}&keyword=${encodeURIComponent(keyword)}`;
+  window.location.href = url;
+});
