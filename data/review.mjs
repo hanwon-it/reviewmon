@@ -7,11 +7,11 @@ const review_schema = new mongoose.Schema(
     rating: { type: Number, require: true },
     nickname: { type: String, require: true },
     movie_title: { type: String, require: true },
+    movie_id: { type: Number, require: true },
     like_cnt: { type: Number, require: true },
     user_idx: { type: String, require: true },
   },
-  { versionKey: false },
-  { timestamps: true }
+  { versionKey: false, timestamps: true }
 );
 
 use_virtual_id(review_schema);
@@ -31,6 +31,11 @@ export async function post_update(id, text) {
 // 리뷰 삭제
 export async function post_delete(id) {
   return Review.findByIdAndDelete(id);
+}
+
+// 리뷰 가져오기
+export async function get_post(params) {
+  return Review.findOne(params);
 }
 
 // 좋아요 버튼 작동

@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 // 비밀번호 확인 실시간 체크
 const pw_input = document.getElementById("password");
 const pw_confirm_input = document.getElementById("password_confirm");
@@ -25,7 +31,9 @@ pw_confirm_input.addEventListener("input", check_password_match);
 const genre_checkboxes = document.querySelectorAll('input[name="genre"]');
 genre_checkboxes.forEach((checkbox) => {
   checkbox.addEventListener("change", () => {
-    const checked_count = document.querySelectorAll('input[name="genre"]:checked').length;
+    const checked_count = document.querySelectorAll(
+      'input[name="genre"]:checked'
+    ).length;
     if (checked_count > 3) {
       checkbox.checked = false;
       alert("장르는 최대 3개까지만 선택할 수 있습니다.");
@@ -140,22 +148,19 @@ signup_form.addEventListener("submit", async (e) => {
     // JSON 파싱 시도
     const result = JSON.parse(resultText);
 
-  if (res.status === 201) {
-    alert("회원가입이 완료되었습니다. 로그인해주세요.");
-    location.href = "/index.html";
-  } else {
-    alert(result.message || "회원가입 실패");
+    if (res.status === 201) {
+      alert("회원가입이 완료되었습니다. 로그인해주세요.");
+      location.href = "/index.html";
+    } else {
+      alert(result.message || "회원가입 실패");
+    }
+  } catch (err) {
+    console.error("서버 응답 오류 (HTML일 수 있음):", resultText);
+    alert("서버 오류로 회원가입에 실패했습니다.");
   }
-} catch (err) {
-  console.error("서버 응답 오류 (HTML일 수 있음):", resultText);
-  alert("서버 오류로 회원가입에 실패했습니다.");
-}if (res.status === 409) {
-  const result = await res.json();
-  alert(result.message || "중복된 정보가 존재합니다.");
-  return;
-}
-}
-
-);
-
-
+  if (res.status === 409) {
+    const result = await res.json();
+    alert(result.message || "중복된 정보가 존재합니다.");
+    return;
+  }
+});

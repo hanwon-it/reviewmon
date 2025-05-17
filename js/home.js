@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 // 배너 슬라이드
 const bannerTrack = document.querySelector(".banner-track");
 const banners = document.querySelectorAll(".banner-link");
@@ -62,7 +68,7 @@ fetch("/api/recommendations/1")
   });
 
 // 🔥 인기 영화 캐러셀
-fetch("/api/movies/popular")
+fetch("/api/popular")
   .then((res) => res.json())
   .then((data) => {
     setupCarousel("carouselTrack2", "prevBtn2", "nextBtn2", data);
@@ -146,20 +152,3 @@ document.getElementById("open_privacy").onclick = (e) => {
 document.getElementById("terms_close").onclick = () => {
   termsOverlay.style.display = "none";
 };
-
-
-document.querySelector(".search_btn").addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const category = document.getElementById("search_category").value;
-  const keyword = document.getElementById("search_input").value.trim();
-
-  if (!keyword) {
-    alert("검색어를 입력해주세요.");
-    return;
-  }
-
-  // search.html로 이동하면서 파라미터 전달
-  const url = `/search.html?category=${encodeURIComponent(category)}&keyword=${encodeURIComponent(keyword)}`;
-  window.location.href = url;
-});

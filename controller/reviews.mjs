@@ -1,4 +1,6 @@
 import * as review_repository from "../data/review.mjs";
+import * as user_repository from "../data/user.mjs";
+import * as movie_repository from "../data/movie.mjs";
 import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
 import { Review } from "../data/review.mjs";
@@ -40,7 +42,7 @@ export async function get_reviews(req, res) {
 
 // 2. 해당 movie_id에 대한 리뷰를 가져오는 함수
 export async function get_movie_reviews(req, res, next) {
-  const movie_id = req.query.movie_id;
+  const movie_id = req.params;
   const data = await (movie_id
     ? review_repository.getAllByUserid(userid)
     : review_repository.getAll());
@@ -50,7 +52,8 @@ export async function get_movie_reviews(req, res, next) {
 // 3. 리뷰를 생성하는 함수
 export async function create_review(req, res, next) {
   try {
-    const { content, rating, nickname, movie_title } = req.body;
+    const { content, rating } = req.body;
+    const { movie_id } = req.params;
 
     // 토큰 파싱
     const auth_header = req.headers.authorization;
@@ -60,18 +63,24 @@ export async function create_review(req, res, next) {
 
     const token = auth_header.split(" ")[1];
     const decoded = jwt.verify(token, secret_key);
-    const user_idx = decoded.id; // JWT에서 user의 ObjectId 추출
+    const user_idx = decoded.id;
+
+    const nickname = await user_repository.find_by_sth(user_idx, "nickname");
+    console.log(nickname);
+    const movie_title = await movie_repository.get_title_by_id(movie_id);
+    console.log(movie_title);
 
     const like_cnt = 0; // 좋아요 초기값 설정
-    const review = await review_repository.post_review(
-      content,
-      rating,
+    const review = await review_repository.post_review({
+      content, //FE
+      rating, //FE
       nickname,
       movie_title,
+      user_idx,
+      movie_id,
       like_cnt,
-      user_idx
-    );
-    res.status(201).json(review);
+    });
+    res.status(201).json(review); //review._id
   } catch (error) {
     console.error("리뷰 생성 오류:", error);
     res.status(500).json({ message: "서버 오류로 인해 리뷰 생성 실패" });
@@ -81,7 +90,7 @@ export async function create_review(req, res, next) {
 // 4. 리뷰를 변경하는 함수
 export async function update_review(req, res, next) {
   const id = req.params.id;
-  const text = req.body.text;
+  const text = req.body;
   const review = await review_repository.getById(id);
   if (!review) {
     return res.status(404).json({ message: `포스트가 없습니다.` });
@@ -173,68 +182,3 @@ export async function reviewRatings(req, res, next) {
   res.status(200).json(ratings);
 }
 */
-
-// Swagger JSDoc
-/**
- * @swagger
- * /auth/search/{nickname}:
- *   get:
- *     summary: 해당 닉네임의 리뷰 목록 조회
- *     tags: [Reviews]
- *     parameters:
- *       - in: path
- *         name: nickname
- *         required: true
- *         schema:
- *           type: string
- *         description: 조회할 유저의 닉네임 (URI 인코딩 필요)
- *         example: %EC%9D%B4%EB%AF%B8%EC%A7%80
- *     responses:
- *       200:
- *         description: 리뷰 목록 조회 성공
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 reviews:
- *                   type: array
- *                   items:
- *                     type: object
- *       400:
- *         description: 유효하지 않은 닉네임
- *       404:
- *         description: 해당 닉네임의 리뷰 없음
- *       500:
- *         description: 서버 오류
- * /api/reviews/rate/{updown}:
- *   get:
- *     summary: 리뷰 평점 정렬
- *     description: idx 배열을 받아 updown 기준으로 평점순 정렬
- *     parameters:
- *       - in: path
- *         name: updown
- *         required: true
- *         schema:
- *           type: boolean
- *         description: true → 높은 순, false → 낮은 순
- *       - in: query
- *         name: idxList
- *         required: true
- *         schema:
- *           type: string
- *           example: 1,3,7
- *         description: 쉼표(,)로 구분된 리뷰 idx 목록
- *     responses:
- *       200:
- *         description: 정렬된 리뷰 반환
- *         content:
- *           application/json:
- *             schema:
- *               type: object
- *               properties:
- *                 sortedReviews:
- *                   type: array
- *                   items:
- *                     $ref: '#/components/schemas/Review'
- */

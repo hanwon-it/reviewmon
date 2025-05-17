@@ -7,7 +7,7 @@ import { is_auth } from "../middleware/auth.mjs";
 const router = express.Router();
 
 const validate_review = [
-  body("text")
+  body("content")
     .trim()
     .isLength({ min: 5 })
     .withMessage("최소 5자 이상 입력해 주세요."),

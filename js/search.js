@@ -1,10 +1,15 @@
-const TMDB_API_KEY = "sgpdDJ2sVjnzGI2VBS0k+XTBvC8XeJY3p2HS0L0bYfpBEC6UFQLgEtEfRQHiUXvAaMbpiAxDCyhXBYcEcQmXWw==";
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
 
 document.addEventListener("DOMContentLoaded", () => {
   const search_grid = document.getElementById("search_grid");
   const category_label = document.getElementById("selected_category_label");
   const keyword_label = document.getElementById("searched_keyword");
 
+  // 1. 쿼리 파라미터에서 category, keyword 추출
   const params = new URLSearchParams(window.location.search);
   const category = params.get("category");
   const keyword = params.get("keyword");
@@ -14,6 +19,7 @@ document.addEventListener("DOMContentLoaded", () => {
     return;
   }
 
+  // 2. 카테고리 라벨 출력
   const category_text_map = {
     movie: "영화정보",
     person: "감독/배우",
@@ -23,56 +29,11 @@ document.addEventListener("DOMContentLoaded", () => {
   category_label.textContent = `[${category_text_map[category] || "기타"}]`;
   keyword_label.textContent = `"${keyword}"`;
 
+  // 3. 검색 실행
   search_data(keyword, category);
 });
 
-document.querySelector(".search_btn").addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const category = document.getElementById("search_category").value;
-  const keyword = document.getElementById("search_input").value.trim();
-
-  if (!keyword) {
-    alert("검색어를 입력해주세요.");
-    return;
-  }
-
-  const url = new URL(window.location.href);
-  url.searchParams.set("category", category);
-  url.searchParams.set("keyword", keyword);
-  history.pushState({}, "", url);
-
-  const category_label = document.getElementById("selected_category_label");
-  const keyword_label = document.getElementById("searched_keyword");
-
-  const category_text_map = {
-    movie: "영화정보",
-    person: "감독/배우",
-    user: "유저",
-  };
-
-  category_label.textContent = `[${category_text_map[category] || "기타"}]`;
-  keyword_label.textContent = `"${keyword}"`;
-
-  search_data(keyword, category);
-});
-
-function showNoResults(message = "검색 결과가 없습니다.") {
-  const grid = document.getElementById("search_grid");
-  grid.innerHTML = `<p>${message}</p>`;
-}
-
-function createCard({ image, title, onClick }) {
-  const card = document.createElement("div");
-  card.className = "movie_item";
-  card.innerHTML = `
-    <img src="${image}" alt="${title}" class="movie_poster" />
-    <div class="movie_title">${title}</div>
-  `;
-  if (onClick) card.addEventListener("click", onClick);
-  return card;
-}
-
+// 4. API 호출 후 결과 렌더링
 async function search_data(keyword, category) {
   const search_grid = document.getElementById("search_grid");
   search_grid.innerHTML = "";
@@ -81,125 +42,74 @@ async function search_data(keyword, category) {
     let res, data;
 
     if (category === "user") {
-      res = await fetch(`/auth/search/${encodeURIComponent(keyword)}`);
+      res = await fetch(`/api/reviews/search/${encodeURIComponent(keyword)}`);
       data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
-      if (!data || data.length === 0) {
-        return showNoResults();
+      if (data.length === 0) {
+        search_grid.innerHTML = "<p>검색 결과가 없습니다.</p>";
+        return;
       }
 
-      data.slice(0, 25).forEach((user) => {
-        const card = createCard({
-          image: user.profile_image_url || "/img/default_user.png",
-          title: user.nickname,
-          onClick: () => {
-            window.location.href = `/profile.html?user=${user.email}`;
-          },
-        });
+      // 유저 리뷰 카드 출력
+      data.forEach((review) => {
+        const card = document.createElement("div");
+        card.className = "movie_item";
+        card.innerHTML = `
+          <div class="movie_title">"${review.title}"</div>
+          <p class="review_author">작성자: ${review.nickname}</p>
+          <p class="review_content">${review.content}</p>
+          <p class="review_rating">⭐ ${"⭐".repeat(
+            Math.round(review.rating)
+          )}</p>
+        `;
         search_grid.appendChild(card);
       });
-
     } else if (category === "movie" || category === "person") {
-      const type = category === "movie" ? "title" : "person";
-      res = await fetch(`/api/movies/search?query=${encodeURIComponent(keyword)}&type=${type}`);
+      const type_param = category === "movie" ? "title" : "person";
+      res = await fetch(
+        `/api/movies/search?query=${encodeURIComponent(
+          keyword
+        )}&type=${type_param}`
+      );
       data = await res.json();
       if (!res.ok) throw new Error(data.message);
 
-      if (!data || data.length === 0) {
-        return showNoResults();
+      if (data.length === 0) {
+        search_grid.innerHTML = "<p>검색 결과가 없습니다.</p>";
+        return;
       }
 
-      data.slice(0, 25).forEach((item) => {
-        const posterUrl = item.poster_path
-          ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-          : "/img/default_poster.jpg";
-
-        const card = createCard({
-          image: posterUrl,
-          title: item.title || "제목 없음",
-          onClick: () => {
-          if (category === "person") {
-             openPersonModal(item.id, item.title || "이름 없음"); // ✅ 수정 완료
-               } else {
-               window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
-        }
-      },
+      // 영화/배우 결과 출력
+      data.forEach((item) => {
+        const card = document.createElement("div");
+        card.className = "movie_item";
+        card.innerHTML = `
+          <img src="${item.poster_path || "/img/default_poster.jpg"}" alt="${
+          item.title
+        }" class="movie_poster" />
+          <div class="movie_title">${item.title}</div>
+        `;
+        card.addEventListener("click", () => {
+          window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
         });
-
         search_grid.appendChild(card);
       });
-
     } else {
-      return showNoResults("지원하지 않는 검색 유형입니다.");
+      search_grid.innerHTML = "<p>지원하지 않는 검색 유형입니다.</p>";
     }
   } catch (err) {
-    console.error("검색 오류:", err);
-    showNoResults("검색 중 오류가 발생했습니다.");
+    console.error(err);
+    search_grid.innerHTML = "<p>검색 중 오류가 발생했습니다.</p>";
   }
 }
 
-// 🎬 출연작 모달 함수
-async function openPersonModal(personId, personName) {
-  const modal = document.getElementById("person_modal");
-  const modalTitle = document.getElementById("person_modal_title");
-  const modalBody = document.getElementById("person_modal_body");
-
-  modalTitle.textContent = `${personName}의 출연작`;
-  modalBody.innerHTML = `<p>출연작 불러오는 중...</p>`;
-  modal.style.display = "flex";
-
-  try {
-    const res = await fetch(`https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}&language=ko-KR`);
-    const data = await res.json();
-
-    if (!data.cast || data.cast.length === 0) {
-      modalBody.innerHTML = `<p>출연작이 없습니다.</p>`;
-      return;
-    }
-
-    modalBody.innerHTML = "";
-    data.cast.slice(0, 25).forEach((movie) => {
-      const div = document.createElement("div");
-      div.className = "movie_item";
-
-      const img = document.createElement("img");
-      img.src = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : "/img/default_poster.jpg";
-      img.alt = movie.title;
-
-      const title = document.createElement("div");
-      title.className = "movie_title";
-      title.textContent = movie.title;
-
-      div.appendChild(img);
-      div.appendChild(title);
-      modalBody.appendChild(div);
-    });
-    console.log("열린 사람 ID:", personId); // → undefined면 무조건 ID 잘못 넘긴 것
-
-
-  } catch (err) {
-    console.error("출연작 조회 실패:", err);
-    modalBody.innerHTML = `<p>출연작을 불러오는 데 실패했습니다.</p>`;
-  }
-}
-
-document.getElementById("person_modal_close").onclick = () => {
-  document.getElementById("person_modal").style.display = "none";
-};
-
-// ✅ 약관/개인정보처리방침 팝업
-const termsOverlay = document.getElementById("terms_overlay");
-const termsTitle = document.getElementById("terms_title");
-
+// 약관/개인정보 팝업
 document.getElementById("open_terms").onclick = (e) => {
   e.preventDefault();
   termsOverlay.style.display = "flex";
   termsTitle.textContent = "이용약관";
 };
-
 document.getElementById("open_privacy").onclick = (e) => {
   e.preventDefault();
   termsOverlay.style.display = "flex";
