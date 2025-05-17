@@ -1,14 +1,7 @@
-// js/reviewpage.js
-
-// — 만약 헤더의 마이페이지 버튼 구현이 되어 있지 않다면 아래 코드 주석 해제
-// const go_mypage = document.querySelector(".btn_mypage");
-// go_mypage?.addEventListener("click", () => {
-//   window.location.href = "/mypage.html";
-// });
-
 document.addEventListener("DOMContentLoaded", () => {
   const review_cards = document.getElementById("review_cards");
   const sort_option = document.getElementById("sort_option");
+  const is_logged_in = !!document.querySelector(".btn_logout");
   const search_btn = document.querySelector(".search_btn");
   const search_input = document.getElementById("search_input");
   const search_category = document.getElementById("search_category");
@@ -118,13 +111,35 @@ function render_reviews(reviews) {
       </div>
       <p class="review_content">${review.content}</p>
       <div class="review_footer">
-        <span class="like_count">👍 ${review.like_cnt || 0}</span>
+      <div class="like_group">
+      <span class="like_heart">${review.liked ? "❤️" : "🤍"}</span>
+        <span class="like_count"> ${review.like_cnt || 0}</span>
+        </div>
         <span class="review_date">${
           review.create_at ? formatDate(review.create_at) : ""
         }</span>
       </div>
     `;
     review_cards.appendChild(card);
+
+    // — 토글 로직: 🤍 클릭하면 POST, ❤️ 클릭하면 DELETE
+    const heartEl = card.querySelector(".like_heart");
+    heartEl.style.cursor = "pointer";
+    heartEl.addEventListener("click", async () => {
+      if (!is_logged_in) {
+        return alert("로그인이 필요합니다.");
+      }
+      try {
+        const method = review.liked ? "DELETE" : "POST";
+        const res = await fetch(`/api/reviews/${review._id}/like`, { method });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        // 성공 시 다시 로드
+        load_reviews(sort_option.value);
+      } catch (err) {
+        console.error("추천 토글 실패:", err);
+        alert("추천 처리 중 오류가 발생했습니다.");
+      }
+    });
   });
 }
 

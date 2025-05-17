@@ -28,6 +28,14 @@
   cursor: pointer;
 }
 
+#review_cards {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+  padding: 20px 0;
+}
+
 .review_cards {
   display: flex;
   flex-direction: column;
@@ -64,4 +72,47 @@
 .like_count {
   font-size: 0.9rem;
   color: #444;
+  display: flex;
+  align-items: center;
+}
+
+.review_card {
+  width: 100%; /* 부모 컨테이너 폭을 100% 차지하되 */
+  max-width: 700px; /* 최대 700px 까지만 */
+  background-color: #1f1f1f; /* 어두운 배경 (프로젝트 테마에 맞게 조정) */
+  border-radius: 8px; /* 둥근 모서리 */
+  padding: 16px; /* 내부 여백 */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6); /* 은은한 그림자 */
+  color: #f5f5f5; /* 카드 안 텍스트 색상 */
+}
+/* 카드 내부 요소들 간격 */
+.review_header,
+.review_content,
+.review_footer {
+  margin-bottom: 12px;
+}
+.review_header {
+  display: flex;
+  justify-content: space-between; /* 닉네임과 별점을 양끝에 배치 */
+  align-items: center;
+}
+.review_nickname {
+  font-size: 1.1rem;
+  font-weight: bold;
+}
+.review_footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.9rem;
+}
+
+.like_group {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.review_date {
+  opacity: 0.75;
 }
