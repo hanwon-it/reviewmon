@@ -4,6 +4,21 @@ go_mypage.addEventListener("click", function () {
   window.location.href = "/mypage.html";
 });
 
+// 장르 value(숫자) → 한글명 매핑
+const GENRE_LABELS = {
+  28: "액션",
+  12: "모험",
+  16: "애니메이션",
+  35: "코미디",
+  80: "범죄",
+  99: "다큐멘터리",
+  18: "드라마",
+  10751: "가족",
+  14: "판타지",
+  10749: "로맨스",
+  // 필요시 추가
+};
+
 // 프로필에 기본 본인 정보 띄워주기
 document.addEventListener("DOMContentLoaded", async () => {
   // DOM 요소 선택
@@ -43,6 +58,15 @@ document.addEventListener("DOMContentLoaded", async () => {
     view_password.value = data.password;
     view_phone.value = data.hp;
     view_email.value = data.email;
+
+    // 선호조사 정보 표시
+    if (data.favorite) {
+      // genre: value(숫자) 배열 → 한글명으로 변환해서 표시
+      const genreArr = (data.favorite.gerne || []);
+      document.getElementById("genre_buttons").value = genreArr.map(v => GENRE_LABELS[v] || v).join(", ");
+      document.getElementById("fav_actor").value = (data.favorite.actor || []).map(a => a.name).join(", ");
+      document.getElementById("fav_director").value = (data.favorite.director || []).map(d => d.name).join(", ");
+    }
   } catch (err) {
     console.error("유저 정보 가져오기 실패:", err);
     alert("유저 정보를 가져오지 못했습니다.");
@@ -136,20 +160,21 @@ document
       return;
     }
 
-    // API 연동 부분 (예시)
     try {
-      const res = await fetch("/api/favorite/update", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ genres: selectedGenres }),
+      const res = await fetch("/auth/favorite", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+        body: JSON.stringify({ genre: selectedGenres }),
       });
-
       const result = await res.json();
       if (res.ok) {
         alert("선호 장르가 저장되었습니다.");
-        document
-          .getElementById("genre_preferences_modal")
-          .classList.remove("open");
+        document.getElementById("genre_preferences_modal").classList.remove("open");
+        // 저장 후 input에도 한글명으로 반영
+        document.getElementById("genre_buttons").value = selectedGenres.map(v => GENRE_LABELS[v] || v).join(", ");
       } else {
         alert("저장 실패: " + result.message);
       }
@@ -196,7 +221,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (e.target === modal) modal.classList.remove("open");
   });
 
-  // 4) “예” 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
+  // 4) "예" 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
   btnConfirm.addEventListener("click", async () => {
     try {
       const res = await fetch("/api/users/me", { method: "DELETE" });
@@ -212,3 +237,61 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   });
 });
+
+// 배우/감독 수정 기능
+function setupFavoriteEdit(fieldId, btnClass, key) {
+  const input = document.getElementById(fieldId);
+  const btn = input.nextElementSibling;
+  btn.addEventListener("click", async () => {
+    if (input.hasAttribute("readonly")) {
+      input.removeAttribute("readonly");
+      input.focus();
+      btn.textContent = "저장";
+    } else {
+      // 저장
+      input.setAttribute("readonly", true);
+      btn.textContent = "수정";
+      const valueArr = input.value
+        .split(",")
+        .map((v) => v.trim())
+        .filter((v) => v);
+      // 이름 → TMDB id+name 객체 배열로 변환
+      const resultArr = [];
+      for (const name of valueArr) {
+        try {
+          const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+          const data = await res.json();
+          if (data.results && data.results.length > 0) {
+            // 동명이인 모두 저장
+            data.results.forEach(person => {
+              resultArr.push({ id: person.id, name: person.name });
+            });
+          } else {
+            // TMDB에 없으면 입력값(이름)만 저장 (id: null)
+            resultArr.push({ id: null, name });
+          }
+        } catch (err) {
+          // 검색 실패 시 입력값(이름)만 저장 (id: null)
+          resultArr.push({ id: null, name });
+        }
+      }
+      try {
+        const res = await fetch("/auth/favorite", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ [key]: resultArr }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message);
+        alert("수정에 성공했습니다.");
+      } catch (err) {
+        alert("수정 실패: " + err.message);
+      }
+    }
+  });
+}
+setupFavoriteEdit("fav_actor", "btn_add", "actor");
+setupFavoriteEdit("fav_director", "btn_add", "director");

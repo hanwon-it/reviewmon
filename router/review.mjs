@@ -7,72 +7,29 @@ import { is_auth } from "../middleware/auth.mjs";
 const router = express.Router();
 
 const validate_review = [
-  body("content")
-    .trim()
-    .isLength({ min: 5 })
-    .withMessage("최소 5자 이상 입력해 주세요."),
+  body("content").trim().isLength({ min: 5 }).withMessage("최소 5자 이상 입력해 주세요."),
   validate,
 ];
-// 리뷰 API
-// http://{baseUrl}/reviews/
 
-// 1. 해당 유저nickname가 작성한 리뷰 가져오기
-// GET
-// http://{baseUrl}/reviews/search/:nickname
-router.get("/search/:nickname", is_auth, review_controller.get_reviews);
-
-// 2. 해당 영화 전체 리뷰 목록
-// GET
-// http://{baseUrl}/reviews/movies/:movieId
-router.get("/movies/:movie_id", review_controller.get_movie_reviews);
-
-// 3. 리뷰 쓰기
-// POST
-// http://{baseUrl}/reviews/movies/:movieId
-// json 형태로 입력 후 저장
-router.post(
-  "/movies/:movie_id",
-  validate_review,
-  is_auth,
-  review_controller.create_review
-);
-
-// 4. 리뷰 수정하기
-// PATCH
-// http://{baseUrl}/reviews/:idx
-// json 형태로 입력 후 저장
-router.patch(
-  "/:idx",
-  validate_review, // content 최소 5자 등 검증
-  is_auth, // req.id 세팅됨
-  review_controller.update_review
-);
-
-// 5. 리뷰 삭제하기
-// DELETE
-// http://{baseUrl}/reviews/:idx
-router.delete("/:idx", is_auth, review_controller.delete_review);
-
-// 6. 리뷰 추천순 정렬
-// GET
-// http://{baseUrl}/reviews/recommand
-router.get("/recommand", review_controller.recommanded_reviews);
-
-// 7. 리뷰 최신순 정렬
-// GET
-// http://{baseUrl}/reviews/latest
+// 영화별 리뷰 목록
+router.get("/movie/:movie_id", review_controller.get_movie_reviews);
+// 리뷰 작성
+router.post("/movie/:movie_id", validate_review, is_auth, review_controller.create_review);
+// 리뷰 수정/삭제
+router.patch("/:review_id", validate_review, is_auth, review_controller.update_review);
+router.delete("/:review_id", is_auth, review_controller.delete_review);
+// 유저별 리뷰 (로그인 필요)
+router.get("/user/:nickname", is_auth, review_controller.get_reviews);
+// 유저별 좋아요한 리뷰 id 리스트 (로그인 필요)
+router.get("/user/me/review-likes", is_auth, review_controller.get_liked_review_ids);
+// 리뷰 정렬
+router.get("/recommend", review_controller.recommanded_reviews);
 router.get("/latest", review_controller.latest_reviews);
-
-// 8. 리뷰 평점순 정렬
-// GET
-// http://{baseUrl}/reviews/rated/:params
 router.get("/rate/:updown", review_controller.rating_reviews);
-
-// 9. 키워드로 리뷰 작성자 검색
-router.get("/search_nickname", review_controller.review_search_nickname);
-
-// 10. nickname의 idx로 작성한 리뷰 가져오기
-// GET
-router.get("/user_reviews", review_controller.get_reviews_by_user_idx);
+// 리뷰 좋아요/좋아요 취소
+router.post('/:review_id/like', is_auth, review_controller.like_review);
+router.delete('/:review_id/like', is_auth, review_controller.unlike_review);
+// 내가 쓴 리뷰(본인만 접근, 토큰 기반)
+router.get("/me", is_auth, review_controller.get_my_reviews);
 
 export default router;

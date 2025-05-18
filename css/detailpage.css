@@ -48,6 +48,7 @@
   font-size: 1rem;
   line-height: 1.6;
   color: var(--color-text-sub);
+  white-space: pre-line;
 }
 .btn {
   display: block;
@@ -166,6 +167,7 @@ textarea {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+  position: relative;
 }
 .review_author {
   font-weight: bold;
@@ -194,6 +196,17 @@ textarea {
 .review_nickname_link:visited {
   color: #8e44ad; /* 보라색 */
   text-decoration: none;
+}
+.review_card .review_date {
+  font-size: 0.82rem;
+  color: #888;
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.1rem;
+  margin: 0;
+  text-align: right;
+  background: transparent;
+  z-index: 2;
 }
 /* 출연진 */
 .cast_section {
@@ -240,4 +253,47 @@ textarea {
 .cast_info .cast_role {
   font-size: 0.95rem;
   color: var(--color-text-sub);
+}
+/* 별점 입력 UI 개선 */
+.star_rating {
+  display: flex;
+  align-items: center;
+  gap: 0.1em;
+  margin-bottom: 0.5em;
+}
+.star_rating span {
+  display: inline-block;
+  transition: transform 0.1s;
+}
+.star_rating span:hover {
+  transform: scale(1.15);
+}
+#star_rating_value {
+  font-weight: bold;
+  font-size: 1.15em;
+  color: #FFD700;
+  margin-left: 0.5em;
+  vertical-align: middle;
+}
+
+@keyframes detailFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.detail_main, .detail-fadein, .detail_container {
+  animation: detailFadeIn 0.9s cubic-bezier(.4,0,.2,1) both;
+}
+
+.btn_more_reviews, .btn_more {
+  display: block;
+  margin: 1.5rem 0 0 auto;
+  float: none;
+  text-align: right;
 }

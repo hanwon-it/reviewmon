@@ -48,3 +48,22 @@ export async function find_email(email) {
 export async function update_user_by_id(id, updates) {
   return User.updateOne({ _id: id }, { $set: updates });
 }
+
+// id로 유저 삭제
+export async function delete_user_by_id(id) {
+  return User.deleteOne({ _id: id });
+}
+
+// 닉네임 부분 일치로 유저 찾기 (DB의 nickname에서도 공백 제거)
+export async function find_by_nickname_regex(nickname) {
+  // MongoDB 4.4+에서 $replaceAll 사용 가능
+  return await User.find({
+    $expr: {
+      $regexMatch: {
+        input: { $replaceAll: { input: "$nickname", find: " ", replacement: "" } },
+        regex: nickname,
+        options: "i"
+      }
+    }
+  });
+}

@@ -54,7 +54,7 @@ export async function get_posts_by_idx({ user_idx }) {
 
 // 좋아요 스키마 생성
 const like_schema = new mongoose.Schema({
-  user_id: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+  user_id: { type: String },
   review_id: { type: mongoose.Schema.Types.ObjectId, ref: "Review" },
   created_at: { type: Date, default: Date.now },
 });
@@ -70,8 +70,8 @@ export async function likeReview(user_id, review_id) {
   // 2. 새로 생성
   await Like.create({ user_id, review_id });
 
-  // 3. (선택) 리뷰 좋아요 수 업데이트
-  await Review.updateOne({ _id: review_id }, { $inc: { like_count: 1 } });
+  // 3. 리뷰 좋아요 수 업데이트 (like_cnt로 통일)
+  await Review.updateOne({ _id: review_id }, { $inc: { like_cnt: 1 } });
 
   return { status: "liked" };
 }
@@ -79,9 +79,15 @@ export async function likeReview(user_id, review_id) {
 // 좋아요 취소
 export async function unlikeReview(user_id, review_id) {
   await Like.deleteOne({ user_id, review_id });
-  await Review.updateOne({ _id: review_id }, { $inc: { like_count: -1 } });
+  await Review.updateOne({ _id: review_id }, { $inc: { like_cnt: -1 } });
 
   return { status: "unliked" };
 }
 
 export async function get_all_by_title(movie_title) {}
+
+// 좋아요한 리뷰 id 리스트 반환
+export async function getLikedReviewIds(user_id) {
+  const likes = await Like.find({ user_id }).select('review_id');
+  return likes.map(like => String(like.review_id));
+}

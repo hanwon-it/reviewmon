@@ -11,15 +11,24 @@ document.addEventListener("DOMContentLoaded", () => {
 
   search_button.addEventListener("click", () => {
     const keyword = keyword_input.value.trim();
-    const category = category_select.value;
+    let category = category_select.value;
 
     if (!keyword) {
       alert("검색어를 입력하세요.");
       return;
     }
+    // category 값이 허용된 값인지 방어
+    if (!["movie", "person", "user"].includes(category)) {
+      category = "movie";
+    }
+    window.location.href = `/search.html?category=${category}&keyword=${encodeURIComponent(keyword)}`;
+  });
 
-    window.location.href = `/search.html?category=${category}&keyword=${encodeURIComponent(
-      keyword
-    )}`;
+  // 검색 input에서 엔터 키로도 검색 가능하게
+  keyword_input.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      search_button.click();
+    }
   });
 });

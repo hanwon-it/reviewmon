@@ -12,7 +12,7 @@
     <!-- 헤더 -->
     <header class="header">
       <div class="header_inner">
-        <div class="logo">Review_mon</div>
+        <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
 
         <!-- 검색창 영역 -->
         <div class="search_box">
@@ -49,8 +49,8 @@
 
         <!-- 사용자 액션 -->
         <div class="user_actions">
-          <button class="btn_mypage">마이페이지</button>
-          <button class="btn_logout">로그아웃</button>
+          <button class="btn btn_mypage">마이페이지</button>
+          <button class="btn btn_logout">로그아웃</button>
         </div>
       </div>
     </header>
@@ -70,6 +70,9 @@
               <input id="join_date" type="text" value="" readonly />
             </div>
           </div>
+        </div>
+        <hr class="profile_edit_divider" />
+        <div class="profile_edit_fields">
           <div class="field">
             <label for="nickname">닉네임</label>
             <input id="nickname" type="text" value="현재 닉네임" readonly />
@@ -107,27 +110,28 @@
           </div>
         </div>
       </section>
-
-      <hr />
-
+      <div class="myreview_section">
+        <button id="btn_myreview" class="btn_myreview">내가 쓴 리뷰 보러가기</button>
+      </div>
+      <hr class="section_divider" />
       <!-- 선호조사 섹션 -->
       <section class="preferences_section">
         <h1>선호조사</h1>
         <!-- <div class="genre_buttons"> -->
         <div class="field">
           <label for="genre_buttons">선호 장르</label>
-          <input id="genre_buttons" type="text" />
+          <input id="genre_buttons" type="text" readonly/>
           <button class="btn_prefs_edit">수정</button>
         </div>
         <div class="field">
           <label for="fav_actor">좋아하는 배우</label>
-          <input id="fav_actor" type="text" value="마동석, 황정민" readonly />
-          <button class="btn_add">추가</button>
+          <input id="fav_actor" type="text" value="" readonly />
+          <button class="btn_add">수정</button>
         </div>
         <div class="field">
           <label for="fav_director">좋아하는 감독</label>
-          <input id="fav_director" type="text" value="봉준호" readonly />
-          <button class="btn_add">추가</button>
+          <input id="fav_director" type="text" value="" readonly />
+          <button class="btn_add">수정</button>
         </div>
       </section>
       <div class="withdrawal_section">
@@ -139,14 +143,16 @@
       <div class="modal-content">
         <p class="modal-text">선호하는 장르를 선택해주세요 (최대 3개)</p>
         <div class="genre-toggle-wrap">
-          <button class="genre-toggle" data-genre="액션">액션</button>
-          <button class="genre-toggle" data-genre="로맨스">로맨스</button>
-          <button class="genre-toggle" data-genre="스릴러">스릴러</button>
-          <button class="genre-toggle" data-genre="코미디">코미디</button>
-          <button class="genre-toggle" data-genre="SF">SF</button>
-          <button class="genre-toggle" data-genre="판타지">판타지</button>
-          <button class="genre-toggle" data-genre="공포">공포</button>
-          <button class="genre-toggle" data-genre="미스터리">미스터리</button>
+          <button class="genre-toggle" data-genre="28">액션</button>
+          <button class="genre-toggle" data-genre="12">모험</button>
+          <button class="genre-toggle" data-genre="16">애니메이션</button>
+          <button class="genre-toggle" data-genre="35">코미디</button>
+          <button class="genre-toggle" data-genre="80">범죄</button>
+          <button class="genre-toggle" data-genre="99">다큐멘터리</button>
+          <button class="genre-toggle" data-genre="18">드라마</button>
+          <button class="genre-toggle" data-genre="10751">가족</button>
+          <button class="genre-toggle" data-genre="14">판타지</button>
+          <button class="genre-toggle" data-genre="10749">로맨스</button>
         </div>
         <div class="modal-actions">
           <button id="genre_preferences_confirm" class="btn-confirm">
@@ -207,6 +213,12 @@
       </div>
     </div>
 
+    <script src="../js/logout.js"></script>
+    <script>
+      document.getElementById('btn_myreview').onclick = function() {
+        location.href = 'myreview.html';
+      };
+    </script>
     <script src="../js/mypage.js" type="module"></script>
   </body>
 </html>

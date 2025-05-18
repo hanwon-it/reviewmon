@@ -58,14 +58,14 @@ autoSlide();
 // 배너 끝
 
 // 🎬 추천 영화 캐러셀
-fetch("/api/recommendations/1")
-  .then((res) => res.json())
-  .then((data) => {
-    setupCarousel("carouselTrack", "prevBtn", "nextBtn", data);
-  })
-  .catch((err) => {
-    console.error("추천 영화 불러오기 실패", err);
-  });
+// fetch("/api/recommendations/1")
+//   .then((res) => res.json())
+//   .then((data) => {
+//     setupCarousel("carouselTrack", "prevBtn", "nextBtn", data);
+//   })
+//   .catch((err) => {
+//     console.error("추천 영화 불러오기 실패", err);
+//   });
 
 // 🔥 인기 영화 캐러셀
 fetch("/movie/popular")
@@ -176,4 +176,16 @@ document.querySelector(".search_btn").addEventListener("click", (e) => {
     category
   )}&keyword=${encodeURIComponent(keyword)}`;
   window.location.href = url;
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.querySelector(".btn_logout");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userid");
+      alert("로그아웃 되었습니다.");
+      window.location.href = "/index.html";
+    });
+  }
 });

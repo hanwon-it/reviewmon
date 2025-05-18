@@ -31,37 +31,147 @@
 .review_cards {
   display: flex;
   flex-direction: column;
-  gap: 1.2rem;
+  gap: 1.5rem;
 }
 
-.review_item {
-  background-color: #f0f0f0;
-  padding: 1.2rem;
-  border-radius: 12px;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
-  color: #222;
+.review_card {
+  background: var(--color-bg-secondary);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px rgba(80, 80, 120, 0.12), 0 1.5px 4px rgba(0,0,0,0.08);
+  padding: 1.5rem 1.7rem 1.2rem 1.7rem;
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border: 1.5px solid var(--color-border);
+  transition: box-shadow 0.2s, border 0.2s;
+  position: relative;
+}
+.review_card:hover {
+  box-shadow: 0 8px 32px rgba(120, 120, 200, 0.18), 0 2px 8px rgba(0,0,0,0.12);
+  border: 1.5px solid var(--color-primary);
 }
 
-.review_author {
-  font-weight: bold;
-  margin-bottom: 0.5rem;
-  font-size: 1rem;
+.review_card .review_author {
+  font-weight: 600;
+  color: var(--color-primary);
+  font-size: 1.08rem;
+  margin-bottom: 0.7em;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.review_card .review_nickname_link {
+  color: var(--color-primary);
+  text-decoration: none;
+  font-weight: 600;
+}
+.review_card .review_nickname_link:hover {
+  text-decoration: underline;
 }
 
-.review_rating {
+.review_card .review_date {
+  color: var(--color-muted);
+  font-size: 0.93rem;
+  text-align: right;
+  margin-bottom: 0.2rem;
+  align-self: flex-end;
+}
+
+.review_card .review_rating {
   font-size: 1.1rem;
+  color: var(--color-accent);
+  font-weight: 500;
+  margin-bottom: 0.2rem;
+}
+
+.review_card .review_content {
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--color-text-sub);
   margin-bottom: 0.5rem;
-  color: gold;
+  word-break: break-all;
+  margin-top: 2.2rem;
 }
 
-/* 내용 + 좋아요 */
-.review_content {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 0.8rem;
+.review_card .review_bottom_row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-top: 1.2rem;
 }
 
-.like_count {
-  font-size: 0.9rem;
-  color: #444;
+.review_card .like_count {
+  font-size: 0.98rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-top: 0.2rem;
+  align-self: flex-start;
+}
+
+.review_card .review_rating_row {
+  margin-top: 0;
+  margin-bottom: 0.7em;
+}
+
+.profile_grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2.2em;
+  justify-content: center;
+  align-items: flex-start;
+  width: 100%;
+  margin: 2.5em 0 2.5em 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+.profile_card {
+  background: var(--color-bg-secondary);
+  border-radius: 16px;
+  box-shadow: 0 2px 8px rgba(80,80,120,0.10);
+  padding: 1.3em 1.7em 1.1em 1.7em;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.7em;
+  border: 1.5px solid var(--color-border);
+  transition: box-shadow 0.2s, border 0.2s;
+  position: relative;
+  min-width: 180px;
+  max-width: 220px;
+  width: 100%;
+  box-sizing: border-box;
+}
+.profile_card:hover {
+  box-shadow: 0 8px 32px rgba(120, 120, 200, 0.18), 0 2px 8px rgba(0,0,0,0.12);
+  border: 1.5px solid var(--color-primary);
+}
+
+.profile_title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 0.7em;
+  margin-top: 0.2em;
+  text-align: center;
+}
+.person_profile_img {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 0.7em;
+  margin-top: 0.1em;
+}
+.profile_name {
+  font-size: 1.13rem;
+  font-weight: 600;
+  margin-bottom: 0.2em;
+  margin-top: 0.7em;
+  text-align: center;
+}
+.profile_job {
+  font-size: 0.98rem;
+  color: var(--color-muted);
+  text-align: center;
 }

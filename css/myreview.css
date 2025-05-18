@@ -7,11 +7,11 @@
 }
 
 /* 제목 */
-.page_title {
-  font-size: 1.8rem;
+.page_title, .review_list_page h2 {
+  font-size: 1.6rem;
   font-weight: bold;
   color: var(--color-primary);
-  margin-bottom: 1.5rem;
+  margin-bottom: 1.2rem;
   text-align: left;
 }
 
@@ -41,53 +41,95 @@
 
 /* 리뷰 카드 */
 .review_card {
-  background-color: #eaeaea;
+  background: var(--color-bg-secondary);
   border-radius: 16px;
-  padding: 1.5rem;
-  color: #222;
+  box-shadow: 0 4px 24px rgba(80, 80, 120, 0.12), 0 1.5px 4px rgba(0,0,0,0.08);
+  padding: 1.5rem 1.7rem 1.2rem 1.7rem;
+  color: var(--color-text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  border: 1.5px solid var(--color-border);
+  transition: box-shadow 0.2s, border 0.2s;
   position: relative;
-  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+}
+.review_card:hover {
+  box-shadow: 0 8px 32px rgba(120, 120, 200, 0.18), 0 2px 8px rgba(0,0,0,0.12);
+  border: 1.5px solid var(--color-primary);
 }
 
 /* 제목 + 별점 */
 .review_card_top {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 0.8rem;
+  gap: 1.1em;
+  margin-bottom: 0.5em;
+}
+
+.review_movie_title {
+  color: var(--color-primary);
+  font-weight: bold;
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
 }
 
 .review_title {
-  font-weight: bold;
-  font-size: 1.1rem;
+  font-weight: 600;
+  font-size: 1.08rem;
+  color: var(--color-text);
 }
 
-.review_rating {
-  color: gold;
+.review_rating_row {
+  margin-top: 0;
+  margin-bottom: 0.7em;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.review_stars {
   font-size: 1.1rem;
+  color: var(--color-accent);
+}
+
+.review_rating_num {
+  font-size: 1.02rem;
+  color: var(--color-accent);
+  font-weight: 500;
 }
 
 /* 내용 */
 .review_content {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 1rem;
-  color: #444;
+  font-size: 1.02rem;
+  line-height: 1.7;
+  color: var(--color-text-sub);
+  margin-bottom: 0.5rem;
+  word-break: break-all;
 }
 
 /* 하단: 좋아요 + 버튼 */
-.review_bottom {
+.review_bottom_row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-end;
+  margin-top: 1.2rem;
+  gap: 1.2em;
 }
 
-.review_like {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-  font-size: 0.9rem;
-  color: #444;
+.like_count {
+  font-size: 0.98rem;
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-top: 0.2rem;
+  align-self: flex-start;
+}
+
+.review_date {
+  color: var(--color-muted);
+  font-size: 0.93rem;
+  text-align: right;
+  margin-bottom: 0.2rem;
+  align-self: flex-end;
 }
 
 .review_buttons {
@@ -102,6 +144,7 @@
   font-size: 0.85rem;
   cursor: pointer;
   font-weight: bold;
+  transition: background 0.15s, color 0.15s;
 }
 
 /* 수정 버튼: 보라색 */
@@ -109,9 +152,40 @@
   background-color: var(--color-primary);
   color: white;
 }
+.review_buttons .btn_edit:hover {
+  background-color: var(--color-primary-dark);
+}
 
 /* 삭제 버튼: 붉은색 */
 .review_buttons .btn_delete {
   background-color: #e74c3c;
   color: white;
+}
+.review_buttons .btn_delete:hover {
+  background-color: #c0392b;
+}
+
+/* 리뷰 수정 textarea (수정 모드) */
+.edit_textarea {
+  width: 70%;
+  min-height: 90px;
+  padding: 1rem 1.1rem;
+  border-radius: 12px;
+  border: 1.5px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font-size: 1.04rem;
+  font-family: inherit;
+  line-height: 1.7;
+  box-shadow: 0 2px 12px rgba(162,155,254,0.07);
+  transition: border 0.18s, box-shadow 0.18s, background 0.3s, color 0.3s;
+  resize: vertical;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.edit_textarea:focus {
+  border: 1.5px solid var(--color-primary);
+  background: var(--color-bg-secondary);
+  box-shadow: 0 4px 18px rgba(162,155,254,0.13);
+  outline: none;
 }
