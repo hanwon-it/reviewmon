@@ -1,4 +1,5 @@
-const TMDB_API_KEY = "sgpdDJ2sVjnzGI2VBS0k+XTBvC8XeJY3p2HS0L0bYfpBEC6UFQLgEtEfRQHiUXvAaMbpiAxDCyhXBYcEcQmXWw==";
+// TMDB API 키 (인코딩 처리까지 포함)
+const TMDB_API_KEY = encodeURIComponent("1dc4fbac48abb39eeb4fbd6c9d845bd3");
 
 document.addEventListener("DOMContentLoaded", () => {
   const search_grid = document.getElementById("search_grid");
@@ -113,18 +114,22 @@ async function search_data(keyword, category) {
       data.slice(0, 25).forEach((item) => {
         const posterUrl = item.poster_path
           ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-          : "/img/default_poster.jpg";
+          : "https://via.placeholder.com/200x300?text=No+Image";
 
         const card = createCard({
           image: posterUrl,
-          title: item.title || "제목 없음",
+          title: item.title || item.name || "제목 없음",
           onClick: () => {
-          if (category === "person") {
-             openPersonModal(item.id, item.title || "이름 없음"); // ✅ 수정 완료
-               } else {
-               window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
-        }
-      },
+            if (category === "person") {
+              if (!item.id) {
+                alert("해당 인물 정보가 부족합니다.");
+                return;
+              }
+              openPersonModal(item.id, item.name || "이름 없음");
+            } else {
+              window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
+            }
+          },
         });
 
         search_grid.appendChild(card);
@@ -139,8 +144,10 @@ async function search_data(keyword, category) {
   }
 }
 
-// 🎬 출연작 모달 함수
+// ✅ 출연작 모달
 async function openPersonModal(personId, personName) {
+  console.log("열린 인물 ID:", personId); // 디버깅용
+
   const modal = document.getElementById("person_modal");
   const modalTitle = document.getElementById("person_modal_title");
   const modalBody = document.getElementById("person_modal_body");
@@ -152,6 +159,9 @@ async function openPersonModal(personId, personName) {
   try {
     const res = await fetch(`https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}&language=ko-KR`);
     const data = await res.json();
+
+    console.log("열린 인물 ID:", item.id); // ← 여기에 undefined 나오면 100% 문제
+
 
     if (!data.cast || data.cast.length === 0) {
       modalBody.innerHTML = `<p>출연작이 없습니다.</p>`;
@@ -166,7 +176,7 @@ async function openPersonModal(personId, personName) {
       const img = document.createElement("img");
       img.src = movie.poster_path
         ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : "/img/default_poster.jpg";
+        : "https://via.placeholder.com/200x300?text=No+Image";
       img.alt = movie.title;
 
       const title = document.createElement("div");
@@ -177,8 +187,6 @@ async function openPersonModal(personId, personName) {
       div.appendChild(title);
       modalBody.appendChild(div);
     });
-    console.log("열린 사람 ID:", personId); // → undefined면 무조건 ID 잘못 넘긴 것
-
 
   } catch (err) {
     console.error("출연작 조회 실패:", err);
