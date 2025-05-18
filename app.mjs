@@ -2,10 +2,10 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { connectDB } from "./db/database.mjs";
-import userRouter from "./router/user.mjs";
-import movieRouter from "./router/movie.mjs";
-import reviewRouter from "./router/review.mjs";
 import { getRecommendations } from "./controller/movies.mjs";
+import userRouter from "./router/user.mjs";
+import reviewRouter from "./router/review.mjs";
+import movieRouter from "./router/movie.mjs";
 
 const app = express();
 app.use(express.json());
@@ -27,9 +27,8 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "html", "index.html"));
 });
 
-// ✅ API 라우팅
+app.use("/movie", movieRouter);
 app.use("/auth", userRouter);
-app.use("/api/movies", movieRouter);
 app.use("/reviews", reviewRouter);
 
 // 서버 연결 확인 및 에러확인
@@ -40,5 +39,17 @@ connectDB()
     });
   })
   .catch((err) => {
-    console.error("❌ DB 연결 실패:", err);
+    console.error("DB 연결 실패:", err);
   });
+// app.listen(config.host.port);
+
+export async function get_popular_movies(req, res) {
+  try {
+    const movies = await Movie.find({}).sort({ popularity: -1 }).limit(10);
+    console.log("인기영화 쿼리 결과:", movies);
+    res.json(movies);
+  } catch (error) {
+    console.error("인기 영화 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류", error: error.toString() });
+  }
+}

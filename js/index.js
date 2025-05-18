@@ -12,9 +12,9 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
 
   try {
     const res = await fetch("/auth/login", {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ userid, password }),
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ userid, password }),
     });
 
     const data = await res.json();

@@ -7,12 +7,13 @@
     <title>마이 리뷰 – review_mon</title>
     <link rel="stylesheet" href="../css/common.css" />
     <link rel="stylesheet" href="../css/myreview.css" />
+    <script src="../js/activate_search.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
     <header class="header">
       <div class="header_inner">
-        <div class="logo">Review_mon</div>
+        <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
         <div class="search_box">
           <select class="search_category" id="search_category">
             <option value="movie">영화정보</option>
@@ -25,7 +26,7 @@
             id="search_input"
             placeholder="검색어를 입력하세요"
           />
-          <button class="search_btn" aria-label="검색">
+          <button class="search_btn" id="search_btn" aria-label="검색">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -43,8 +44,8 @@
           </button>
         </div>
         <div class="user_actions">
-          <button class="btn_mypage">마이페이지</button>
-          <button class="btn_logout">로그아웃</button>
+          <button class="btn btn_mypage">마이페이지</button>
+          <button class="btn btn_logout">로그아웃</button>
         </div>
       </div>
     </header>
@@ -108,6 +109,7 @@
       </div>
     </div>
 
+    <script src="../js/logout.js"></script>
     <script src="../js/myreview.js" type="module"></script>
   </body>
 </html>

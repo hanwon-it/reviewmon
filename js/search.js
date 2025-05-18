@@ -1,219 +1,234 @@
-// TMDB API 키 (인코딩 처리까지 포함)
-const TMDB_API_KEY = encodeURIComponent("1dc4fbac48abb39eeb4fbd6c9d845bd3");
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
+// 모달 닫기 버튼 연결
+const modalCloseBtn = document.getElementById("modal_close");
+if (modalCloseBtn) {
+  modalCloseBtn.addEventListener("click", () => {
+    document.getElementById("user_review_modal").classList.add("hidden");
+  });
+}
+
+// 유저 리뷰 모달 열기 함수 (유저 카드 클릭 시)
+async function openUserReviewModal(user_idx, nickname) {
+  const modal = document.getElementById("user_review_modal");
+  const modal_title = document.getElementById("modal_title");
+  const modal_reviews = document.getElementById("modal_reviews");
+
+  modal_title.textContent = `"${nickname}" 님의 리뷰`;
+
+  try {
+    const res = await fetch(`/reviews/user_reviews?user_idx=${user_idx}`);
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.message);
+
+    if (data.length === 0) {
+      modal_reviews.innerHTML = "<p>작성한 리뷰가 없습니다.</p>";
+    } else {
+      modal_reviews.innerHTML = data
+        .map(
+          (r) => `
+        <div class="review_item">
+          <strong>${r.movie_title}</strong>
+          <p>${r.content}</p>
+        </div>
+      `
+        )
+        .join("");
+    }
+    modal.classList.remove("hidden");
+  } catch (err) {
+    console.error("리뷰 불러오기 실패:", err);
+    modal_reviews.innerHTML = "<p>리뷰를 불러오지 못했습니다.</p>";
+    modal.classList.remove("hidden");
+  }
+}
+
+// 검색 결과 렌더링 함수 (카테고리별)
+function renderSearchResults(data, category) {
+  const searchGrid = document.getElementById("search_grid");
+  let html = "";
+  if (!data || (Array.isArray(data) && data.length === 0)) {
+    searchGrid.innerHTML = "<p>검색 결과가 없습니다.</p>";
+    return;
+  }
+  if (category === "movie") {
+    // 카테고리명 표시
+    let categoryTitle = `<h2 class='search_category_title'>[영화]로 검색한 결과</h2>`;
+    html = Array.isArray(data) ? data.map(movie => `
+      <div class="search_card" style="cursor:pointer;" data-movie-id="${movie.movie_id}">
+        <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : 'https://search.pstatic.net/sunny/?src=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Finstagram%2Ftrumanblack%2Fprofile_pic.jpg&type=a340'}" alt="포스터" class="search_poster" onerror="this.src='https://search.pstatic.net/sunny/?src=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Finstagram%2Ftrumanblack%2Fprofile_pic.jpg&type=a340';" />
+        <div class="search_info">
+          <h3>${movie.title}</h3>
+          <div class="search_rating">
+            ${typeof movie.rating === "number" ? `⭐ ${movie.rating.toFixed(1)} / 5.0` : ""}
+          </div>
+        </div>
+      </div>
+    `).join("") : "<p>검색 결과가 없습니다.</p>";
+    searchGrid.innerHTML = categoryTitle + `<div class="search_grid">${html}</div>`;
+    // 카드 클릭 시 detailpage로 이동
+    setTimeout(() => {
+      document.querySelectorAll('.search_card[data-movie-id]').forEach(card => {
+        card.addEventListener('click', function() {
+          const movieId = card.getAttribute('data-movie-id');
+          if (movieId) {
+            window.location.href = `/detailpage.html?movie_id=${movieId}`;
+          }
+        });
+      });
+    }, 0);
+    return;
+  } else if (category === "person") {
+    // TMDB 연동: data가 객체(castMovies, directorMovies, people)인지 확인
+    let people = [];
+    let castMovies = [], directorMovies = [];
+    if (data && typeof data === 'object' && (data.castMovies || data.directorMovies || data.people)) {
+      castMovies = Array.isArray(data.castMovies) ? data.castMovies : [];
+      directorMovies = Array.isArray(data.directorMovies) ? data.directorMovies : [];
+      people = Array.isArray(data.people) ? data.people : [];
+    } else if (Array.isArray(data)) {
+      // 기존 DB 구조 호환(배우/감독 구분)
+      data.forEach(movie => {
+        if (movie.cast && movie.cast.length > 0) castMovies.push(movie);
+        if (movie.director && movie.director.length > 0) directorMovies.push(movie);
+      });
+    }
+    // 1. 인물 프로필 카드 먼저 렌더링
+    let html = '';
+    if (people.length > 0) {
+      html += `<div class=\"profile_grid\">`;
+      html += people.map(person => `
+        <div class=\"profile_card\" style=\"cursor:pointer;\" data-person-id=\"${person.id}\"> 
+          <h2 class=\"profile_title\">검색된 인물</h2>
+          <img src=\"${person.profile_path ? `https://image.tmdb.org/t/p/w185${person.profile_path}` : 'https://search.pstatic.net/sunny/?src=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Finstagram%2Ftrumanblack%2Fprofile_pic.jpg&type=a340'}\" alt=\"프로필 이미지\" class=\"person_profile_img\" />
+          <span class=\"profile_name\">${person.name}</span>
+          <span class=\"profile_job\">${person.known_for_department || ''}</span>
+        </div>
+      `).join("");
+      html += `</div>`;
+    } else {
+      html += `<p>일치하는 인물이 없습니다.</p>`;
+    }
+    // 2. 프로필 카드 클릭 시 personpage.html로 이동
+    setTimeout(() => {
+      document.querySelectorAll('.profile_card').forEach(card => {
+        card.addEventListener('click', function() {
+          const personId = card.getAttribute('data-person-id');
+          if (personId) {
+            window.location.href = `/personpage.html?person_id=${personId}`;
+          }
+        });
+      });
+    }, 0);
+    searchGrid.innerHTML = html;
+    return;
+  } else if (category === "user") {
+    html = Array.isArray(data) ? data.map(user => `
+      <div class="search_card user_card" style="cursor:pointer;">
+        <img src="${user.profile_image_url || 'https://search.pstatic.net/sunny/?src=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Finstagram%2Ftrumanblack%2Fprofile_pic.jpg&type=a340'}" alt="프로필 이미지" class="user_profile_img" />
+        <div class="search_info">
+          <h3 class="user_nickname_link" data-user-idx="${user.user_idx}">${user.nickname}</h3>
+        </div>
+      </div>
+    `).join("") : "<p>검색 결과가 없습니다.</p>";
+    // 유저 카드 클릭 시 해당 유저의 리뷰 페이지로 이동
+    setTimeout(() => {
+      document.querySelectorAll(".user_card").forEach(card => {
+        card.addEventListener("click", function(e) {
+          const nickname = card.querySelector(".user_nickname_link").textContent;
+          if (nickname) {
+            window.location.href = `/reviewpage.html?nickname=${encodeURIComponent(nickname)}`;
+          }
+        });
+      });
+    }, 0);
+    // 유저 카드 그리드 구조를 영화 검색과 동일하게 적용
+    searchGrid.innerHTML = `<div class='search_grid user_search_grid'>${html}</div>`;
+    return;
+  }
+  searchGrid.innerHTML = html;
+  console.log("검색 결과:", data);
+}
+
+// 검색 실행 함수 (카테고리/검색어)
+async function doSearch(category, keyword) {
+  const searchGrid = document.getElementById("search_grid");
+  let apiUrl = "";
+  switch (category) {
+    case "movie":
+      apiUrl = `/movie/search?query=${encodeURIComponent(keyword)}&type=title`;
+      break;
+    case "person":
+      apiUrl = `/movie/search?query=${encodeURIComponent(keyword)}&type=person`;
+      break;
+    case "user":
+      apiUrl = `/auth/search/${encodeURIComponent(keyword)}`;
+      break;
+  }
+  try {
+    const res = await fetch(apiUrl);
+    const data = await res.json();
+    renderSearchResults(data, category);
+  } catch (err) {
+    searchGrid.innerHTML = "<p>검색 중 오류가 발생했습니다.</p>";
+    console.error("검색 오류:", err);
+  }
+}
+
+// DOMContentLoaded 시 URL 파라미터로 검색 실행
+// 그리고 검색창에서 검색 시에도 실행
 
 document.addEventListener("DOMContentLoaded", () => {
-  const search_grid = document.getElementById("search_grid");
-  const category_label = document.getElementById("selected_category_label");
-  const keyword_label = document.getElementById("searched_keyword");
-
   const params = new URLSearchParams(window.location.search);
   const category = params.get("category");
   const keyword = params.get("keyword");
+  const searchBtn = document.getElementById("search_btn");
+  const searchInput = document.getElementById("search_input");
+  const searchCategory = document.getElementById("search_category");
 
-  if (!category || !keyword) {
-    alert("잘못된 접근입니다.");
-    return;
+  function normalizeQuery(query) {
+    return query.replace(/\s/g, ""); // 모든 공백 제거
   }
 
-  const category_text_map = {
-    movie: "영화정보",
-    person: "감독/배우",
-    user: "유저",
-  };
-
-  category_label.textContent = `[${category_text_map[category] || "기타"}]`;
-  keyword_label.textContent = `"${keyword}"`;
-
-  search_data(keyword, category);
-});
-
-document.querySelector(".search_btn").addEventListener("click", (e) => {
-  e.preventDefault();
-
-  const category = document.getElementById("search_category").value;
-  const keyword = document.getElementById("search_input").value.trim();
-
-  if (!keyword) {
-    alert("검색어를 입력해주세요.");
-    return;
+  // URL 파라미터로 진입 시 자동 검색
+  if (category && keyword) {
+    doSearch(category, normalizeQuery(keyword));
+    if (searchCategory) searchCategory.value = category;
+    if (searchInput) searchInput.value = keyword;
   }
 
-  const url = new URL(window.location.href);
-  url.searchParams.set("category", category);
-  url.searchParams.set("keyword", keyword);
-  history.pushState({}, "", url);
-
-  const category_label = document.getElementById("selected_category_label");
-  const keyword_label = document.getElementById("searched_keyword");
-
-  const category_text_map = {
-    movie: "영화정보",
-    person: "감독/배우",
-    user: "유저",
-  };
-
-  category_label.textContent = `[${category_text_map[category] || "기타"}]`;
-  keyword_label.textContent = `"${keyword}"`;
-
-  search_data(keyword, category);
-});
-
-function showNoResults(message = "검색 결과가 없습니다.") {
-  const grid = document.getElementById("search_grid");
-  grid.innerHTML = `<p>${message}</p>`;
-}
-
-function createCard({ image, title, onClick }) {
-  const card = document.createElement("div");
-  card.className = "movie_item";
-  card.innerHTML = `
-    <img src="${image}" alt="${title}" class="movie_poster" />
-    <div class="movie_title">${title}</div>
-  `;
-  if (onClick) card.addEventListener("click", onClick);
-  return card;
-}
-
-async function search_data(keyword, category) {
-  const search_grid = document.getElementById("search_grid");
-  search_grid.innerHTML = "";
-
-  try {
-    let res, data;
-
-    if (category === "user") {
-      res = await fetch(`/auth/search/${encodeURIComponent(keyword)}`);
-      data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-
-      if (!data || data.length === 0) {
-        return showNoResults();
+  // 검색 버튼 클릭 시
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      let query = searchInput.value.trim();
+      if (!query) {
+        alert("검색어를 입력하세요.");
+        return;
       }
-
-      data.slice(0, 25).forEach((user) => {
-        const card = createCard({
-          image: user.profile_image_url || "/img/default_user.png",
-          title: user.nickname,
-          onClick: () => {
-            window.location.href = `/profile.html?user=${user.email}`;
-          },
-        });
-        search_grid.appendChild(card);
-      });
-
-    } else if (category === "movie" || category === "person") {
-      const type = category === "movie" ? "title" : "person";
-      res = await fetch(`/api/movies/search?query=${encodeURIComponent(keyword)}&type=${type}`);
-      data = await res.json();
-      if (!res.ok) throw new Error(data.message);
-
-      if (!data || data.length === 0) {
-        return showNoResults();
-      }
-
-      data.slice(0, 25).forEach((item) => {
-        const posterUrl = item.poster_path
-          ? `https://image.tmdb.org/t/p/w500${item.poster_path}`
-          : "https://via.placeholder.com/200x300?text=No+Image";
-
-        const card = createCard({
-          image: posterUrl,
-          title: item.title || item.name || "제목 없음",
-          onClick: () => {
-            if (category === "person") {
-              if (!item.id) {
-                alert("해당 인물 정보가 부족합니다.");
-                return;
-              }
-              openPersonModal(item.id, item.name || "이름 없음");
-            } else {
-              window.location.href = `/detailpage.html?movie_id=${item.movie_id}`;
-            }
-          },
-        });
-
-        search_grid.appendChild(card);
-      });
-
-    } else {
-      return showNoResults("지원하지 않는 검색 유형입니다.");
-    }
-  } catch (err) {
-    console.error("검색 오류:", err);
-    showNoResults("검색 중 오류가 발생했습니다.");
-  }
-}
-
-// ✅ 출연작 모달
-async function openPersonModal(personId, personName) {
-  console.log("열린 인물 ID:", personId); // 디버깅용
-
-  const modal = document.getElementById("person_modal");
-  const modalTitle = document.getElementById("person_modal_title");
-  const modalBody = document.getElementById("person_modal_body");
-
-  modalTitle.textContent = `${personName}의 출연작`;
-  modalBody.innerHTML = `<p>출연작 불러오는 중...</p>`;
-  modal.style.display = "flex";
-
-  try {
-    const res = await fetch(`https://api.themoviedb.org/3/person/${personId}/movie_credits?api_key=${TMDB_API_KEY}&language=ko-KR`);
-    const data = await res.json();
-
-    console.log("열린 인물 ID:", item.id); // ← 여기에 undefined 나오면 100% 문제
-
-
-    if (!data.cast || data.cast.length === 0) {
-      modalBody.innerHTML = `<p>출연작이 없습니다.</p>`;
-      return;
-    }
-
-    modalBody.innerHTML = "";
-    data.cast.slice(0, 25).forEach((movie) => {
-      const div = document.createElement("div");
-      div.className = "movie_item";
-
-      const img = document.createElement("img");
-      img.src = movie.poster_path
-        ? `https://image.tmdb.org/t/p/w500${movie.poster_path}`
-        : "https://via.placeholder.com/200x300?text=No+Image";
-      img.alt = movie.title;
-
-      const title = document.createElement("div");
-      title.className = "movie_title";
-      title.textContent = movie.title;
-
-      div.appendChild(img);
-      div.appendChild(title);
-      modalBody.appendChild(div);
+      query = normalizeQuery(query);
+      doSearch(searchCategory.value, query);
     });
-
-  } catch (err) {
-    console.error("출연작 조회 실패:", err);
-    modalBody.innerHTML = `<p>출연작을 불러오는 데 실패했습니다.</p>`;
   }
-}
 
-document.getElementById("person_modal_close").onclick = () => {
-  document.getElementById("person_modal").style.display = "none";
-};
 
-// ✅ 약관/개인정보처리방침 팝업
-const termsOverlay = document.getElementById("terms_overlay");
-const termsTitle = document.getElementById("terms_title");
-
-document.getElementById("open_terms").onclick = (e) => {
-  e.preventDefault();
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "이용약관";
-};
-
-document.getElementById("open_privacy").onclick = (e) => {
-  e.preventDefault();
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "개인정보처리방침";
-};
-
-document.getElementById("terms_close").onclick = () => {
-  termsOverlay.style.display = "none";
-};
+  // 약관/개인정보 팝업
+  const termsOverlay = document.getElementById("terms_overlay");
+  const termsTitle = document.getElementById("terms_title");
+  document.getElementById("open_terms").onclick = (e) => {
+    e.preventDefault();
+    termsOverlay.style.display = "flex";
+    termsTitle.textContent = "이용약관";
+  };
+  document.getElementById("open_privacy").onclick = (e) => {
+    e.preventDefault();
+    termsOverlay.style.display = "flex";
+    termsTitle.textContent = "개인정보처리방침";
+  };
+  document.getElementById("terms_close").onclick = () => {
+    termsOverlay.style.display = "none";
+  };
+});

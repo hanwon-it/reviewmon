@@ -1,3 +1,9 @@
+//마이페이지 버튼 활성화
+const go_mypage = document.querySelector(".btn_mypage");
+go_mypage.addEventListener("click", function () {
+  window.location.href = "/mypage.html";
+});
+
 // 배너 슬라이드
 const bannerTrack = document.querySelector(".banner-track");
 const banners = document.querySelectorAll(".banner-link");
@@ -52,19 +58,20 @@ autoSlide();
 // 배너 끝
 
 // 🎬 추천 영화 캐러셀
-fetch("/api/recommendations/1")
-  .then((res) => res.json())
-  .then((data) => {
-    setupCarousel("carouselTrack", "prevBtn", "nextBtn", data);
-  })
-  .catch((err) => {
-    console.error("추천 영화 불러오기 실패", err);
-  });
+// fetch("/api/recommendations/1")
+//   .then((res) => res.json())
+//   .then((data) => {
+//     setupCarousel("carouselTrack", "prevBtn", "nextBtn", data);
+//   })
+//   .catch((err) => {
+//     console.error("추천 영화 불러오기 실패", err);
+//   });
 
 // 🔥 인기 영화 캐러셀
-fetch("/api/movies/popular")
+fetch("/movie/popular")
   .then((res) => res.json())
   .then((data) => {
+    console.log("인기영화 응답", data);
     setupCarousel("carouselTrack2", "prevBtn2", "nextBtn2", data);
   })
   .catch((err) => {
@@ -103,6 +110,12 @@ function setupCarousel(trackId, prevBtnId, nextBtnId, movies) {
     infoDiv.appendChild(ratingDiv);
     li.appendChild(img);
     li.appendChild(infoDiv);
+
+    // 영화 카드 클릭 시 detailpage로 이동
+    li.style.cursor = "pointer";
+    li.addEventListener("click", () => {
+      window.location.href = `/detailpage.html?movie_id=${movie.movie_id}`;
+    });
 
     track.appendChild(li);
   });
@@ -147,7 +160,6 @@ document.getElementById("terms_close").onclick = () => {
   termsOverlay.style.display = "none";
 };
 
-
 document.querySelector(".search_btn").addEventListener("click", (e) => {
   e.preventDefault();
 
@@ -160,6 +172,20 @@ document.querySelector(".search_btn").addEventListener("click", (e) => {
   }
 
   // search.html로 이동하면서 파라미터 전달
-  const url = `/search.html?category=${encodeURIComponent(category)}&keyword=${encodeURIComponent(keyword)}`;
+  const url = `/search.html?category=${encodeURIComponent(
+    category
+  )}&keyword=${encodeURIComponent(keyword)}`;
   window.location.href = url;
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+  const logoutBtn = document.querySelector(".btn_logout");
+  if (logoutBtn) {
+    logoutBtn.addEventListener("click", () => {
+      localStorage.removeItem("token");
+      localStorage.removeItem("userid");
+      alert("로그아웃 되었습니다.");
+      window.location.href = "/index.html";
+    });
+  }
 });

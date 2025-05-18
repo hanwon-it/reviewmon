@@ -10,8 +10,10 @@ function check_password_match() {
   if (pw && pw_confirm) {
     if (pw === pw_confirm) {
       pw_msg.textContent = "비밀번호가 일치합니다.";
+      pw_msg.style.color = "green";
     } else {
       pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
+      pw_msg.style.color = "red";
     }
   } else {
     pw_msg.textContent = "";
@@ -123,8 +125,14 @@ signup_form.addEventListener("submit", async (e) => {
     genre: Array.from(
       document.querySelectorAll('input[name="genre"]:checked')
     ).map((el) => el.value),
-    actor: document.getElementById("actors").value.trim(),
-    director: document.getElementById("directors").value.trim(),
+    actor: document.getElementById("actors").value
+      .split(",")
+      .map((v) => v.trim())
+      .filter((v) => v),
+    director: document.getElementById("directors").value
+      .split(",")
+      .map((v) => v.trim())
+      .filter((v) => v),
   };
   const res = await fetch("/auth/signup", {
     method: "POST",

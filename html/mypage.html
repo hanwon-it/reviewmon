@@ -6,12 +6,13 @@
     <title>마이 페이지 – review_mon</title>
     <link rel="stylesheet" href="../css/common.css" />
     <link rel="stylesheet" href="../css/mypage.css" />
+    <script src="../js/activate_search.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
     <header class="header">
       <div class="header_inner">
-        <div class="logo">Review_mon</div>
+        <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
 
         <!-- 검색창 영역 -->
         <div class="search_box">
@@ -28,7 +29,7 @@
             placeholder="검색어를 입력하세요"
           />
 
-          <button class="search_btn" aria-label="검색">
+          <button class="search_btn" id="search_btn" aria-label="검색">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -48,8 +49,8 @@
 
         <!-- 사용자 액션 -->
         <div class="user_actions">
-          <button class="btn_mypage">마이페이지</button>
-          <button class="btn_logout">로그아웃</button>
+          <button class="btn btn_mypage">마이페이지</button>
+          <button class="btn btn_logout">로그아웃</button>
         </div>
       </div>
     </header>
@@ -69,49 +70,68 @@
               <input id="join_date" type="text" value="" readonly />
             </div>
           </div>
+        </div>
+        <hr class="profile_edit_divider" />
+        <div class="profile_edit_fields">
           <div class="field">
             <label for="nickname">닉네임</label>
-            <input id="nickname" type="text" value="현재닉네임" readonly />
+            <input id="nickname" type="text" value="현재 닉네임" readonly />
             <button class="btn_edit">수정</button>
           </div>
           <div class="field">
             <label for="password">비밀번호 변경</label>
-            <input id="password" type="password" value="********" readonly />
+            <input
+              id="password"
+              type="password"
+              value="현재 비밀번호(는 갯수만 *로 보여주기?)"
+              readonly
+            />
             <button class="btn_edit">수정</button>
           </div>
           <div class="field">
             <label for="phone">휴대폰 번호</label>
-            <input id="phone" type="text" value="010-1234-5678" readonly />
+            <input
+              id="phone"
+              type="text"
+              value="현재 핸드폰 번호 띄우기"
+              readonly
+            />
             <button class="btn_edit">수정</button>
           </div>
           <div class="field">
             <label for="email">이메일</label>
-            <input id="email" type="email" value="user@example.com" readonly />
+            <input
+              id="email"
+              type="email"
+              value="현재 이메일 띄우기"
+              readonly
+            />
             <button class="btn_edit">수정</button>
           </div>
         </div>
       </section>
-
-      <hr />
-
+      <div class="myreview_section">
+        <button id="btn_myreview" class="btn_myreview">내가 쓴 리뷰 보러가기</button>
+      </div>
+      <hr class="section_divider" />
       <!-- 선호조사 섹션 -->
       <section class="preferences_section">
         <h1>선호조사</h1>
         <!-- <div class="genre_buttons"> -->
         <div class="field">
           <label for="genre_buttons">선호 장르</label>
-          <input id="genre_buttons" type="text" />
+          <input id="genre_buttons" type="text" readonly/>
           <button class="btn_prefs_edit">수정</button>
         </div>
         <div class="field">
           <label for="fav_actor">좋아하는 배우</label>
-          <input id="fav_actor" type="text" value="마동석, 황정민" readonly />
-          <button class="btn_add">추가</button>
+          <input id="fav_actor" type="text" value="" readonly />
+          <button class="btn_add">수정</button>
         </div>
         <div class="field">
           <label for="fav_director">좋아하는 감독</label>
-          <input id="fav_director" type="text" value="봉준호" readonly />
-          <button class="btn_add">추가</button>
+          <input id="fav_director" type="text" value="" readonly />
+          <button class="btn_add">수정</button>
         </div>
       </section>
       <div class="withdrawal_section">
@@ -123,14 +143,16 @@
       <div class="modal-content">
         <p class="modal-text">선호하는 장르를 선택해주세요 (최대 3개)</p>
         <div class="genre-toggle-wrap">
-          <button class="genre-toggle" data-genre="액션">액션</button>
-          <button class="genre-toggle" data-genre="로맨스">로맨스</button>
-          <button class="genre-toggle" data-genre="스릴러">스릴러</button>
-          <button class="genre-toggle" data-genre="코미디">코미디</button>
-          <button class="genre-toggle" data-genre="SF">SF</button>
-          <button class="genre-toggle" data-genre="판타지">판타지</button>
-          <button class="genre-toggle" data-genre="공포">공포</button>
-          <button class="genre-toggle" data-genre="미스터리">미스터리</button>
+          <button class="genre-toggle" data-genre="28">액션</button>
+          <button class="genre-toggle" data-genre="12">모험</button>
+          <button class="genre-toggle" data-genre="16">애니메이션</button>
+          <button class="genre-toggle" data-genre="35">코미디</button>
+          <button class="genre-toggle" data-genre="80">범죄</button>
+          <button class="genre-toggle" data-genre="99">다큐멘터리</button>
+          <button class="genre-toggle" data-genre="18">드라마</button>
+          <button class="genre-toggle" data-genre="10751">가족</button>
+          <button class="genre-toggle" data-genre="14">판타지</button>
+          <button class="genre-toggle" data-genre="10749">로맨스</button>
         </div>
         <div class="modal-actions">
           <button id="genre_preferences_confirm" class="btn-confirm">
@@ -191,128 +213,12 @@
       </div>
     </div>
 
+    <script src="../js/logout.js"></script>
     <script>
-      // 선호장르 수정 팝업 열기 버튼 연결
-      document
-        .querySelector(".btn_prefs_edit")
-        .addEventListener("click", () => {
-          document
-            .getElementById("genre_preferences_modal")
-            .classList.add("open");
-        });
-
-      // 닫기 버튼 연결
-      document
-        .getElementById("genre_preferences_cancel")
-        .addEventListener("click", () => {
-          document
-            .getElementById("genre_preferences_modal")
-            .classList.remove("open");
-        });
-
-      // 토글 버튼 처리
-      document.querySelectorAll(".genre-toggle").forEach((button) => {
-        button.addEventListener("click", () => {
-          const selected = document.querySelectorAll(".genre-toggle.selected");
-          if (!button.classList.contains("selected") && selected.length >= 3) {
-            alert("최대 3개까지 선택할 수 있습니다.");
-            return;
-          }
-          button.classList.toggle("selected");
-        });
-      });
-
-      // 저장 버튼 클릭
-      document
-        .getElementById("genre_preferences_confirm")
-        .addEventListener("click", async () => {
-          const selectedGenres = Array.from(
-            document.querySelectorAll(".genre-toggle.selected")
-          ).map((btn) => btn.dataset.genre);
-
-          if (selectedGenres.length === 0) {
-            alert("최소 한 개 이상 선택해주세요.");
-            return;
-          }
-
-          // API 연동 부분 (예시)
-          try {
-            const res = await fetch("/api/favorite/update", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ genres: selectedGenres }),
-            });
-
-            const result = await res.json();
-            if (res.ok) {
-              alert("선호 장르가 저장되었습니다.");
-              document
-                .getElementById("genre_preferences_modal")
-                .classList.remove("open");
-            } else {
-              alert("저장 실패: " + result.message);
-            }
-          } catch (err) {
-            console.error(err);
-            alert("오류가 발생했습니다.");
-          }
-        });
-
-      // 약관 팝업 오픈/닫기 처리
-      const termsOverlay = document.getElementById("terms_overlay");
-      const termsTitle = document.getElementById("terms_title");
-
-      document.getElementById("open_terms").onclick = () => {
-        termsOverlay.style.display = "flex";
-        termsTitle.textContent = "이용약관";
+      document.getElementById('btn_myreview').onclick = function() {
+        location.href = 'myreview.html';
       };
-      document.getElementById("open_privacy").onclick = () => {
-        termsOverlay.style.display = "flex";
-        termsTitle.textContent = "개인정보처리방침";
-      };
-      document.getElementById("terms_close").onclick = () => {
-        termsOverlay.style.display = "none";
-      };
-
-      document.addEventListener("DOMContentLoaded", () => {
-        const btnWithdrawal = document.getElementById("btn_withdrawal");
-        const modal = document.getElementById("withdrawalModal");
-        const btnConfirm = document.getElementById("confirmWithdrawalBtn");
-        const btnCancel = document.getElementById("cancelWithdrawalBtn");
-
-        // 1) 모달 열기
-        btnWithdrawal.addEventListener("click", () => {
-          modal.classList.add("open");
-        });
-
-        // 2) 모달 닫기 (아니요)
-        btnCancel.addEventListener("click", () => {
-          modal.classList.remove("open");
-        });
-
-        // 3) 모달 바깥 클릭해도 닫히도록 (선택)
-        modal.addEventListener("click", (e) => {
-          if (e.target === modal) modal.classList.remove("open");
-        });
-
-        // 4) “예” 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
-        btnConfirm.addEventListener("click", async () => {
-          try {
-            const res = await fetch("/api/users/me", { method: "DELETE" });
-            if (res.ok) {
-              alert("회원탈퇴가 완료되었습니다.");
-              window.location.href = "/"; // index 페이지로 이동
-            } else {
-              throw new Error(res.status);
-            }
-          } catch (err) {
-            console.error("탈퇴 오류:", err);
-            alert("탈퇴 처리 중 오류가 발생했습니다.");
-          }
-        });
-      });
     </script>
-
     <script src="../js/mypage.js" type="module"></script>
   </body>
 </html>

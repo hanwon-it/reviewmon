@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>인물 상세 – review_mon</title>
+  <link rel="stylesheet" href="../css/common.css" />
+  <link rel="stylesheet" href="../css/search.css" />
+</head>
+<body>
+  <!-- 헤더 -->
+  <header class="header">
+    <div class="header_inner">
+      <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
+      <div class="search_box">
+        <select class="search_category" id="search_category">
+          <option value="movie">영화정보</option>
+          <option value="person">감독/배우</option>
+          <option value="user">유저</option>
+        </select>
+        <input
+          type="text"
+          class="search_input"
+          id="search_input"
+          placeholder="검색어를 입력하세요"
+        />
+        <button class="search_btn" id="search_btn" aria-label="검색">
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="20"
+            height="20"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="2"
+            stroke-linecap="round"
+            stroke-linejoin="round"
+          >
+            <circle cx="11" cy="11" r="8"></circle>
+            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+          </svg>
+        </button>
+      </div>
+      <div class="user_actions">
+        <button class="btn btn_mypage">마이페이지</button>
+        <button class="btn btn_logout">로그아웃</button>
+      </div>
+    </div>
+  </header>
+  <main class="review_list_page">
+    <section id="person_profile" class="person_profile_section"></section>
+    <div id="actor_movies_section">
+      <div class="section_title">배우로 출연한 영화</div>
+      <div class="search_grid" id="actor_movies_grid"></div>
+    </div>
+    <div id="director_movies_section">
+      <div class="section_title">감독으로 참여한 영화</div>
+      <div class="search_grid" id="director_movies_grid"></div>
+    </div>
+  </main>
+  <footer class="footer">
+    <p>
+      문의: <a href="mailto:reviewmon@email.com">reviewmon@email.com</a> |
+      <a href="#" id="open_terms">이용약관</a> |
+      <a href="#" id="open_privacy">개인정보처리방침</a>
+    </p>
+  </footer>
+  <script src="../js/logout.js"></script>
+  <script src="../js/personpage.js" type="module"></script>
+</body>
+</html> 
