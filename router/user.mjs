@@ -13,7 +13,12 @@ const validate_login = [
     .withMessage("최소 4자이상 입력")
     .matches(/^[a-zA-Z0-9]*$/)
     .withMessage("특수문자는 사용불가"),
-  body("password").trim().isLength({ min: 8 }).withMessage("최소 8자이상 입력"),
+  body("password")
+    .trim()
+    .isLength({ min: 6 })
+    .withMessage("최소 6자 이상 입력")
+    .matches(/^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{6,}$/)
+    .withMessage("영문, 특수문자, 숫자 모두 포함"),
   validate,
 ];
 
@@ -21,6 +26,9 @@ const validate_signup = [
   ...validate_login,
   body("name").trim().notEmpty().withMessage("name을 입력"),
   body("email").trim().isEmail().withMessage("이메일 형식 확인"),
+  body("hp")
+    .matches(/^01[016789][0-9]{7,8}$/)
+    .withMessage("휴대폰 번호는 숫자만 입력하세요\n 예) 01012345678"),
   validate,
 ];
 
@@ -31,6 +39,22 @@ const validate_userid_only = [
     .withMessage("최소 4자 이상 입력")
     .matches(/^[a-zA-Z0-9]*$/)
     .withMessage("특수문자는 사용 불가"),
+  validate,
+];
+
+const validate_update_user = [
+  body("email").optional().trim().isEmail().withMessage("이메일 형식 확인"),
+  body("password")
+    .optional()
+    .trim()
+    .isLength({ min: 6 })
+    .withMessage("최소 6자 이상 입력")
+    .matches(/^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{6,}$/)
+    .withMessage("영문, 특수문자, 숫자 모두 포함"),
+  body("hp")
+    .optional()
+    .matches(/^01[016789][0-9]{7,8}$/)
+    .withMessage("휴대폰 번호 형식 확인"),
   validate,
 ];
 
@@ -45,7 +69,12 @@ router.post(
 
 // 내 정보 조회/수정/탈퇴
 router.get("/me", is_auth, user_controller.my_info);
-router.patch("/me", is_auth, user_controller.update_user_info);
+router.patch(
+  "/me",
+  is_auth,
+  validate_update_user,
+  user_controller.update_user_info
+);
 router.delete("/me", is_auth, user_controller.signout);
 
 // 비밀번호/아이디 찾기

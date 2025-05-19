@@ -230,6 +230,12 @@ async function load_movie_details(movie_id) {
     ratingElem.innerHTML = `리뷰몬 평점 : <span style='display:flex;align-items:center;gap:2px;'>${starsSVG}</span> ( ${ratingText} / 5.0 )`;
 
     // 출연진/감독 렌더링 (영문 이름만)
+    const getProfileUrl = (profile_path) => {
+      if (!profile_path) return null;
+      return `https://image.tmdb.org/t/p/w500${
+        profile_path.startsWith("/") ? profile_path : "/" + profile_path
+      }`;
+    };
     const cast_grid = document.querySelector(".cast_grid");
     cast_grid.innerHTML = "";
     const people = [...(data.director || []), ...(data.cast || [])];
@@ -239,7 +245,7 @@ async function load_movie_details(movie_id) {
       div.innerHTML = `
         <div class="cast_photo" style="background-image:url('${
           person.profile_path
-            ? `https://image.tmdb.org/t/p/w500${person.profile_path}`
+            ? getProfileUrl(person.profile_path)
             : "https://search.pstatic.net/sunny/?src=https%3A%2F%2Flookaside.fbsbx.com%2Flookaside%2Fcrawler%2Finstagram%2Ftrumanblack%2Fprofile_pic.jpg&type=a340"
         }')"></div>
         <div class="cast_info">${person.name}<br />${

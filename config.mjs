@@ -28,4 +28,8 @@ export const config = {
   tmdb: {
     api_key: required("TMDB_API_KEY"),
   },
+  email: {
+    user: required("ADMIN_EMAIL"),
+    pass: required("EMAIL_PASS"),
+  },
 };
