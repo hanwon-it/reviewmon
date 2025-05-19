@@ -4,7 +4,7 @@ const favorite_schema = new mongoose.Schema(
   {
     user_idx: { type: String, required: true },
     userid: { type: String },
-    gerne: { type: [String], required: true },
+    genre: { type: [String], required: true },
     actor: [
       {
         id: { type: Number, required: true },

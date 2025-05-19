@@ -49,7 +49,7 @@ export async function signup(req, res) {
         await Favorite.create({
           user_idx: new_user._id,
           userid: new_user.userid,
-          gerne: genre || [],
+          genre: genre || [],
           actor: actor || [],
           director: director || [],
         });
@@ -307,7 +307,7 @@ export async function input_favorite(req, res) {
     }
     const favorite = await Favorite.create({
       user_idx,
-      gerne: genre || [],
+      genre: genre || [],
       actor: actor || [],
       director: director || [],
     });

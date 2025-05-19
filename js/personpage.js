@@ -31,7 +31,7 @@ function renderPersonProfile(person) {
 function renderMoviesGrid(movies, gridId) {
   const grid = document.getElementById(gridId);
   if (!movies || movies.length === 0) {
-    grid.innerHTML = '<p>일치하는 결과가 없습니다.</p>';
+    grid.innerHTML = '<p>결과가 없습니다.</p>';
     return;
   }
   grid.innerHTML = movies.map(movie => `

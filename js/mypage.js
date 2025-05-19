@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 선호조사 정보 표시
     if (data.favorite) {
       // genre: value(숫자) 배열 → 한글명으로 변환해서 표시
-      const genreArr = (data.favorite.gerne || []);
+      const genreArr = (data.favorite.genre || []);
       document.getElementById("genre_buttons").value = genreArr.map(v => GENRE_LABELS[v] || v).join(", ");
       document.getElementById("fav_actor").value = (data.favorite.actor || []).map(a => a.name).join(", ");
       document.getElementById("fav_director").value = (data.favorite.director || []).map(d => d.name).join(", ");

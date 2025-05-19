@@ -208,10 +208,11 @@ export async function movie_info(req, res) {
   }
 }
 
-// ✅ 영화 추천 로직 (좋아하는 배우/감독 출연/연출작 기반)
+// 영화 추천 로직 (좋아하는 배우/감독 출연/연출작 기반)
 export async function getRecommendations(req, res) {
   try {
     const user_idx = req.id;
+    console.log('[getRecommendations] req.id:', req.id);
     if (!user_idx) return res.status(401).json({ message: "로그인 필요" });
 
     const { Favorite } = await import("../data/favorite.mjs");

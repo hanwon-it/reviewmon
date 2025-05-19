@@ -5,10 +5,10 @@
   justify-content: center;
   min-height: 100vh;
   padding: 2rem;
-  background-image: url("./image/bg1.png"); /* 이미지 넣을 경우 */
-  background-color: #121212; /* 이미지 없을 경우 */
-  background-size: cover;
-  background-position: center;
+  /* background-image: url("./image/bg1.png"); */
+  /* background-color: #121212; */
+  /* background-size: cover; */
+  /* background-position: center; */
 }
 
 /* 로그인 박스 */
@@ -65,6 +65,14 @@
   font-size: 1rem;
   border-radius: 12px;
   font-weight: bold;
+  background-color: var(--color-primary);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.btn_login:hover {
+  background-color: var(--color-primary-dark);
 }
 
 /* 로그인 하단 링크 */

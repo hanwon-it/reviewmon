@@ -4,6 +4,7 @@
   margin: 0 auto;
   padding: 2rem;
   color: var(--color-text);
+  /* background: linear-gradient(135deg, #18122b 0%, #7c3aed 100%); */
 }
 
 /* 제목 */
@@ -20,16 +21,39 @@
   display: flex;
   justify-content: flex-end;
   margin-bottom: 1.5rem;
+  position: relative;
 }
 
 .sort_dropdown select {
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  background-color: var(--color-primary);
-  color: white;
-  border: none;
-  font-size: 0.9rem;
+  padding: 0.5rem 2.2rem 0.5rem 1.1rem;
+  border-radius: 24px;
+  background: linear-gradient(135deg, #18122b 0%, #7c3aed 100%);
+  color: var(--color-text);
+  border: 1.5px solid var(--color-primary);
+  font-size: 1rem;
+  font-weight: 500;
   cursor: pointer;
+  box-shadow: 0 2px 12px #7c3aed22;
+  appearance: none;
+  outline: none;
+  transition: background 0.22s, border 0.18s, box-shadow 0.18s, color 0.18s;
+  position: relative;
+}
+.sort_dropdown select:focus, .sort_dropdown select:hover {
+  border: 1.5px solid var(--color-glow);
+  background: linear-gradient(135deg, #251a3a 0%, #a78bfa 100%);
+  color: var(--color-glow);
+  box-shadow: 0 4px 16px #a78bfa33;
+}
+.sort_dropdown::after {
+  content: '\25BC';
+  position: absolute;
+  right: 1.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--color-glow);
+  font-size: 1.1em;
+  pointer-events: none;
 }
 
 /* 리뷰 리스트 영역 */
