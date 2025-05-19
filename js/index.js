@@ -2,7 +2,7 @@
 document.querySelector(".login_form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const userid = document.getElementById("username").value.trim();
+  const userid = document.getElementById("userid").value.trim();
   const password = document.getElementById("password").value.trim();
 
   if (!userid || !password) {
@@ -60,11 +60,11 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
   }
 
   try {
-    const res = await fetch(
-      `/api/auth/find-id?name=${encodeURIComponent(
-        name
-      )}&email=${encodeURIComponent(email)}`
-    );
+    const res = await fetch("/auth/find-id", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email }),
+    });
     const data = await res.json();
 
     if (data.userid) {
@@ -91,7 +91,7 @@ document
     }
 
     try {
-      const res = await fetch("/api/auth/find-pw", {
+      const res = await fetch("/auth/find-pw", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ userid, email }),

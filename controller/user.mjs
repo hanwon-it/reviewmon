@@ -3,6 +3,9 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import { config } from "../config.mjs";
 import { Favorite } from "../data/favorite.mjs";
+import { validationResult } from "express-validator";
+import nodemailer from "nodemailer";
+
 
 const secret_key = config.jwt.secret_key;
 const bcrypt_salt_rounds = config.bcrypt.salt_rounds;
@@ -86,24 +89,26 @@ export async function check_userid(req, res) {
 export async function login(req, res) {
   try {
     const { userid, password } = req.body;
+    console.log('[LOGIN] 입력값:', { userid, password });
     const user = await user_repository.find_by_userid(userid);
-
+    console.log('[LOGIN] DB에서 찾은 user:', user);
     if (!user) {
+      console.log('[LOGIN] 존재하지 않는 아이디');
       return res.status(401).json({ message: "존재하지 않는 아이디입니다." });
     }
-
     const is_valid_password = await bcrypt.compare(password, user.password);
+    console.log('[LOGIN] 비밀번호 일치 여부:', is_valid_password);
     if (!is_valid_password) {
+      console.log('[LOGIN] 비밀번호 불일치');
       return res
         .status(401)
         .json({ message: "아이디 또는 비밀번호가 틀립니다." });
     }
-
     const token = await create_jwt_token(user._id.toString());
-    console.log(token);
+    console.log('[LOGIN] JWT 토큰 생성:', token);
     res.status(200).json({ token: token, userid: user.userid });
   } catch (err) {
-    console.error("로그인 오류:", err);
+    console.error("[LOGIN] 로그인 오류:", err);
     res.status(500).json({ message: "로그인 처리 중 서버 오류" });
   }
 }
@@ -152,16 +157,101 @@ export async function logout(req, res, next) {
   }
 }
 
-// 이메일로 아이디 찾기
-
-// 이메일로 비밀번호 찾기 (임시)
-export async function find_pw_by_email(req, res) {
-  res.status(501).json({ message: "아직 구현되지 않은 기능입니다." });
-}
-
-// 이메일로 아이디 찾기 (임시)
+//이메일로 아이디 찾기
 export async function find_id_by_email(req, res) {
-  res.status(501).json({ message: "아직 구현되지 않은 기능입니다." });
+  const { name, email } = req.body;
+  console.log(req.body);
+  try {
+    const user = await user_repository.find_email(email, name);
+    if (!user) {
+      return res.status(404).json({ message: "일치하는 사용자가 없습니다." });
+    }
+    res.status(200).json({ userid: user.userid });
+  } catch (err) {
+    res.status(500).json({ message: "서버 오류" });
+  }
+}
+// 이메일로 비번 찾기
+// 예외처리가 너무 많긴 한데 비번 잠김 사고(비번만 바뀌고 메일 안 감)를 막기 위해 끼워 둔 게 좀 있음.
+export async function find_pw_by_email(req, res) {
+  try {
+    const { email, userid } = req.body;
+    const user = await user_repository.find_pw(email, userid);
+    if (!user) {
+      return res.status(404).json({ message: "일치하는 사용자가 없습니다." });
+    }
+    const random_pw = generate_password(8);
+    console.log(`8자리 새 비번 생성: ${random_pw}`);
+    const hashed_pw = await bcrypt.hash(random_pw, config.bcrypt.salt_rounds);
+    if (hashed_pw === null) {
+      return res.status(500).json({
+        success: false,
+        message: "비밀번호 생성 실패, 비밀번호는 변경되지 않았습니다. ",
+      });
+    }
+    const email_result = await send_pw_email(email, random_pw);
+    console.log(email_result);
+    if (!email_result?.success) {
+      return res.status(500).json({
+        success: false,
+        message: "이메일 전송 실패, 비밀번호는 변경되지 않았습니다.",
+      });
+    }
+    await user_repository.update_user_by_id(user._id, {
+      password: hashed_pw,
+    });
+    console.log(`비번 갱신 성공: ${hashed_pw}`);
+    res.status(200).json({
+      success: true,
+      message: "임시 비밀번호가 이메일로 전송되었습니다.",
+    });
+  } catch (err) {
+    console.error("비밀번호 찾기 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
+  //랜덤 비밀번호 생성
+  function generate_password(length = 8) {
+    const letters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+    const numbers = "0123456789";
+    const specials = "!@#$%^&*";
+    const all = letters + numbers + specials;
+    // 최소 한 글자씩 포함
+    const password = [
+      letters[Math.floor(Math.random() * letters.length)],
+      numbers[Math.floor(Math.random() * numbers.length)],
+      specials[Math.floor(Math.random() * specials.length)],
+      ...Array.from(
+        { length: length - 3 },
+        () => all[Math.floor(Math.random() * all.length)]
+      ),
+    ];
+    // 무작위 섞기
+    return password.sort(() => Math.random() - 0.5).join("");
+  }
+
+  // 이메일 전송
+  async function send_pw_email(to_email, temp_pw) {
+    try {
+      const transporter = nodemailer.createTransport({
+        service: "Gmail",
+        auth: {
+          user: config.email.user,
+          pass: config.email.pass,
+        },
+      });
+      const mailOptions = {
+        from: `"Support" <${config.email.user}>`,
+        to: to_email,
+        subject: "임시 비밀번호 안내",
+        text: `임시 비밀번호는: ${temp_pw}\n로그인 후 비밀번호를 변경해주세요.`,
+      };
+      await transporter.sendMail(mailOptions);
+      return { success: true };
+    } catch (err) {
+      console.error("이메일 전송 실패:", err);
+      return { success: false };
+    }
+  }
 }
 
 // 내 회원 정보 수정
@@ -205,15 +295,34 @@ export async function signout(req, res) {
   }
 }
 
-// 내 취향 정보 입력 (임시)
+// 내 취향 정보 입력 (최초 입력)
 export async function input_favorite(req, res) {
-  res.status(501).json({ message: "아직 구현되지 않은 기능입니다." });
+  try {
+    const user_idx = req.id; // 토큰에서 추출
+    const { genre, actor, director } = req.body;
+    // 이미 있으면 중복 입력 방지
+    const exists = await Favorite.findOne({ user_idx });
+    if (exists) {
+      return res.status(400).json({ message: "이미 선호조사 정보가 존재합니다." });
+    }
+    const favorite = await Favorite.create({
+      user_idx,
+      gerne: genre || [],
+      actor: actor || [],
+      director: director || [],
+    });
+    res.status(201).json({ success: true, favorite });
+  } catch (err) {
+    console.error("선호조사 최초 입력 오류:", err);
+    res.status(500).json({ message: "서버 오류" });
+  }
 }
 
 // 내 취향 정보 수정 
 export async function update_favorite(req, res) {
   try {
     const user_idx = req.id; // 토큰에서 추출
+    const userid = req.body.userid;
     const update = {};
     if (req.body.actor) update.actor = req.body.actor;
     if (req.body.director) update.director = req.body.director;
@@ -221,6 +330,7 @@ export async function update_favorite(req, res) {
 
     const result = await Favorite.findOneAndUpdate(
       { user_idx: user_idx },
+      { userid: userid },
       { $set: update },
       { new: true }
     );
