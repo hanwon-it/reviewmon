@@ -7,14 +7,13 @@
     <title>검색 결과 – review_mon</title>
     <link rel="stylesheet" href="../css/common.css" />
     <link rel="stylesheet" href="../css/search.css" />
+    <script src="../js/activate_search.js"></script>
   </head>
   <body>
     <!-- 헤더 -->
     <header class="header">
       <div class="header_inner">
-        <a href="home.html" class="logo">
-          <img src="../css/image/logo.svg" alt="ReviewMon 로고" />
-        </a>
+        <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
         <div class="search_box">
           <select class="search_category" id="search_category">
             <option value="movie">영화정보</option>
@@ -27,7 +26,7 @@
             id="search_input"
             placeholder="검색어를 입력하세요"
           />
-          <button class="search_btn" aria-label="검색">
+          <button class="search_btn" id="search_btn" aria-label="검색">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="20"
@@ -45,48 +44,43 @@
           </button>
         </div>
         <div class="user_actions">
-          <button class="btn_mypage">마이페이지</button>
-          <button class="btn_logout">로그아웃</button>
+          <button class="btn btn_mypage">마이페이지</button>
+          <button class="btn btn_logout">로그아웃</button>
         </div>
       </div>
     </header>
 
     <!-- 검색 결과 영역 -->
-    <section class="search_results">
-      <h2>
-        검색 결과
-        <span id="selected_category_label" class="category_label"
-          >[영화정보]</span
-        >
-        <span id="searched_keyword" class="keyword_label">"범죄도시"</span>
-      </h2>
-      <div class="search_grid" id="search_grid">
-        <!-- JS로 검색 결과 카드 동적 렌더링 예정 -->
-        <!--
-        <div class="movie_item">
-          <img src="poster_url.jpg" alt="영화 포스터" class="movie_poster" />
-          <div class="movie_title">영화 제목</div>
-        </div>
-        -->
-      </div>
-    </section>
+    <div id="search_grid"></div>
 
-    <!-- 출연작 모달 -->
-    <div id="person_modal" class="modal_overlay" style="display: none">
+    <!-- 사용자 리뷰 모달 -->
+    <div id="user_review_modal" class="modal hidden">
+      <button
+        onclick="document.getElementById('user_review_modal').classList.add('hidden')"
+      >
+        닫기
+      </button>
       <div class="modal_content">
-        <h3 id="person_modal_title">출연작</h3>
-        <div id="person_modal_body" class="modal_movie_list"></div>
-        <button id="person_modal_close">닫기</button>
+        <span id="modal_close" class="close">&times;</span>
+        <h3 id="modal_title">리뷰 목록</h3>
+        <div id="modal_reviews"></div>
       </div>
     </div>
 
     <!-- 광고 배너 -->
-    <section class="ad_banner">
-      <a href="https://example.com" target="_blank">
-        <img src="/img/ad_banner_sample.jpg" alt="광고 배너" class="ad_image" />
-      </a>
-    </section>
-
+    <a
+      href="https://koreaitacademy.com/landing/ai_prompt.asp"
+      target="_blank"
+      style="display: block"
+    >
+      <section class="ad_banner" style="cursor: pointer">
+        <img
+          src="https://koreaitacademy.com/2023/img/landing/ai_prompt_hero-tit.png"
+          alt="광고 배너"
+          class="ad_image"
+        />
+      </section>
+    </a>
     <!-- 푸터 -->
     <footer class="footer">
       <p>
@@ -122,6 +116,7 @@
         </div>
       </div>
     </div>
+    <script src="../js/logout.js"></script>
     <script src="../js/search.js"></script>
   </body>
 </html>

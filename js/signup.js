@@ -1,9 +1,3 @@
-//마이페이지 버튼 활성화
-const go_mypage = document.querySelector(".btn_mypage");
-go_mypage.addEventListener("click", function () {
-  window.location.href = "/mypage.html";
-});
-
 // 비밀번호 확인 실시간 체크
 const pw_input = document.getElementById("password");
 const pw_confirm_input = document.getElementById("password_confirm");
@@ -16,8 +10,10 @@ function check_password_match() {
   if (pw && pw_confirm) {
     if (pw === pw_confirm) {
       pw_msg.textContent = "비밀번호가 일치합니다.";
+      pw_msg.style.color = "green";
     } else {
       pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
+      pw_msg.style.color = "red";
     }
   } else {
     pw_msg.textContent = "";
@@ -131,8 +127,16 @@ signup_form.addEventListener("submit", async (e) => {
     genre: Array.from(
       document.querySelectorAll('input[name="genre"]:checked')
     ).map((el) => el.value),
-    actor: document.getElementById("actors").value.trim(),
-    director: document.getElementById("directors").value.trim(),
+    actor: document
+      .getElementById("actors")
+      .value.split(",")
+      .map((v) => v.trim())
+      .filter((v) => v),
+    director: document
+      .getElementById("directors")
+      .value.split(",")
+      .map((v) => v.trim())
+      .filter((v) => v),
   };
   const res = await fetch("/auth/signup", {
     method: "POST",

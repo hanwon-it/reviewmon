@@ -2,16 +2,23 @@ import mongoose from "mongoose";
 
 const favorite_schema = new mongoose.Schema(
   {
-    userid: { type: String, require: true },
-    gerne: { type: String, require: true },
-    actor: { type: String, require: true },
-    director: { type: String, require: true },
+    user_idx: { type: String, required: true },
+    userid: { type: String },
+    gerne: { type: [String], require: true },
+    actor: [
+      {
+        id: { type: Number, required: true },
+        name: { type: String, required: true },
+      },
+    ],
+    director: [
+      {
+        id: { type: Number, required: true },
+        name: { type: String, required: true },
+      },
+    ],
   },
   { versionKey: false }
 );
 
-<<<<<<< HEAD
-const Favorite = mongoose.model("favorite", favorite_schema);
-=======
 export const Favorite = mongoose.model("favorite", favorite_schema);
->>>>>>> 09b0c7dbc33e29424a74776f16ea3c8e3d106fef

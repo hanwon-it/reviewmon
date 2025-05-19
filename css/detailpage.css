@@ -38,12 +38,17 @@
 }
 .rating {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-size: 1.1rem;
 }
 .overview {
   font-size: 1rem;
   line-height: 1.6;
   color: var(--color-text-sub);
+  white-space: pre-line;
 }
 .btn {
   display: block;
@@ -145,8 +150,10 @@ textarea {
 }
 .review_cards {
   display: flex;
-  flex-direction: column;
-  gap: 1rem;
+  flex-direction: row;
+  gap: 1.5rem;
+  justify-content: center;
+  align-items: stretch;
 }
 .review_card {
   background-color: #eee;
@@ -154,6 +161,13 @@ textarea {
   border-radius: 12px;
   color: #222;
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  flex: 1 1 0;
+  min-width: 0;
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  position: relative;
 }
 .review_author {
   font-weight: bold;
@@ -172,6 +186,27 @@ textarea {
 .like_count {
   font-size: 0.9rem;
   color: #555;
+}
+.review_nickname_link {
+  color: inherit;
+  text-decoration: none;
+  font-weight: bold;
+  transition: color 0.2s;
+}
+.review_nickname_link:visited {
+  color: #8e44ad; /* 보라색 */
+  text-decoration: none;
+}
+.review_card .review_date {
+  font-size: 0.82rem;
+  color: #888;
+  position: absolute;
+  right: 1.2rem;
+  bottom: 1.1rem;
+  margin: 0;
+  text-align: right;
+  background: transparent;
+  z-index: 2;
 }
 /* 출연진 */
 .cast_section {
@@ -192,11 +227,14 @@ textarea {
 }
 .cast_photo {
   width: 90px;
-  aspect-ratio: 1 / 1;
+  aspect-ratio: 2 / 3;
   background-color: #ccc;
   border-radius: 10px;
   margin: 0;
   flex-shrink: 0;
+  background-size: contain; /* 이미지를 잘리지 않게 전체 표시 */
+  background-position: center; /* 가운데 정렬 */
+  background-repeat: no-repeat; /* 반복 없음 */
 }
 .cast_info {
   display: flex;
@@ -216,10 +254,49 @@ textarea {
   font-size: 0.95rem;
   color: var(--color-text-sub);
 }
+/* 별점 입력 UI 개선 */
+.star_rating {
+  display: flex;
+  align-items: center;
+  gap: 0.1em;
+  margin-bottom: 0.5em;
+}
+.star_rating span {
+  display: inline-block;
+  transition: transform 0.1s;
+}
+.star_rating span:hover {
+  transform: scale(1.15);
+}
+#star_rating_value {
+  font-weight: bold;
+  font-size: 1.15em;
+  color: #ffd700;
+  margin-left: 0.5em;
+  vertical-align: middle;
+}
 
-header.header .logo img {
-  height: 35px;
-  width: auto;
-  margin-top: 8px;
+@keyframes detailFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(40px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.detail_main,
+.detail-fadein,
+.detail_container {
+  animation: detailFadeIn 0.9s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+.btn_more_reviews,
+.btn_more {
   display: block;
+  margin: 1.5rem 0 0 auto;
+  float: none;
+  text-align: right;
 }

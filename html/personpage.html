@@ -3,10 +3,9 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>리뷰 보기 – review_mon</title>
+    <title>인물 상세 – review_mon</title>
     <link rel="stylesheet" href="../css/common.css" />
-    <link rel="stylesheet" href="../css/reviewpage.css" />
-    <script src="../js/activate_search.js"></script>
+    <link rel="stylesheet" href="../css/search.css" />
   </head>
   <body>
     <!-- 헤더 -->
@@ -48,28 +47,17 @@
         </div>
       </div>
     </header>
-
-    <!-- 리뷰 메인 -->
     <main class="review_list_page">
-      <h2>리뷰</h2>
-
-      <!-- 정렬 선택 -->
-      <div class="sort_dropdown">
-        <select id="sort_option">
-          <option value="newest">최신순</option>
-          <option value="like_count">추천순</option>
-          <option value="rating_high">별점 높은순</option>
-          <option value="rating_low">별점 낮은순</option>
-        </select>
+      <section id="person_profile" class="person_profile_section"></section>
+      <div id="actor_movies_section">
+        <div class="section_title">배우로 출연한 영화</div>
+        <div class="search_grid" id="actor_movies_grid"></div>
       </div>
-
-      <!-- 리뷰 리스트 -->
-      <div class="review_cards" id="review_cards">
-        <!-- JS로 리뷰 카드 생성 -->
+      <div id="director_movies_section">
+        <div class="section_title">감독으로 참여한 영화</div>
+        <div class="search_grid" id="director_movies_grid"></div>
       </div>
     </main>
-
-    <!-- 푸터 -->
     <footer class="footer">
       <p>
         문의: <a href="mailto:reviewmon@email.com">reviewmon@email.com</a> |
@@ -77,31 +65,7 @@
         <a href="#" id="open_privacy">개인정보처리방침</a>
       </p>
     </footer>
-
-    <!-- 약관/개인정보 팝업 -->
-    <div class="terms_overlay" id="terms_overlay">
-      <div class="terms_modal">
-        <button class="terms_close" id="terms_close">&times;</button>
-        <h2 id="terms_title">약관</h2>
-        <div class="terms_content">
-          <p>
-            본 서비스는 영화 리뷰 제공 및 추천 서비스를 목적으로 하며, 회원은
-            자유롭게 콘텐츠를 이용할 수 있습니다.
-          </p>
-          <p>
-            타인의 개인정보 침해, 부정 사용, 상업적 무단 이용은 금지되며, 관리자
-            판단에 따라 서비스가 제한될 수 있습니다.
-          </p>
-          <p>
-            서비스는 예고 없이 수정·중단될 수 있으며, 이용자 과실에 대한 책임은
-            본인에게 있습니다.
-          </p>
-          <p>기타 세부사항은 고객센터 안내를 따릅니다.</p>
-        </div>
-      </div>
-    </div>
-
     <script src="../js/logout.js"></script>
-    <script src="../js/reviewpage.js" type="module"></script>
+    <script src="../js/personpage.js" type="module"></script>
   </body>
 </html>

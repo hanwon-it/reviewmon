@@ -8,44 +8,30 @@ import reviewRouter from "./router/review.mjs";
 import movieRouter from "./router/movie.mjs";
 
 const app = express();
-
-// JSON 요청 바디 파싱
 app.use(express.json());
 
-// __dirname 대체 (ESM 환경에서 __dirname 사용)
+// 현재 디렉토리 경로 처리 (ESM 환경에서 __dirname 대체)
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// 정적 파일 제공 설정
+// 정적 파일 제공 (public 폴더 안에 HTML, CSS, JS 넣어야 함)
+// 정적 파일 제공 (html, css, js)
+app.use(express.static(path.join(__dirname, "html")));
 app.use("/css", express.static(path.join(__dirname, "css")));
 app.use("/js", express.static(path.join(__dirname, "js")));
-app.use("/", express.static(path.join(__dirname, "html")));
-
-// 추천 API
-// GET /api/recommendations/:userId
 app.get("/api/recommendations/:userId", getRecommendations);
+app.use("/image", express.static(path.join(__dirname, "css/image")));
 
-// 인증(Auth) 관련 라우터
-// /auth/*
-app.use("/auth", userRouter);
-
-// 리뷰(Review) 관련 라우터
-// /api/reviews/*
-app.use("/api/reviews", reviewRouter);
-
-// 영화(Movie) 관련 라우터 (검색/상세/인기)
-// GET /api/search?query=...&type=...
-// GET /api/info/:movie_id
-// GET /api/popular
-app.use("/api", movieRouter);
-
-// 특정 HTML 페이지 핸들링 (선택적)
-// GET /reviewpage.html
-app.get("/reviewpage.html", (req, res) => {
-  res.sendFile(path.join(__dirname, "html", "reviewpage.html"));
+// 기본 라우팅 - index.html 반환
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "html", "index.html"));
 });
 
-// MongoDB 연결 및 서버 시작
+app.use("/movie", movieRouter);
+app.use("/auth", userRouter);
+app.use("/reviews", reviewRouter);
+
+// 서버 연결 확인 및 에러확인
 connectDB()
   .then(() => {
     app.listen(8080, () => {
@@ -55,3 +41,15 @@ connectDB()
   .catch((err) => {
     console.error("DB 연결 실패:", err);
   });
+// app.listen(config.host.port);
+
+export async function get_popular_movies(req, res) {
+  try {
+    const movies = await Movie.find({}).sort({ popularity: -1 }).limit(10);
+    console.log("인기영화 쿼리 결과:", movies);
+    res.json(movies);
+  } catch (error) {
+    console.error("인기 영화 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류", error: error.toString() });
+  }
+}
