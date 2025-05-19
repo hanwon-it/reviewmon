@@ -5,6 +5,7 @@ export const validate = (req, res, next) => {
   if (errors.isEmpty()) {
     return next();
   }
+  console.log('[VALIDATOR] 에러:', errors.array());
   return res.status(400).json({ message: errors.array()[0].msg });
 };
 

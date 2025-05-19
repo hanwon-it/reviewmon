@@ -91,7 +91,7 @@ signup_form.addEventListener("submit", async (e) => {
     "password",
     "password_confirm",
     "name",
-    "phone",
+    "hp",
     "nickname",
     "email",
   ];
@@ -115,24 +115,48 @@ signup_form.addEventListener("submit", async (e) => {
     return;
   }
 
+  // 배우/감독 입력값 → TMDB id+name 객체 배열로 변환
+  async function getPeopleArr(inputId) {
+    const names = document.getElementById(inputId).value
+      .split(",")
+      .map((v) => v.trim())
+      .filter((v) => v);
+    const arr = [];
+    for (const name of names) {
+      try {
+        const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+          // 동명이인 모두 저장
+          data.results.forEach(person => {
+            arr.push({ id: person.id, name: person.name });
+          });
+        } else {
+          arr.push({ id: null, name });
+        }
+      } catch {
+        arr.push({ id: null, name });
+      }
+    }
+    return arr;
+  }
+
+  // 배우/감독 동기적으로 TMDB id+name 변환
+  const actorArr = await getPeopleArr("actors");
+  const directorArr = await getPeopleArr("directors");
+
   const data = {
     userid: document.getElementById("userid").value.trim(),
     password: document.getElementById("password").value.trim(),
     name: document.getElementById("name").value.trim(),
-    hp: document.getElementById("phone").value.trim(),
+    hp: document.getElementById("hp").value.trim(),
     nickname: document.getElementById("nickname").value.trim(),
     email: document.getElementById("email").value.trim(),
     genre: Array.from(
       document.querySelectorAll('input[name="genre"]:checked')
     ).map((el) => el.value),
-    actor: document.getElementById("actors").value
-      .split(",")
-      .map((v) => v.trim())
-      .filter((v) => v),
-    director: document.getElementById("directors").value
-      .split(",")
-      .map((v) => v.trim())
-      .filter((v) => v),
+    actor: actorArr,
+    director: directorArr,
   };
   const res = await fetch("/auth/signup", {
     method: "POST",

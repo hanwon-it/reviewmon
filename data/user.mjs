@@ -22,6 +22,17 @@ export async function create_user(user) {
   return new User(user).save(); // 👉 전체 유저 문서 반환
 }
 
+<<<<<<< HEAD
+=======
+// 아이디 찾기
+export async function find_email(email, name) {
+  return User.findOne({ email, name }).select("userid");
+}
+// 비번 찾기
+export async function find_pw(email, userid) {
+  return User.findOne({ email, userid });
+}
+>>>>>>> fb665bc79acdc3a7072cedeaa1fc609cc75ed84e
 
 // 아이디 찾기(중복방지)
 export async function find_by_userid(userid) {
@@ -38,11 +49,6 @@ export async function find_by_sth(param1, param2) {
   //return User.findOne({ param1 }).select(param2);
   const doc = await User.findOne({ _id: param1 }).select(param2);
   return doc?.[param2];
-}
-
-// 비밀번호 찾기(email 사용?)
-export async function find_email(email) {
-  return User.findOne(email);
 }
 
 // 업데이트 수행

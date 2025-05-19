@@ -2,7 +2,7 @@
 document.querySelector(".login_form").addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const userid = document.getElementById("username").value.trim();
+  const userid = document.getElementById("userid").value.trim();
   const password = document.getElementById("password").value.trim();
 
   if (!userid || !password) {
@@ -58,7 +58,11 @@ document.getElementById("btn_find_id").addEventListener("click", async () => {
   }
 
   try {
-    const res = await fetch(`/api/auth/find-id?name=${encodeURIComponent(name)}&email=${encodeURIComponent(email)}`);
+    const res = await fetch("/auth/find-id", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, email }),
+    });
     const data = await res.json();
 
     if (data.userid) {
@@ -82,22 +86,22 @@ document.getElementById("btn_send_temp_pw").addEventListener("click", async () =
     return;
   }
 
-  try {
-    const res = await fetch("/api/auth/find-pw", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userid, email }),
-    });
+    try {
+      const res = await fetch("/auth/find-pw", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userid, email }),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (result.success) {
-      alert("임시 비밀번호가 이메일로 전송되었습니다.");
-    } else {
-      alert(result.message || "일치하는 회원 정보가 없습니다.");
+      if (result.success) {
+        alert("임시 비밀번호가 이메일로 전송되었습니다.");
+      } else {
+        alert(result.message || "일치하는 회원 정보가 없습니다.");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("서버 오류로 임시 비밀번호 전송에 실패했습니다.");
     }
-  } catch (err) {
-    console.error(err);
-    alert("서버 오류로 임시 비밀번호 전송에 실패했습니다.");
-  }
-});
+  });

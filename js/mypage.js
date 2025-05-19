@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const view_join_date = document.getElementById("join_date");
   const view_nickname = document.getElementById("nickname");
   const view_password = document.getElementById("password");
-  const view_phone = document.getElementById("phone");
+  const view_hp = document.getElementById("hp");
   const view_email = document.getElementById("email");
 
   const token = localStorage.getItem("token"); // 저장된 JWT 토큰 가져오기
@@ -56,7 +56,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     view_join_date.value = new Date(data.createdAt).toLocaleDateString();
     view_nickname.value = data.nickname;
     view_password.value = data.password;
-    view_phone.value = data.hp;
+    view_hp.value = data.hp;
     view_email.value = data.email;
 
     // 선호조사 정보 표시
@@ -66,6 +66,77 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("genre_buttons").value = genreArr.map(v => GENRE_LABELS[v] || v).join(", ");
       document.getElementById("fav_actor").value = (data.favorite.actor || []).map(a => a.name).join(", ");
       document.getElementById("fav_director").value = (data.favorite.director || []).map(d => d.name).join(", ");
+    } else {
+      // 선호조사 정보가 없을 때: 장르 input은 readonly 유지, 저장 버튼 클릭 시 모달 오픈
+      document.getElementById("genre_buttons").setAttribute("readonly", true);
+      document.querySelector(".btn_prefs_edit").textContent = "선택";
+      document.querySelector(".btn_prefs_edit").onclick = async () => {
+        document.getElementById("genre_preferences_modal").classList.add("open");
+        const genreVal = document.getElementById("genre_buttons").value.split(",").map(v => v.trim()).filter(v => v);
+        try {
+          const method = data.favorite ? "PATCH" : "POST";
+          const res = await fetch("/auth/favorite", {
+            method,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ genre: genreVal }),
+          });
+          const result = await res.json();
+          if (!res.ok) throw new Error(result.message);
+          alert("선호 장르가 저장되었습니다.");
+          document.getElementById("genre_preferences_modal").classList.remove("open");
+        } catch (err) {
+          alert("저장 실패: " + err.message);
+        }
+      };
+      // 배우/감독 입력만 활성화
+      document.getElementById("fav_actor").removeAttribute("readonly");
+      document.getElementById("fav_director").removeAttribute("readonly");
+      document.querySelectorAll(".btn_add").forEach(btn => btn.textContent = "저장");
+      // 배우/감독 저장 버튼
+      async function savePeople(inputId, key) {
+        const names = document.getElementById(inputId).value.split(",").map(v => v.trim()).filter(v => v);
+        const arr = [];
+        for (const name of names) {
+          try {
+            const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+            const data = await res.json();
+            if (data.results && data.results.length > 0) {
+              data.results.forEach(person => {
+                arr.push({ id: person.id, name: person.name });
+              });
+            } else {
+              arr.push({ id: null, name });
+            }
+          } catch {
+            arr.push({ id: null, name });
+          }
+        }
+        try {
+          const method = data.favorite ? "PATCH" : "POST";
+          const res = await fetch("/auth/favorite", {
+            method,
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({ [key]: arr }),
+          });
+          const result = await res.json();
+          if (!res.ok) throw new Error(result.message);
+          alert("저장되었습니다.");
+        } catch (err) {
+          alert("저장 실패: " + err.message);
+        }
+      }
+      document.querySelectorAll(".btn_add").forEach((btn, idx) => {
+        btn.onclick = () => {
+          if (idx === 0) savePeople("fav_actor", "actor");
+          else savePeople("fav_director", "director");
+        };
+      });
     }
   } catch (err) {
     console.error("유저 정보 가져오기 실패:", err);
@@ -96,14 +167,17 @@ document.addEventListener("DOMContentLoaded", () => {
 
         const field_id = field.id;
         const updated_value = field.value;
-
-        fetch("/auth/update", {
+        let patchBody = { [field_id]: updated_value };
+        if (field_id === "hp") {
+          patchBody = { hp: updated_value };
+        }
+        fetch("/auth/me", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
-          body: JSON.stringify({ [field_id]: updated_value }),
+          body: JSON.stringify(patchBody),
         })
           .then((res) => res.json())
           .then((data) => {
@@ -147,43 +221,6 @@ document.querySelectorAll(".genre-toggle").forEach((button) => {
   });
 });
 
-// 저장 버튼 클릭
-document
-  .getElementById("genre_preferences_confirm")
-  .addEventListener("click", async () => {
-    const selectedGenres = Array.from(
-      document.querySelectorAll(".genre-toggle.selected")
-    ).map((btn) => btn.dataset.genre);
-
-    if (selectedGenres.length === 0) {
-      alert("최소 한 개 이상 선택해주세요.");
-      return;
-    }
-
-    try {
-      const res = await fetch("/auth/favorite", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ genre: selectedGenres }),
-      });
-      const result = await res.json();
-      if (res.ok) {
-        alert("선호 장르가 저장되었습니다.");
-        document.getElementById("genre_preferences_modal").classList.remove("open");
-        // 저장 후 input에도 한글명으로 반영
-        document.getElementById("genre_buttons").value = selectedGenres.map(v => GENRE_LABELS[v] || v).join(", ");
-      } else {
-        alert("저장 실패: " + result.message);
-      }
-    } catch (err) {
-      console.error(err);
-      alert("오류가 발생했습니다.");
-    }
-  });
-
 // 약관 팝업 오픈/닫기 처리
 const termsOverlay = document.getElementById("terms_overlay");
 const termsTitle = document.getElementById("terms_title");
@@ -224,7 +261,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // 4) "예" 클릭 → 탈퇴 API 호출 → 인덱스로 리다이렉트
   btnConfirm.addEventListener("click", async () => {
     try {
-      const res = await fetch("/api/users/me", { method: "DELETE" });
+      const res = await fetch("/auth/me", {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("token")}`
+        }
+      });
       if (res.ok) {
         alert("회원탈퇴가 완료되었습니다.");
         window.location.href = "/"; // index 페이지로 이동
@@ -295,3 +337,142 @@ function setupFavoriteEdit(fieldId, btnClass, key) {
 }
 setupFavoriteEdit("fav_actor", "btn_add", "actor");
 setupFavoriteEdit("fav_director", "btn_add", "director");
+
+// 장르 선택 모달 저장 버튼 클릭
+const genreConfirmBtn = document.getElementById("genre_preferences_confirm");
+genreConfirmBtn.addEventListener("click", async () => {
+  const selectedGenres = Array.from(
+    document.querySelectorAll(".genre-toggle.selected")
+  ).map((btn) => btn.dataset.genre);
+
+  if (selectedGenres.length === 0) {
+    alert("최소 한 개 이상 선택해주세요.");
+    return;
+  }
+
+  // POST/PATCH 분기: favorite이 있으면 PATCH, 없으면 POST
+  const token = localStorage.getItem("token");
+  let hasFavorite = false;
+  try {
+    // 현재 favorite 존재 여부를 서버에서 다시 확인
+    const resMe = await fetch("/auth/me", {
+      headers: { Authorization: `Bearer ${token}` }
+    });
+    const meData = await resMe.json();
+    hasFavorite = !!(meData.favorite);
+  } catch {}
+
+  try {
+    const method = hasFavorite ? "PATCH" : "POST";
+    const res = await fetch("/auth/favorite", {
+      method,
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`,
+      },
+      body: JSON.stringify({ genre: selectedGenres }),
+    });
+    const result = await res.json();
+    if (!res.ok) throw new Error(result.message);
+    alert("선호 장르가 저장되었습니다.");
+    document.getElementById("genre_preferences_modal").classList.remove("open");
+    // input에도 한글명으로 반영
+    document.getElementById("genre_buttons").value = selectedGenres.map(v => GENRE_LABELS[v] || v).join(", ");
+  } catch (err) {
+    alert("저장 실패: " + err.message);
+  }
+});
+
+// 비밀번호 변경 UI 동작
+const pwEditBtn = document.getElementById("btn_pw_edit");
+const pwSaveBtn = document.getElementById("btn_pw_save");
+const pwCancelBtn = document.getElementById("btn_pw_cancel");
+const pwField = document.getElementById("password");
+const pwConfirmField = document.getElementById("password_confirm");
+const pw_msg = document.getElementById("pw_check_msg");
+
+pwEditBtn.addEventListener("click", () => {
+  pwField.style.display = "inline-block";
+  pwConfirmField.style.display = "inline-block";
+  pw_msg.style.display = "block";
+  pwSaveBtn.style.display = "inline-block";
+  pwCancelBtn.style.display = "inline-block";
+  pwEditBtn.style.display = "none";
+  pwField.removeAttribute("readonly");
+  pwConfirmField.removeAttribute("readonly");
+  pwField.value = "";
+  pwConfirmField.value = "";
+  pw_msg.textContent = "";
+});
+
+pwCancelBtn.addEventListener("click", () => {
+  pwField.style.display = "none";
+  pwConfirmField.style.display = "none";
+  pw_msg.style.display = "none";
+  pwSaveBtn.style.display = "none";
+  pwCancelBtn.style.display = "none";
+  pwEditBtn.style.display = "inline-block";
+  pwField.value = "";
+  pwConfirmField.value = "";
+  pwField.setAttribute("readonly", true);
+  pwConfirmField.setAttribute("readonly", true);
+  pw_msg.textContent = "";
+});
+
+function check_password_match() {
+  const pw = pwField.value;
+  const pw_confirm = pwConfirmField.value;
+  if (pw && pw_confirm) {
+    if (pw === pw_confirm) {
+      pw_msg.textContent = "비밀번호가 일치합니다.";
+      pw_msg.style.color = "green";
+    } else {
+      pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
+      pw_msg.style.color = "red";
+    }
+  } else {
+    pw_msg.textContent = "";
+  }
+}
+
+pwField.addEventListener("input", check_password_match);
+pwConfirmField.addEventListener("input", check_password_match);
+
+pwSaveBtn.addEventListener("click", async () => {
+  if (!pwField.value || !pwConfirmField.value) {
+    alert("비밀번호를 모두 입력해주세요.");
+    return;
+  }
+  if (pwField.value !== pwConfirmField.value) {
+    alert("비밀번호가 일치하지 않습니다.");
+    return;
+  }
+  // PATCH 요청
+  try {
+    const res = await fetch("/auth/me", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ password: pwField.value }),
+    });
+    const data = await res.json();
+    if (!data.success) throw new Error(data.message);
+    alert("비밀번호가 성공적으로 변경되었습니다.");
+    // UI 원상복구
+    pwField.style.display = "none";
+    pwConfirmField.style.display = "none";
+    pw_msg.style.display = "none";
+    pwSaveBtn.style.display = "none";
+    pwCancelBtn.style.display = "none";
+    pwEditBtn.style.display = "inline-block";
+    pwField.value = "";
+    pwConfirmField.value = "";
+    pwField.setAttribute("readonly", true);
+    pwConfirmField.setAttribute("readonly", true);
+    pw_msg.textContent = "";
+  } catch (err) {
+    alert("비밀번호 변경 실패: " + err.message);
+  }
+});
