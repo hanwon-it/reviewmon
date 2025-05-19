@@ -330,8 +330,7 @@ export async function update_favorite(req, res) {
 
     const result = await Favorite.findOneAndUpdate(
       { user_idx: user_idx },
-      { userid: userid },
-      { $set: update },
+      { $set: { userid: userid, ...update } },
       { new: true }
     );
     if (!result) {

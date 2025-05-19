@@ -26,6 +26,7 @@ const validate_signup = [
   ...validate_login,
   body("name").trim().notEmpty().withMessage("name을 입력"),
   body("email").trim().isEmail().withMessage("이메일 형식 확인"),
+  body("hp").matches(/^01[016789][0-9]{7,8}$/).withMessage("휴대폰 번호는 숫자만 입력하세요\n 예) 01012345678"),
   validate,
 ];
 
