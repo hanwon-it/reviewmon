@@ -10,8 +10,10 @@ function check_password_match() {
   if (pw && pw_confirm) {
     if (pw === pw_confirm) {
       pw_msg.textContent = "비밀번호가 일치합니다.";
+      pw_msg.style.color = "green";
     } else {
       pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
+      pw_msg.style.color = "red";
     }
   } else {
     pw_msg.textContent = "";
@@ -30,7 +32,8 @@ genre_checkboxes.forEach((checkbox) => {
     ).length;
     if (checked_count > 3) {
       checkbox.checked = false;
-      alert("장르는 최대 3개까지만 선택할 수 있습니다.");
+      // 커스텀 알림 모달로 대체
+      window.showCustomAlert("장르는 최대 3개까지만 선택할 수 있습니다.");
     }
   });
 });
@@ -91,7 +94,7 @@ signup_form.addEventListener("submit", async (e) => {
     "password",
     "password_confirm",
     "name",
-    "phone",
+    "hp",
     "nickname",
     "email",
   ];
@@ -115,18 +118,48 @@ signup_form.addEventListener("submit", async (e) => {
     return;
   }
 
+  // 배우/감독 입력값 → TMDB id+name 객체 배열로 변환
+  async function getPeopleArr(inputId) {
+    const names = document.getElementById(inputId).value
+      .split(",")
+      .map((v) => v.trim())
+      .filter((v) => v);
+    const arr = [];
+    for (const name of names) {
+      try {
+        const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+        const data = await res.json();
+        if (data.results && data.results.length > 0) {
+          // 동명이인 모두 저장
+          data.results.forEach(person => {
+            arr.push({ id: person.id, name: person.name });
+          });
+        } else {
+          arr.push({ id: null, name });
+        }
+      } catch {
+        arr.push({ id: null, name });
+      }
+    }
+    return arr;
+  }
+
+  // 배우/감독 동기적으로 TMDB id+name 변환
+  const actorArr = await getPeopleArr("actors");
+  const directorArr = await getPeopleArr("directors");
+
   const data = {
     userid: document.getElementById("userid").value.trim(),
     password: document.getElementById("password").value.trim(),
     name: document.getElementById("name").value.trim(),
-    hp: document.getElementById("phone").value.trim(),
+    hp: document.getElementById("hp").value.trim(),
     nickname: document.getElementById("nickname").value.trim(),
     email: document.getElementById("email").value.trim(),
     genre: Array.from(
       document.querySelectorAll('input[name="genre"]:checked')
     ).map((el) => el.value),
-    actor: document.getElementById("actors").value.trim(),
-    director: document.getElementById("directors").value.trim(),
+    actor: actorArr,
+    director: directorArr,
   };
   const res = await fetch("/auth/signup", {
     method: "POST",
@@ -143,10 +176,10 @@ signup_form.addEventListener("submit", async (e) => {
     const result = JSON.parse(resultText);
 
     if (res.status === 201) {
-      alert("회원가입이 완료되었습니다. 로그인해주세요.");
+      window.showCustomAlert("회원가입이 완료되었습니다. 로그인해주세요.");
       location.href = "/index.html";
     } else {
-      alert(result.message || "회원가입 실패");
+      window.showCustomAlert(result.message || "회원가입 실패");
     }
   } catch (err) {
     console.error("서버 응답 오류 (HTML일 수 있음):", resultText);
@@ -154,7 +187,7 @@ signup_form.addEventListener("submit", async (e) => {
   }
   if (res.status === 409) {
     const result = await res.json();
-    alert(result.message || "중복된 정보가 존재합니다.");
+    window.showCustomAlert(result.message || "중복된 정보가 존재합니다.");
     return;
   }
 });

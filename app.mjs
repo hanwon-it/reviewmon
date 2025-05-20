@@ -19,7 +19,6 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "html")));
 app.use("/css", express.static(path.join(__dirname, "css")));
 app.use("/js", express.static(path.join(__dirname, "js")));
-app.get("/api/recommendations/:userId", getRecommendations);
 app.use("/image", express.static(path.join(__dirname, "css/image")));
 
 // 기본 라우팅 - index.html 반환
@@ -42,3 +41,15 @@ connectDB()
     console.error("DB 연결 실패:", err);
   });
 // app.listen(config.host.port);
+
+export async function get_popular_movies(req, res) {
+  try {
+    const movies = await Movie.find({}).sort({ popularity: -1 }).limit(10);
+    console.log("인기영화 쿼리 결과:", movies);
+    res.json(movies);
+  } catch (error) {
+    console.error("인기 영화 조회 실패:", error);
+    res.status(500).json({ message: "서버 오류", error: error.toString() });
+  }
+}
+

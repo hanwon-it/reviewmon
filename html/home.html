@@ -14,7 +14,7 @@
     <!-- 헤더 -->
     <header class="header">
       <div class="header_inner">
-        <div class="logo">Review_mon</div>
+        <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
         <div class="search_box">
           <select class="search_category" id="search_category">
             <option value="movie">영화정보</option>
@@ -54,23 +54,23 @@
     <!-- 슬라이드 배너 영역 -->
     <div class="main-banner-slider">
       <div class="banner-track">
-        <a href="https://example.com/1" class="banner-link" target="_blank">
+        <a href="detailpage.html?movie_id=157336" class="banner-link" target="_blank">
           <img
-            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20150203_267%2F1422954366520nmAor_JPEG%2Fmovie_image.jpg"
+            src="../css/image/banner3.png"
             alt="배너1"
             class="banner-img"
           />
         </a>
-        <a href="https://example.com/2" class="banner-link" target="_blank">
+        <a href="detailpage.html?movie_id=1137179" class="banner-link" target="_blank">
           <img
-            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20190130_112%2F15488129298423hBCg_JPEG%2Fmovie_image.jpg"
+            src="../css/image/banner2.png"
             alt="배너2"
             class="banner-img"
           />
         </a>
-        <a href="https://example.com/3" class="banner-link" target="_blank">
+        <a href="detailpage.html?movie_id=59436" class="banner-link" target="_blank">
           <img
-            src="https://search.pstatic.net/common?quality=75&direct=true&src=https%3A%2F%2Fmovie-phinf.pstatic.net%2F20250331_6%2F1743387508742cqKdk_JPEG%2Fmovie_image.jpg"
+            src="../css/image/banner1.png"
             alt="배너3"
             class="banner-img"
           />
@@ -115,11 +115,11 @@
     </section>
 
     <!-- 광고 배너 -->
-    <!-- <section class="ad_banner">
-      <a href="https://example.com" target="_blank">
-        <img src="/img/ad_banner_sample.jpg" alt="광고 배너" class="ad_image" />
-      </a>
-    </section> -->
+    <a href="https://koreaitacademy.com/landing/ai_prompt.asp" target="_blank" style="display:block;">
+      <section class="ad_banner" style="cursor:pointer;">
+        <img src="https://koreaitacademy.com/2023/img/landing/ai_prompt_hero-tit.png" alt="광고 배너" class="ad_image" />
+      </section>
+    </a>
 
     <!-- 푸터 -->
     <footer class="footer">
@@ -156,7 +156,9 @@
         </div>
       </div>
     </div>
-
+    <script src="../js/recommend.js" type="module"></script>
+    <script src="../js/activate_search.js"></script>
+    <script src="../js/logout.js"></script>
     <script src="../js/home.js"></script>
   </body>
 </html>

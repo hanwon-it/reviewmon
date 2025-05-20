@@ -11,7 +11,7 @@
     <!-- 헤더 -->
     <header class="header">
       <div class="header_inner">
-        <div class="logo">Review_mon</div>
+        <img src="../css/image/logo.svg" alt="ReviewMon 로고" class="logo" />
         <div class="search_box">
           <select class="search_category" id="search_category">
             <option value="movie">영화정보</option>
@@ -21,6 +21,7 @@
           <input
             type="text"
             class="search_input"
+            id="search_input"
             placeholder="검색어를 입력하세요"
           />
           <button class="search_btn" id="search_btn" aria-label="검색">
@@ -41,11 +42,14 @@
           </button>
         </div>
         <div class="user_actions">
-          <button class="btn_mypage">마이페이지</button>
-          <button class="btn_logout">로그아웃</button>
+          <button class="btn btn_mypage">마이페이지</button>
+          <button class="btn btn_logout">로그아웃</button>
         </div>
       </div>
     </header>
+
+    <!-- 검색 결과 영역 추가 -->
+    <div id="search_grid"></div>
 
     <!-- 메인 컨텐츠 -->
     <main class="movie_detail">
@@ -76,10 +80,11 @@
           <button id="close_modal" class="modal_close">&times;</button>
           <form id="review_form">
             <h3>별점</h3>
-            <div class="star_rating">⭐⭐⭐⭐⭐</div>
-            <h3>코멘트</h3>
-            <textarea rows="4" placeholder="코멘트를 입력하세요..."></textarea>
-            <button type="submit" class="btn_submit">리뷰 등록</button>
+            <div class="star_rating" id="star_rating_input"></div>
+            <span id="star_rating_value">0.0</span>점 (5.0점 만점)
+            <h3>리뷰</h3>
+            <textarea rows="4" placeholder="코멘트를 입력하세요..." style="font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;"></textarea>
+            <button type="submit" class="btn btn_submit">리뷰 등록</button>
           </form>
         </div>
       </div>
@@ -88,7 +93,7 @@
       <section class="reviews_section">
         <div class="reviews_header">
           <h2>리뷰</h2>
-          <button class="btn_link">더보기</button>
+          <button class="btn btn_link">더보기</button>
         </div>
         <div class="review_cards">
           <div class="review_card">
@@ -145,6 +150,7 @@
       </div>
     </div>
 
+    <script src="../js/logout.js"></script>
     <script src="../js/detailpage.js" type="module"></script>
     <script src="../js/activate_search.js"></script>
   </body>

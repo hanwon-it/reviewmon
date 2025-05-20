@@ -22,6 +22,15 @@ export async function create_user(user) {
   return new User(user).save(); // 👉 전체 유저 문서 반환
 }
 
+// 아이디 찾기
+export async function find_email(email, name) {
+  return User.findOne({ email, name }).select("userid");
+}
+// 비번 찾기
+export async function find_pw(email, userid) {
+  return User.findOne({ email, userid });
+}
+
 // 아이디 찾기(중복방지)
 export async function find_by_userid(userid) {
   return User.findOne({ userid });
@@ -39,12 +48,26 @@ export async function find_by_sth(param1, param2) {
   return doc?.[param2];
 }
 
-// 비밀번호 찾기(email 사용?)
-export async function find_email(email) {
-  return User.findOne(email);
-}
-
 // 업데이트 수행
 export async function update_user_by_id(id, updates) {
   return User.updateOne({ _id: id }, { $set: updates });
+}
+
+// id로 유저 삭제
+export async function delete_user_by_id(id) {
+  return User.deleteOne({ _id: id });
+}
+
+// 닉네임 부분 일치로 유저 찾기 (DB의 nickname에서도 공백 제거)
+export async function find_by_nickname_regex(nickname) {
+  // MongoDB 4.4+에서 $replaceAll 사용 가능
+  return await User.find({
+    $expr: {
+      $regexMatch: {
+        input: { $replaceAll: { input: "$nickname", find: " ", replacement: "" } },
+        regex: nickname,
+        options: "i"
+      }
+    }
+  });
 }

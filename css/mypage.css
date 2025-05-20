@@ -1,57 +1,178 @@
-.my_page {
-  max-width: 600px;
-  margin: 40px auto; /* 위아래 40px, 가로 중앙 */
-  padding: 0 20px;
-}
-.profile_section > h1,
-.preferences_section > h1 {
-  color: var(--color-primary);
-  font-size: 1.8rem;
-  font-weight: bold;
-  text-align: left; /* center???left??? 선택장애와버림 */
+:root {
+  --color-bg: #121212;
+  --color-bg-secondary: #1e1e1e;
+  --color-primary: #a29bfe;
+  --color-primary-dark: #6c5ce7;
+  --color-text: #ffffff;
+  --color-text-sub: #bbb;
+  --color-border: #444;
+  --color-accent: #f1c40f;
+  --color-muted: #888;
 }
 
-/* 프로필·선호조사 필드 */
+body {
+  /* background: linear-gradient(135deg, #18122b 0%, #0a0714 100%); */
+  color: var(--color-text);
+  font-family: 'Pretendard', 'Noto Sans KR', Arial, sans-serif;
+  transition: background 0.3s, color 0.3s;
+}
+.my_page {
+  max-width: 700px;
+  margin: 48px auto 0 auto;
+  padding: 0 0 40px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+  align-items: stretch;
+}
+.profile_section, .preferences_section {
+  background: linear-gradient(135deg, #18122b 0%, #251a3a 100%);
+  border-radius: 18px;
+  box-shadow: 0 4px 24px #7c3aed22, 0 1.5px 8px #0002;
+  border: 1.5px solid var(--color-border);
+  padding: 36px 40px 28px 40px;
+  margin-bottom: 0;
+  transition: background 0.32s, box-shadow 0.28s, border 0.28s, transform 0.25s;
+  will-change: transform, box-shadow;
+  animation: cardFadeIn 0.7s cubic-bezier(.4,1.4,.6,1) 1;
+}
+@keyframes cardFadeIn {
+  0% { opacity: 0; transform: translateY(32px) scale(0.98); }
+  100% { opacity: 1; transform: none; }
+}
+.profile_section > h1, .preferences_section > h1 {
+  color: var(--color-primary);
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 18px;
+  letter-spacing: 0.01em;
+}
 .big_field {
   display: flex;
-  justify-content: flex-start;
+  flex-direction: row;
   gap: 32px;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
 }
 .big_field .field {
-  flex: 0 0 45%; /* flex-grow:0, flex-shrink:0, flex-basis:35% */
-  max-width: 90%; /* 혹은 flex-basis 대신 사용해도 무방 */
+  flex: 1 1 0;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-
 .field {
   display: flex;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 14px;
+  justify-content: space-between;
 }
 .field label {
-  width: 120px;
+  flex-shrink: 0;
+  width: 130px;
   margin-right: 8px;
+  color: var(--color-text-sub);
+  font-size: 1rem;
+  font-weight: 400;
+  transition: color 0.3s;
 }
 .field input {
-  flex: 0 0 58%;
-  max-width: 400px;
+  flex: 1 1 auto;
+  min-width: 0;
+  margin-right: 12px;
+  max-width: 320px;
   width: 100px;
   height: 36px;
   padding: 0 12px;
   border-radius: 10px;
+  background: rgba(60, 40, 100, 0.32);
+  color: var(--color-text);
+  font-size: 1rem;
+  font-weight: 500;
+  transition: box-shadow 0.18s, border 0.18s, background 0.3s, color 0.3s;
+  box-shadow: 0 2px 8px #7c3aed11;
+  outline: none;
+  border: 1.5px solid var(--color-border);
+}
+.field input:focus {
+  border: 1.5px solid var(--color-primary);
+  background: rgba(124, 58, 237, 0.18);
+  box-shadow: 0 4px 16px #a78bfa22;
+  color: var(--color-glow);
+}
+.field input[readonly] {
+  background: rgba(40, 30, 60, 0.18);
+  color: var(--color-muted);
   border: none;
+  font-weight: 500;
+  box-shadow: none;
+  outline: none;
+  padding-left: 0;
+}
+.field input::placeholder {
+  color: var(--color-text-sub);
+  opacity: 0.8;
 }
 .field button {
-  margin-left: 12px;
+  margin-left: 0;
   padding: 0 16px;
   height: 36px;
-
-  font-size: 0.9rem;
+  font-size: 0.95rem;
   border: none;
+  border-radius: 12px;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
+  box-shadow: 0 1px 4px #7c3aed22;
 }
-
-/* 회원탈퇴 버튼 별도 중앙 배치 */
+.field button:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 4px 16px #a78bfa33;
+}
+.myreview_section {
+  text-align: center;
+  margin: 0 0 0 0;
+  animation: cardFadeIn 0.8s cubic-bezier(.4,1.4,.6,1) 1;
+}
+.btn_myreview {
+  background: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 20px;
+  padding: 13px 36px;
+  font-size: 1.08rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 2px 12px #7c3aed22;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.15s, color 0.18s;
+  margin-bottom: 8px;
+  letter-spacing: 0.01em;
+  will-change: transform, box-shadow;
+}
+.btn_myreview:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 4px 16px #a78bfa33;
+}
+.my_page hr, .section_divider {
+  border: none;
+  border-top: 2.5px solid var(--color-border);
+  /* margin: 30px 0 30px 0; */
+  transition: border-color 0.3s;
+}
+.profile_edit_divider {
+  border: none;
+  border-top: 1.5px dashed var(--color-border);
+  margin: 18px 0 18px 0;
+  transition: border-color 0.3s;
+}
+.profile_edit_fields {
+  margin-top: 0;
+}
 .withdrawal_section {
   text-align: center;
   margin: 32px 0;
@@ -59,9 +180,66 @@
 .withdrawal_section button {
   padding: 10px 24px;
   border: none;
-
   font-size: 1rem;
+  border-radius: 16px;
+  background: var(--color-bg-secondary);
+  color: var(--color-muted);
+  font-weight: 600;
   cursor: pointer;
+  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
+  box-shadow: 0 1px 4px rgba(80,80,120,0.07);
+}
+.withdrawal_section button:hover {
+  background: var(--color-bg);
+  color: #d63031;
+  transform: translateY(-1px) scale(1.04);
+  box-shadow: 0 2px 8px rgba(80,80,120,0.13);
+}
+@media (max-width: 900px) {
+  .my_page {
+    max-width: 98vw;
+    padding: 0 2vw 40px 2vw;
+  }
+  .profile_section, .preferences_section {
+    padding: 24px 8vw 18px 8vw;
+  }
+}
+@media (max-width: 600px) {
+  .my_page {
+    max-width: 100vw;
+    padding: 0 0 40px 0;
+  }
+  .profile_section, .preferences_section {
+    padding: 18px 2vw 12px 2vw;
+    border-radius: 10px;
+  }
+  .field {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .field input {
+    margin-right: 12px;
+  }
+  .field label {
+    width: 90px;
+    font-size: 0.97rem;
+  }
+  .field input {
+    font-size: 0.97rem;
+    height: 32px;
+  }
+  .btn_myreview {
+    padding: 10px 10vw;
+    font-size: 1rem;
+  }
+  .big_field {
+    flex-direction: column;
+    gap: 8px;
+  }
+  .big_field .field {
+    width: 100%;
+  }
 }
 /* 선호장르 수정 모달 */
 .genre-toggle-wrap {
@@ -140,75 +318,13 @@
   cursor: pointer;
 }
 
-/* “예” 버튼 */
+/* "예" 버튼 */
 .btn-confirm {
   background-color: var(--color-primary);
   color: #fff;
 }
 
-/* “아니요” 버튼 */
-.btn-cancel {
-  background-color: var(--color-primary);
-  color: #fff;
-}
-
-/* === 모달 공통 오버레이 === */
-.modal {
-  display: none; /* 기본 숨김 */
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.6);
-  justify-content: center;
-  align-items: center;
-  z-index: 1000;
-}
-.modal.open {
-  display: flex; /* open 클래스 붙으면 중앙에 노출 */
-}
-
-/* === 모달 박스 === */
-.modal-content {
-  background: #f1f1f1;
-  padding: 24px;
-  border-radius: 12px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-}
-
-/* 안내 문구 */
-.modal-text {
-  margin-bottom: 20px;
-  line-height: 1.4;
-  color: #000;
-}
-
-/* 버튼 그룹 */
-.modal-actions {
-  display: flex;
-  gap: 16px;
-  justify-content: center;
-}
-
-.modal-actions button {
-  flex: 1;
-  padding: 10px 0;
-  border: none;
-  border-radius: 20px;
-  font-size: 16px;
-  cursor: pointer;
-}
-
-/* “예” 버튼 */
-.btn-confirm {
-  background-color: var(--color-primary);
-  color: #fff;
-}
-
-/* “아니요” 버튼 */
+/* "아니요" 버튼 */
 .btn-cancel {
   background-color: var(--color-primary);
   color: #fff;

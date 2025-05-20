@@ -2,10 +2,21 @@ import mongoose from "mongoose";
 
 const favorite_schema = new mongoose.Schema(
   {
-    userid: { type: String, require: true },
-    gerne: { type: String, require: true },
-    actor: { type: String, require: true },
-    director: { type: String, require: true },
+    user_idx: { type: String, required: true },
+    userid: { type: String },
+    genre: { type: [String], required: true },
+    actor: [
+      {
+        id: { type: Number, required: true },
+        name: { type: String, required: true }
+      }
+    ],
+    director: [
+      {
+        id: { type: Number, required: true },
+        name: { type: String, required: true }
+      }
+    ]
   },
   { versionKey: false }
 );

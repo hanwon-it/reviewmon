@@ -10,30 +10,14 @@ const secret_key = config.jwt.secret_key;
 // 1. 해당 nickname에 대한 리뷰를 가져오는 함수
 export async function get_reviews(req, res) {
   try {
-    const { nickname } = req.query; // 또는 req.params.nickname
+    const { nickname } = req.params;
 
     if (!nickname) {
       return res.status(400).json({ error: "nickname is required" });
     }
 
     const reviews = await Review.find({ nickname }).sort({ createdAt: -1 });
-
-    const user_map = {};
-    for (const review of reviews) {
-      const { user_idx } = review;
-      if (!user_map[user_idx]) {
-        user_map[user_idx] = {
-          user_idx,
-          nickname,
-          review_count: 0,
-          reviews: [],
-        };
-      }
-      user_map[user_idx].reviews.push(review);
-      user_map[user_idx].review_count++;
-    }
-
-    return res.json(Object.values(user_map));
+    return res.json(reviews);
   } catch (error) {
     console.error("Error getting reviews:", error);
     return res.status(500).json({ error: "Internal server error" });
@@ -41,12 +25,18 @@ export async function get_reviews(req, res) {
 }
 
 // 2. 해당 movie_id에 대한 리뷰를 가져오는 함수
-export async function get_movie_reviews(req, res, next) {
-  const movie_id = req.params;
-  const data = await (movie_id
-    ? review_repository.getAllByUserid(userid)
-    : review_repository.getAll());
-  res.status(200).json(data);
+export async function get_movie_reviews(req, res) {
+  try {
+    const { movie_id } = req.params;
+    if (!movie_id) {
+      return res.status(400).json({ message: "movie_id가 필요합니다." });
+    }
+    const reviews = await Review.find({ movie_id });
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("Error getting movie reviews:", error);
+    res.status(500).json({ message: "리뷰 조회 실패" });
+  }
 }
 
 // 3. 리뷰를 생성하는 함수
@@ -57,7 +47,7 @@ export async function create_review(req, res, next) {
 
     // 토큰 파싱
     const auth_header = req.headers.authorization;
-    const { user_idx } = await token_decoding(auth_header);
+    const user_idx = await token_decoding(auth_header);
 
     const nickname = await user_repository.find_by_sth(user_idx, "nickname");
     console.log(nickname);
@@ -84,15 +74,15 @@ export async function create_review(req, res, next) {
 // 4. 리뷰를 변경하는 함수
 export async function update_review(req, res, next) {
   try {
-    const { idx } = req.params;
+    const { review_id } = req.params;
     const { content, rating } = req.body;
 
     // 1. 토큰 파싱
     const auth_header = req.headers.authorization;
-    const { user_idx } = await token_decoding(auth_header);
+    const user_idx = await token_decoding(auth_header);
 
     // 2. 리뷰 존재 확인
-    const review = await Review.findById(idx);
+    const review = await Review.findById(review_id);
     if (!review) {
       return res.status(404).json({ message: "리뷰를 찾을 수 없습니다." });
     }
@@ -103,8 +93,8 @@ export async function update_review(req, res, next) {
     }
 
     // 4. 리뷰 내용 업데이트
-    review.content = content;
-    review.rating = rating;
+    if (content !== undefined) review.content = content;
+    if (rating !== undefined) review.rating = rating;
     const updated_review = await review.save();
 
     res
@@ -119,14 +109,12 @@ export async function update_review(req, res, next) {
 // 5. 리뷰를 삭제하는 함수
 export async function delete_review(req, res, next) {
   try {
-    const { idx } = req.params;
+    const { review_id } = req.params;
     const auth_header = req.headers.authorization;
-
-    // 1. 토큰 파싱
-    const { user_idx } = await token_decoding(auth_header);
+    const user_idx = await token_decoding(auth_header);
 
     // 2. 리뷰 존재 확인
-    const review = await Review.findById(idx);
+    const review = await Review.findById(review_id);
     if (!review) {
       return res.status(404).json({ message: "리뷰를 찾을 수 없습니다." });
     }
@@ -137,7 +125,7 @@ export async function delete_review(req, res, next) {
     }
 
     // 4. 삭제 수행
-    await Review.findByIdAndDelete(idx);
+    await Review.findByIdAndDelete(review_id);
     res.status(200).json({ message: "리뷰가 삭제되었습니다." });
   } catch (error) {
     console.error("리뷰 삭제 오류:", error);
@@ -153,9 +141,13 @@ export async function recommanded_reviews(req, res, next) {
 
 // 7. 리뷰를 timestamp 순으로 정렬하는 함수
 export async function latest_reviews(req, res, next) {
-  const { idx } = req.body;
-  // 각 idx에 해당하는 리뷰에 접근, 뽑아낸 리뷰들을 timestamp순 정렬해 json으로 idx[] 보내 주는 쿼리
-  res.status(200);
+  try {
+    const reviews = await Review.find({}).sort({ createdAt: -1 });
+    res.status(200).json(reviews);
+  } catch (error) {
+    console.error("리뷰 최신순 조회 오류:", error);
+    res.status(500).json({ message: "서버 오류" });
+  }
 }
 
 // 8. 리뷰를 rating 순으로 정렬하는 함수
@@ -250,4 +242,60 @@ export async function token_decoding(auth_header) {
   const decoded = jwt.verify(token, secret_key);
   const user_idx_from_token = decoded.id;
   return user_idx_from_token;
+}
+
+// 리뷰 좋아요 추가
+export async function like_review(req, res) {
+  try {
+    const { review_id } = req.params;
+    const auth_header = req.headers.authorization;
+    const user_idx = await token_decoding(auth_header);
+    const result = await review_repository.likeReview(user_idx, review_id);
+    // 최신 like_cnt 반환
+    const review = await Review.findById(review_id);
+    res.status(200).json({ status: result.status, like_cnt: review.like_cnt ?? 0 });
+  } catch (err) {
+    console.error('리뷰 좋아요 오류:', err);
+    res.status(500).json({ message: '좋아요 처리 실패' });
+  }
+}
+
+// 리뷰 좋아요 취소
+export async function unlike_review(req, res) {
+  try {
+    const { review_id } = req.params;
+    const auth_header = req.headers.authorization;
+    const user_idx = await token_decoding(auth_header);
+    const result = await review_repository.unlikeReview(user_idx, review_id);
+    // 최신 like_cnt 반환
+    const review = await Review.findById(review_id);
+    res.status(200).json({ status: result.status, like_cnt: review.like_cnt ?? 0 });
+  } catch (err) {
+    console.error('리뷰 좋아요 취소 오류:', err);
+    res.status(500).json({ message: '좋아요 취소 실패' });
+  }
+}
+
+// (추가) 내가 좋아요한 리뷰 id 리스트 반환
+export async function get_liked_review_ids(req, res) {
+  try {
+    const auth_header = req.headers.authorization;
+    const user_idx = await token_decoding(auth_header);
+    const liked = await review_repository.getLikedReviewIds(user_idx);
+    res.status(200).json(liked);
+  } catch (err) {
+    res.status(500).json({ message: "좋아요한 리뷰 조회 실패" });
+  }
+}
+
+export async function get_my_reviews(req, res) {
+  try {
+    const auth_header = req.headers.authorization;
+    const user_idx = await token_decoding(auth_header);
+    const reviews = await Review.find({ user_idx }).sort({ createdAt: -1 });
+    res.status(200).json(reviews);
+  } catch (err) {
+    console.error("내 리뷰 조회 실패:", err);
+    res.status(500).json({ message: "내 리뷰 조회 중 오류" });
+  }
 }
