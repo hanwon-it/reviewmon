@@ -89,6 +89,15 @@ const signup_form = document.querySelector(".signup_form");
 signup_form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
+  // 선호조사 필수값 체크
+  const genre = document.querySelector("input[name='genre']:checked");
+  const actor = document.querySelector("input[name='actor']:checked");
+  const director = document.querySelector("input[name='director']:checked");
+  if (!genre || !actor || !director) {
+    window.showCustomAlert("선호 장르, 배우, 감독을 모두 선택해주세요.");
+    return;
+  }
+
   const required_fields = [
     "userid",
     "password",

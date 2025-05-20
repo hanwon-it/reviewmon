@@ -32,7 +32,9 @@ export async function post_update(id, text) {
 
 // 리뷰 삭제
 export async function post_delete(id) {
+  await User.updateOne({ _id: user_id }, { $inc: { activity_point: -1 } });
   return Review.findByIdAndDelete(id);
+
 }
 
 // 리뷰 가져오기

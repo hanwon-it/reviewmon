@@ -146,16 +146,20 @@ document.addEventListener("DOMContentLoaded", () => {
     btn.addEventListener("click", () => {
       const field = btn.previousElementSibling;
 
-      // ✅ 이전 값 백업
-      const original_value = field.value;
-
       if (field.hasAttribute("readonly")) {
-        // 수정 모드 진입
+        field.dataset.original = field.value; // 진입 시점의 값을 data-original에 저장
         field.removeAttribute("readonly");
         field.focus();
         btn.textContent = "저장";
       } else {
         // 저장 요청
+        // 닉네임 필드일 때 빈값 방지
+        if (field.id === "nickname" && (!field.value || !field.value.trim())) {
+          window.showCustomAlert("닉네임은 필수 입력 사항입니다.");
+          field.value = field.dataset.original || "";
+          field.focus();
+          return;
+        }
         field.setAttribute("readonly", true);
         btn.textContent = "수정";
 
@@ -182,8 +186,8 @@ document.addEventListener("DOMContentLoaded", () => {
             window.showCustomAlert("수정에 성공했습니다.");
           })
           .catch((err) => {
-            // 실패 시 이전 값 복구
-            field.value = original_value;
+            // 실패 시 이전 값 복구 (data-original에서)
+            field.value = field.dataset.original || "";
             window.showCustomAlert("수정 실패: " + err.message);
           });
       }

@@ -359,23 +359,26 @@ export async function get_person_credits(req, res) {
     return res.status(400).json({ message: "person_id가 필요합니다." });
 
   try {
+    // 1. TMDB에서 출연/감독작 받아오기
     const url = `https://api.themoviedb.org/3/person/${person_id}/combined_credits?api_key=${api_key}&language=ko-KR`;
     const response = await fetch(url);
     const data = await response.json();
 
-    const works = data.cast
-      .filter((item) => item.poster_path)
-      .slice(0, 20)
-      .map((item) => ({
-        id: item.id,
-        title: item.title || item.name,
-        poster_path: item.poster_path,
-      }));
+    // 2. 출연/감독작 id 리스트 추출
+    const movieIds = [
+      ...(data.cast || []),
+      ...(data.crew || [])
+    ]
+      .filter(item => item.poster_path && item.id)
+      .map(item => item.id);
 
-    res.status(200).json(works);
+    // 3. DB에서 해당 영화만 조회
+    const moviesInDb = await Movie.find({ movie_id: { $in: movieIds } });
+
+    res.status(200).json(moviesInDb);
   } catch (err) {
     console.error("출연작 조회 실패:", err);
-    res.status(500).json({ message: "TMDB 요청 실패" });
+    res.status(500).json({ message: "TMDB/DB 요청 실패" });
   }
 }
 

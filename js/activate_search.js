@@ -22,6 +22,11 @@ document.addEventListener("DOMContentLoaded", () => {
         alert("검색어를 입력하세요.");
         return;
       }
+      if (keyword.length < 2) {
+        window.showCustomAlert("검색어는 최소 2글자 이상 입력해야 합니다.");
+        keyword_input.focus();
+        return;
+      }
       if (!["movie", "person", "user"].includes(category)) {
         category = "movie";
       }
@@ -30,6 +35,12 @@ document.addEventListener("DOMContentLoaded", () => {
     keyword_input.addEventListener("keydown", (e) => {
       if (e.key === "Enter") {
         e.preventDefault();
+        const keyword = keyword_input.value.trim();
+        if (keyword.length < 2) {
+          window.showCustomAlert("검색어는 최소 2글자 이상 입력해야 합니다.");
+          keyword_input.focus();
+          return;
+        }
         search_button.click();
       }
     });
@@ -107,7 +118,18 @@ window.showCustomAlert = function(message, onClose) {
   document.body.appendChild(modal);
   function closeModal() {
     modal.classList.add('hide');
-    setTimeout(() => { modal.remove(); if (onClose) onClose(); }, 200);
+    setTimeout(() => { 
+      modal.remove(); 
+      document.removeEventListener('keydown', handleEnterKey); // 엔터키 이벤트 해제
+      if (onClose) onClose(); 
+    }, 200);
   }
   modal.querySelector('.custom_alert_btn').onclick = closeModal;
+  // 엔터키로도 닫히게
+  function handleEnterKey(e) {
+    if (e.key === 'Enter') {
+      closeModal();
+    }
+  }
+  document.addEventListener('keydown', handleEnterKey);
 };

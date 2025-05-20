@@ -9,6 +9,7 @@ const user_schema = new mongoose.Schema(
     email: { type: String, required: true, unique: true },
     nickname: { type: String, required: true },
     hp: { type: String, required: true },
+    activity_point: { type: Number, default: 0 },
   },
   { versionKey: false, timestamps: true }
 );
