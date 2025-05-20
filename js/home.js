@@ -135,3 +135,10 @@ function setupCarousel(trackId, prevBtnId, nextBtnId, movies) {
     }
   });
 }
+
+// 페이지 진입 시 토큰 체크
+if (!localStorage.getItem('token')) {
+  window.showCustomAlert('로그인이 필요합니다.', function() {
+    window.location.href = '/index.html';
+  });
+}

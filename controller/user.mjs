@@ -89,9 +89,7 @@ export async function check_userid(req, res) {
 export async function login(req, res) {
   try {
     const { userid, password } = req.body;
-    console.log('[LOGIN] 입력값:', { userid, password });
     const user = await user_repository.find_by_userid(userid);
-    console.log('[LOGIN] DB에서 찾은 user:', user);
     if (!user) {
       console.log('[LOGIN] 존재하지 않는 아이디');
       return res.status(401).json({ message: "존재하지 않는 아이디입니다." });
