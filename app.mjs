@@ -19,7 +19,6 @@ const __dirname = path.dirname(__filename);
 app.use(express.static(path.join(__dirname, "html")));
 app.use("/css", express.static(path.join(__dirname, "css")));
 app.use("/js", express.static(path.join(__dirname, "js")));
-app.get("/api/recommendations/:userId", getRecommendations);
 app.use("/image", express.static(path.join(__dirname, "css/image")));
 
 // 기본 라우팅 - index.html 반환
@@ -53,3 +52,4 @@ export async function get_popular_movies(req, res) {
     res.status(500).json({ message: "서버 오류", error: error.toString() });
   }
 }
+

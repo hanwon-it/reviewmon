@@ -2,6 +2,11 @@
    signup.css - 회원가입 페이지 전용 스타일
 ============================================= */
 
+body {
+  background: linear-gradient(rgba(0,0,0,0.72), rgba(0,0,0,0.82)), url('../css/image/bg1.png') center/cover no-repeat fixed;
+  color: var(--color-text);
+}
+
 .signup_page {
   display: flex;
   align-items: center;

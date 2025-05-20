@@ -1,9 +1,3 @@
-//마이페이지 버튼 활성화
-const go_mypage = document.querySelector(".btn_mypage");
-go_mypage.addEventListener("click", function () {
-  window.location.href = "/mypage.html";
-});
-
 // 장르 value(숫자) → 한글명 매핑
 const GENRE_LABELS = {
   28: "액션",
@@ -32,7 +26,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token"); // 저장된 JWT 토큰 가져오기
 
   if (!token) {
-    alert("로그인이 필요합니다.");
+    window.showCustomAlert("로그인이 필요합니다.");
     window.location.href = "/login.html"; // 필요시 로그인 페이지로 이동
     return;
   }
@@ -85,10 +79,10 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
           const result = await res.json();
           if (!res.ok) throw new Error(result.message);
-          alert("선호 장르가 저장되었습니다.");
+          window.showCustomAlert("선호 장르가 저장되었습니다.");
           document.getElementById("genre_preferences_modal").classList.remove("open");
         } catch (err) {
-          alert("저장 실패: " + err.message);
+          window.showCustomAlert("저장 실패: " + err.message);
         }
       };
       // 배우/감독 입력만 활성화
@@ -126,9 +120,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           });
           const result = await res.json();
           if (!res.ok) throw new Error(result.message);
-          alert("저장되었습니다.");
+          window.showCustomAlert("저장되었습니다.");
         } catch (err) {
-          alert("저장 실패: " + err.message);
+          window.showCustomAlert("저장 실패: " + err.message);
         }
       }
       document.querySelectorAll(".btn_add").forEach((btn, idx) => {
@@ -140,7 +134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   } catch (err) {
     console.error("유저 정보 가져오기 실패:", err);
-    alert("유저 정보를 가져오지 못했습니다.");
+    window.showCustomAlert("유저 정보를 가져오지 못했습니다.");
   }
 });
 
@@ -185,12 +179,12 @@ document.addEventListener("DOMContentLoaded", () => {
             console.log("업데이트 성공:", data);
 
             // ✅ 성공 알림
-            alert("수정에 성공했습니다.");
+            window.showCustomAlert("수정에 성공했습니다.");
           })
           .catch((err) => {
             // 실패 시 이전 값 복구
             field.value = original_value;
-            alert("수정 실패: " + err.message);
+            window.showCustomAlert("수정 실패: " + err.message);
           });
       }
     });
@@ -214,28 +208,13 @@ document.querySelectorAll(".genre-toggle").forEach((button) => {
   button.addEventListener("click", () => {
     const selected = document.querySelectorAll(".genre-toggle.selected");
     if (!button.classList.contains("selected") && selected.length >= 3) {
-      alert("최대 3개까지 선택할 수 있습니다.");
+      // 커스텀 알림 모달로 대체
+      window.showCustomAlert("최대 3개까지 선택할 수 있습니다.");
       return;
     }
     button.classList.toggle("selected");
   });
 });
-
-// 약관 팝업 오픈/닫기 처리
-const termsOverlay = document.getElementById("terms_overlay");
-const termsTitle = document.getElementById("terms_title");
-
-document.getElementById("open_terms").onclick = () => {
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "이용약관";
-};
-document.getElementById("open_privacy").onclick = () => {
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "개인정보처리방침";
-};
-document.getElementById("terms_close").onclick = () => {
-  termsOverlay.style.display = "none";
-};
 
 document.addEventListener("DOMContentLoaded", () => {
   const btnWithdrawal = document.getElementById("btn_withdrawal");
@@ -268,14 +247,14 @@ document.addEventListener("DOMContentLoaded", () => {
         }
       });
       if (res.ok) {
-        alert("회원탈퇴가 완료되었습니다.");
+        window.showCustomAlert("회원탈퇴가 완료되었습니다.");
         window.location.href = "/"; // index 페이지로 이동
       } else {
         throw new Error(res.status);
       }
     } catch (err) {
       console.error("탈퇴 오류:", err);
-      alert("탈퇴 처리 중 오류가 발생했습니다.");
+      window.showCustomAlert("탈퇴 처리 중 오류가 발생했습니다.");
     }
   });
 });
@@ -328,9 +307,9 @@ function setupFavoriteEdit(fieldId, btnClass, key) {
         });
         const result = await res.json();
         if (!res.ok) throw new Error(result.message);
-        alert("수정에 성공했습니다.");
+        window.showCustomAlert("수정에 성공했습니다.");
       } catch (err) {
-        alert("수정 실패: " + err.message);
+        window.showCustomAlert("수정 실패: " + err.message);
       }
     }
   });
@@ -346,7 +325,7 @@ genreConfirmBtn.addEventListener("click", async () => {
   ).map((btn) => btn.dataset.genre);
 
   if (selectedGenres.length === 0) {
-    alert("최소 한 개 이상 선택해주세요.");
+    window.showCustomAlert("최소 한 개 이상 선택해주세요.");
     return;
   }
 
@@ -374,12 +353,12 @@ genreConfirmBtn.addEventListener("click", async () => {
     });
     const result = await res.json();
     if (!res.ok) throw new Error(result.message);
-    alert("선호 장르가 저장되었습니다.");
+    window.showCustomAlert("선호 장르가 저장되었습니다.");
     document.getElementById("genre_preferences_modal").classList.remove("open");
     // input에도 한글명으로 반영
     document.getElementById("genre_buttons").value = selectedGenres.map(v => GENRE_LABELS[v] || v).join(", ");
   } catch (err) {
-    alert("저장 실패: " + err.message);
+    window.showCustomAlert("저장 실패: " + err.message);
   }
 });
 
@@ -440,11 +419,11 @@ pwConfirmField.addEventListener("input", check_password_match);
 
 pwSaveBtn.addEventListener("click", async () => {
   if (!pwField.value || !pwConfirmField.value) {
-    alert("비밀번호를 모두 입력해주세요.");
+    window.showCustomAlert("비밀번호를 모두 입력해주세요.");
     return;
   }
   if (pwField.value !== pwConfirmField.value) {
-    alert("비밀번호가 일치하지 않습니다.");
+    window.showCustomAlert("비밀번호가 일치하지 않습니다.");
     return;
   }
   // PATCH 요청
@@ -459,7 +438,7 @@ pwSaveBtn.addEventListener("click", async () => {
     });
     const data = await res.json();
     if (!data.success) throw new Error(data.message);
-    alert("비밀번호가 성공적으로 변경되었습니다.");
+    window.showCustomAlert("비밀번호가 성공적으로 변경되었습니다.");
     // UI 원상복구
     pwField.style.display = "none";
     pwConfirmField.style.display = "none";
@@ -473,6 +452,6 @@ pwSaveBtn.addEventListener("click", async () => {
     pwConfirmField.setAttribute("readonly", true);
     pw_msg.textContent = "";
   } catch (err) {
-    alert("비밀번호 변경 실패: " + err.message);
+    window.showCustomAlert("비밀번호 변경 실패: " + err.message);
   }
 });

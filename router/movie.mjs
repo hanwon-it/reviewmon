@@ -8,7 +8,7 @@ const router = express.Router();
 router.get("/popular", movies_controller.get_popular_movies);
 
 // 추천 영화 정보
-router.get("/recommend", is_auth, movies_controller.getRecommendations);
+router.get("/recommend", is_auth, movies_controller.recommend_movies_by_user);
 
 // 배우/감독 api 호출
 router.get("/search_person", movies_controller.search_person);

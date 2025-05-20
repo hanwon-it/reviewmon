@@ -88,6 +88,7 @@
   align-items: center;
   gap: 1.1em;
   margin-bottom: 0.5em;
+  justify-content: space-between;
 }
 
 .review_movie_title {
@@ -154,6 +155,14 @@
   text-align: right;
   margin-bottom: 0.2rem;
   align-self: flex-end;
+}
+
+.review_date_top {
+  color: var(--color-muted);
+  font-size: 0.93rem;
+  text-align: right;
+  margin-left: auto;
+  font-weight: 400;
 }
 
 .review_buttons {

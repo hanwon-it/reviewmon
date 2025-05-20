@@ -1,9 +1,3 @@
-//마이페이지 버튼 활성화
-const go_mypage = document.querySelector(".btn_mypage");
-go_mypage.addEventListener("click", function () {
-  window.location.href = "/mypage.html";
-});
-
 //마이 리뷰 페이지 활성화
 document.addEventListener("DOMContentLoaded", () => {
   const review_list = document.getElementById("review_list");
@@ -31,11 +25,12 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // 삭제 처리
     if (e.target.classList.contains("btn_delete")) {
-      if (confirm("리뷰를 삭제하시겠습니까?")) {
+      window.showCustomConfirm("리뷰를 삭제하시겠습니까?", async () => {
         await delete_review(review_id);
         const token = localStorage.getItem("token");
         load_my_reviews(document.getElementById("sort_option").value, token);
-      }
+      });
+      return;
     }
 
     // 수정 처리
@@ -162,6 +157,7 @@ function render_my_reviews(reviews) {
     card.innerHTML = `
       <div class="review_card_top">
         ${(review.movie_title && review.movie_title !== 'undefined') ? `<span class="review_movie_title">[${review.movie_title}]</span>` : ''}
+        <span class="review_date_top">${dateStr ? `${dateStr}` : ''}</span>
       </div>
       <div class="review_rating_row" style="display:flex;align-items:center;gap:6px;margin-bottom:2px;">
         <span class="review_stars">${starsSVG}</span>
@@ -170,7 +166,6 @@ function render_my_reviews(reviews) {
       <div class="review_content" data-type="text">${review.content}</div>
       <div class="review_bottom_row">
         <span class="like_count">❤️ ${review.like_cnt || 0}</span>
-        <span class="review_date">${dateStr ? `작성일: ${dateStr}` : ''}</span>
         <div class="review_buttons">
           <button class="btn_edit">수정</button>
           <button class="btn_delete">삭제</button>
@@ -195,10 +190,11 @@ async function patch_review(idx, new_content, new_rating) {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
-    alert("리뷰가 수정되었습니다.");
+    // 커스텀 알림 모달로 대체
+    window.showCustomAlert("리뷰가 수정되었습니다.");
   } catch (err) {
     console.error(err);
-    alert("리뷰 수정 실패");
+    window.showCustomAlert("리뷰 수정 실패");
   }
 }
 
@@ -211,10 +207,11 @@ async function delete_review(idx) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
-    alert("리뷰가 삭제되었습니다.");
+    // 커스텀 알림 모달로 대체
+    window.showCustomAlert("리뷰가 삭제되었습니다.");
   } catch (err) {
     console.error(err);
-    alert("리뷰 삭제 실패");
+    window.showCustomAlert("리뷰 삭제 실패");
   }
 }
 
@@ -234,24 +231,6 @@ async function fetch_nickname(token) {
     return null;
   }
 }
-
-// 약관 팝업 오픈/닫기 처리
-const termsOverlay = document.getElementById("terms_overlay");
-const termsTitle = document.getElementById("terms_title");
-
-document.getElementById("open_terms").onclick = (e) => {
-  e.preventDefault();
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "이용약관";
-};
-document.getElementById("open_privacy").onclick = (e) => {
-  e.preventDefault();
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "개인정보처리방침";
-};
-document.getElementById("terms_close").onclick = () => {
-  termsOverlay.style.display = "none";
-};
 
 function getStarSVG(rating) {
   let stars = "";
@@ -292,3 +271,29 @@ function updateEditableStars(rowElem, rating) {
     }
   });
 }
+
+// 커스텀 confirm 모달 함수 추가
+window.showCustomConfirm = function(message, onConfirm) {
+  const old = document.getElementById('custom_alert_modal');
+  if (old) old.remove();
+  const modal = document.createElement('div');
+  modal.id = 'custom_alert_modal';
+  modal.innerHTML = `
+    <div class="custom_alert_overlay"></div>
+    <div class="custom_alert_box">
+      <div class="custom_alert_message">${message}</div>
+      <div style="display:flex;gap:1.2em;justify-content:center;">
+        <button class="custom_alert_btn confirm">확인</button>
+        <button class="custom_alert_btn cancel">취소</button>
+      </div>
+    </div>
+  `;
+  document.body.appendChild(modal);
+  modal.querySelector('.confirm').onclick = function() {
+    modal.remove();
+    if (onConfirm) onConfirm();
+  };
+  modal.querySelector('.cancel').onclick = function() {
+    modal.remove();
+  };
+};

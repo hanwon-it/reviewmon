@@ -20,7 +20,9 @@ export const Review = mongoose.model("review", review_schema);
 
 // 새로운 리뷰 등록
 export async function post_review(review_info) {
+  await User.updateOne({ _id: user_id }, { $inc: { activity_point: 1 } });
   return new Review(review_info).save().then((data) => data.id);
+  
 }
 
 // 리뷰 수정
@@ -59,7 +61,7 @@ const like_schema = new mongoose.Schema({
   created_at: { type: Date, default: Date.now },
 });
 
-const Like = mongoose.model("like", like_schema);
+export const Like = mongoose.model("like", like_schema);
 
 //// 좋아요 추가
 export async function likeReview(user_id, review_id) {
@@ -74,12 +76,16 @@ export async function likeReview(user_id, review_id) {
   await Review.updateOne({ _id: review_id }, { $inc: { like_cnt: 1 } });
 
   return { status: "liked" };
+  
+  //4. 4. 유저 스키마 - activity_point 1 상승
+  await User.updateOne({ _id: user_id }, { $inc: { activity_point: 1 } });
 }
 
 // 좋아요 취소
 export async function unlikeReview(user_id, review_id) {
   await Like.deleteOne({ user_id, review_id });
   await Review.updateOne({ _id: review_id }, { $inc: { like_cnt: -1 } });
+  await User.updateOne({ _id: user_id }, { $inc: { activity_point: -1 } });
 
   return { status: "unliked" };
 }

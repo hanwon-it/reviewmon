@@ -1,9 +1,3 @@
-//마이페이지 버튼 활성화
-const go_mypage = document.querySelector(".btn_mypage");
-go_mypage.addEventListener("click", function () {
-  window.location.href = "/mypage.html";
-});
-
 // 모달 닫기 버튼 연결
 const modalCloseBtn = document.getElementById("modal_close");
 if (modalCloseBtn) {
@@ -213,22 +207,4 @@ document.addEventListener("DOMContentLoaded", () => {
       doSearch(searchCategory.value, query);
     });
   }
-
-
-  // 약관/개인정보 팝업
-  const termsOverlay = document.getElementById("terms_overlay");
-  const termsTitle = document.getElementById("terms_title");
-  document.getElementById("open_terms").onclick = (e) => {
-    e.preventDefault();
-    termsOverlay.style.display = "flex";
-    termsTitle.textContent = "이용약관";
-  };
-  document.getElementById("open_privacy").onclick = (e) => {
-    e.preventDefault();
-    termsOverlay.style.display = "flex";
-    termsTitle.textContent = "개인정보처리방침";
-  };
-  document.getElementById("terms_close").onclick = () => {
-    termsOverlay.style.display = "none";
-  };
 });

@@ -32,7 +32,8 @@ genre_checkboxes.forEach((checkbox) => {
     ).length;
     if (checked_count > 3) {
       checkbox.checked = false;
-      alert("장르는 최대 3개까지만 선택할 수 있습니다.");
+      // 커스텀 알림 모달로 대체
+      window.showCustomAlert("장르는 최대 3개까지만 선택할 수 있습니다.");
     }
   });
 });
@@ -175,10 +176,10 @@ signup_form.addEventListener("submit", async (e) => {
     const result = JSON.parse(resultText);
 
     if (res.status === 201) {
-      alert("회원가입이 완료되었습니다. 로그인해주세요.");
+      window.showCustomAlert("회원가입이 완료되었습니다. 로그인해주세요.");
       location.href = "/index.html";
     } else {
-      alert(result.message || "회원가입 실패");
+      window.showCustomAlert(result.message || "회원가입 실패");
     }
   } catch (err) {
     console.error("서버 응답 오류 (HTML일 수 있음):", resultText);
@@ -186,7 +187,7 @@ signup_form.addEventListener("submit", async (e) => {
   }
   if (res.status === 409) {
     const result = await res.json();
-    alert(result.message || "중복된 정보가 존재합니다.");
+    window.showCustomAlert(result.message || "중복된 정보가 존재합니다.");
     return;
   }
 });

@@ -1,9 +1,3 @@
-//마이페이지 버튼 활성화
-const go_mypage = document.querySelector(".btn_mypage");
-go_mypage.addEventListener("click", function () {
-  window.location.href = "/mypage.html";
-});
-
 // 영화 상세 페이지 활성화
 document.addEventListener("DOMContentLoaded", async () => {
   const movie_id = get_movie_id_from_url();
@@ -105,15 +99,16 @@ document.addEventListener("DOMContentLoaded", async () => {
     const comment = review_form.querySelector("textarea").value.trim();
     const token = localStorage.getItem("token");
     if (!comment) {
-      alert("코멘트를 입력해주세요.");
+      // 커스텀 알림 모달로 대체
+      window.showCustomAlert("코멘트를 입력해주세요.");
       return;
     }
     if (!token) {
-      alert("로그인 후 이용해주세요.");
+      window.showCustomAlert("로그인 후 이용해주세요.");
       return;
     }
     if (!currentRating || currentRating < 0.5) {
-      alert("별점을 0.5점 이상 선택해주세요.");
+      window.showCustomAlert("별점을 0.5점 이상 선택해주세요.");
       return;
     }
     try {
@@ -130,16 +125,16 @@ document.addEventListener("DOMContentLoaded", async () => {
       });
       const data = await res.json();
       if (res.status === 201) {
-        alert("리뷰가 등록되었습니다.");
+        window.showCustomAlert("리뷰가 등록되었습니다.");
         review_form.reset();
         review_modal.classList.remove("show");
         await load_movie_details(movie_id);
       } else {
-        alert(data.message || "리뷰 등록에 실패했습니다.");
+        window.showCustomAlert(data.message || "리뷰 등록에 실패했습니다.");
       }
     } catch (err) {
       console.error(err);
-      alert("서버 오류로 리뷰 등록에 실패했습니다.");
+      window.showCustomAlert("서버 오류로 리뷰 등록에 실패했습니다.");
     }
   });
 
@@ -343,21 +338,3 @@ function get_movie_id_from_url() {
   const params = new URLSearchParams(window.location.search);
   return params.get("movie_id");
 }
-
-const termsOverlay = document.getElementById("terms_overlay");
-const termsTitle = document.getElementById("terms_title");
-
-document.getElementById("open_terms").onclick = (e) => {
-  e.preventDefault();
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "이용약관";
-};
-document.getElementById("open_privacy").onclick = (e) => {
-  e.preventDefault();
-  termsOverlay.style.display = "flex";
-  termsTitle.textContent = "개인정보처리방침";
-};
-
-document.getElementById("terms_close").onclick = () => {
-  document.getElementById("terms_overlay").style.display = "none";
-};

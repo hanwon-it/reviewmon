@@ -326,7 +326,7 @@ export async function update_favorite(req, res) {
     const update = {};
     if (req.body.actor) update.actor = req.body.actor;
     if (req.body.director) update.director = req.body.director;
-    if (req.body.genre || req.body.gerne) update.gerne = req.body.genre || req.body.gerne;
+    if (req.body.genre || req.body.gerne) update.genre = req.body.genre || req.body.gerne;
 
     const result = await Favorite.findOneAndUpdate(
       { user_idx: user_idx },
