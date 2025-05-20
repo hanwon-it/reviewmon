@@ -1,6 +1,9 @@
 /* =============================================
    detailpage.css - 영화 상세 페이지 전용 스타일
 ============================================= */
+body {
+  /* background: linear-gradient(135deg, #18122b 0%, #251a3a 100%); */
+}
 .movie_detail {
   max-width: 1000px;
   margin: 0 auto;
@@ -50,19 +53,22 @@
   color: var(--color-text-sub);
   white-space: pre-line;
 }
-.btn {
-  display: block;
-  margin: 0 auto 2rem;
+.btn,
+.btn_submit,
+.btn_link {
   background-color: var(--color-primary);
   color: white;
-  padding: 0.6rem 1.2rem;
   border: none;
   border-radius: 10px;
   font-size: 1rem;
   cursor: pointer;
+  transition: background 0.18s;
 }
-.btn:hover {
+.btn:hover,
+.btn_submit:hover,
+.btn_link:hover {
   background-color: var(--color-primary-dark);
+  color: #fff;
 }
 /* 모달 */
 .modal {
@@ -126,41 +132,64 @@ textarea {
   background-color: var(--color-primary-dark);
 }
 .btn_link {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 32px;
-  padding: 0 12px;
+  padding: 0 16px;
   font-size: 16px;
   line-height: 1;
   background-color: var(--color-primary);
   color: #fff;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
+  box-shadow: 0 2px 8px #7c3aed22;
+  transition: background 0.18s, box-shadow 0.18s, transform 0.22s, color 0.18s;
+}
+.btn_link:hover {
+  background-color: var(--color-primary-dark);
+  box-shadow: 0 8px 24px #a78bfa55;
+  color: var(--color-glow);
+  transform: translateY(-3px) scale(1.06);
 }
 /* 리뷰 카드 */
 .reviews_section {
   margin-top: 3rem;
+  position: relative;
 }
 .reviews_header {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
+  justify-content: flex-start;
+  align-items: flex-end;
+  position: relative;
+  margin-bottom: 1.2rem;
+  min-height: 40px;
+}
+.reviews_header h2 {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  margin: 0;
 }
 .review_cards {
   display: flex;
-  flex-direction: row;
+  flex-wrap: wrap;
   gap: 1.5rem;
-  justify-content: center;
+  justify-content: flex-start;
   align-items: stretch;
 }
 .review_card {
-  background-color: #eee;
-  padding: 1rem 1.2rem;
-  border-radius: 12px;
-  color: #222;
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.08);
+  background: linear-gradient(135deg, #18122b 0%, #251a3a 100%);
+  padding: 1.2rem 1.5rem;
+  border-radius: 16px;
+  color: var(--color-text);
+  box-shadow: 0 4px 24px #7c3aed22, 0 1.5px 8px #0002;
+  border: 1.5px solid var(--color-border);
   flex: 1 1 0;
   min-width: 0;
   max-width: 320px;
@@ -168,24 +197,45 @@ textarea {
   flex-direction: column;
   align-items: flex-start;
   position: relative;
+  transition: box-shadow 0.32s, border 0.28s, background 0.32s, color 0.28s,
+    transform 0.32s;
+}
+.review_card:hover {
+  box-shadow: 0 8px 32px #a78bfa33, 0 2px 8px #7c3aed33;
+  border: 1.5px solid var(--color-primary);
+  background: linear-gradient(135deg, #251a3a 0%, #18122b 100%);
+  color: var(--color-glow);
+  transform: translateY(-4px) scale(1.03);
 }
 .review_author {
   font-weight: bold;
   margin-bottom: 0.4rem;
+  color: var(--color-glow);
+  font-size: 1.08rem;
+  letter-spacing: 0.01em;
 }
 .review_rating {
-  color: gold;
-  font-size: 1.1rem;
+  color: #ffd700;
+  font-size: 1.13rem;
   margin-bottom: 0.5rem;
+  letter-spacing: 0.03em;
 }
 .review_content {
-  font-size: 0.95rem;
-  line-height: 1.5;
-  margin-bottom: 0.5rem;
+  font-size: 1.01rem;
+  line-height: 1.6;
+  margin-bottom: 0.7rem;
+  color: var(--color-text-sub);
+  word-break: break-word;
 }
 .like_count {
-  font-size: 0.9rem;
-  color: #555;
+  font-size: 0.98rem;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-top: 0.2rem;
+  align-self: flex-start;
+  display: flex;
+  align-items: center;
+  gap: 0.3em;
 }
 .review_nickname_link {
   color: inherit;
@@ -198,8 +248,8 @@ textarea {
   text-decoration: none;
 }
 .review_card .review_date {
-  font-size: 0.82rem;
-  color: #888;
+  font-size: 0.85rem;
+  color: var(--color-muted);
   position: absolute;
   right: 1.2rem;
   bottom: 1.1rem;
@@ -299,4 +349,17 @@ textarea {
   margin: 1.5rem 0 0 auto;
   float: none;
   text-align: right;
+}
+
+@media (max-width: 900px) {
+  .review_cards {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .btn_link {
+    top: 8px;
+    right: 8px;
+    font-size: 15px;
+    padding: 0 10px;
+  }
 }

@@ -60,7 +60,8 @@
 
 .search_category_title {
   font-size: 1.2rem;
-  color: var(--color-primary-dark, #6c5ce7);
+  color: var(--color-glow, #a78bfa);
+  font-weight: 700;
   margin: 2.2rem 0;
   text-align: left;
   padding-left: 18.5rem;
@@ -71,22 +72,36 @@
   grid-template-columns: repeat(5, 1fr);
   gap: 1.5em;
   justify-items: center;
+  justify-content: center;
   max-width: 950px;
   margin-left: auto;
   margin-right: auto;
+  margin-top: 2.5rem;
+  margin-bottom: 2.5rem;
   padding-left: 1rem;
   padding-right: 1rem;
 }
 
 .search_card {
   width: 180px;
-  background: var(--color-bg-secondary);
-  border-radius: 12px;
-  box-shadow: 0 2px 8px rgba(80, 80, 120, 0.1);
-  padding: 1em;
+  background: linear-gradient(135deg, #18122b 0%, #251a3a 100%);
+  border-radius: 16px;
+  box-shadow: 0 4px 24px #7c3aed22, 0 1.5px 8px #0002;
+  border: 1.5px solid var(--color-border);
+  padding: 1.2em 1.2em 1.1em 1.2em;
   display: flex;
   flex-direction: column;
   align-items: center;
+  color: var(--color-text);
+  transition: box-shadow 0.32s, border 0.28s, background 0.32s, color 0.28s,
+    transform 0.32s;
+}
+.search_card:hover {
+  box-shadow: 0 8px 32px #a78bfa33, 0 2px 8px #7c3aed33;
+  border: 1.5px solid var(--color-primary);
+  background: linear-gradient(135deg, #251a3a 0%, #18122b 100%);
+  color: var(--color-glow);
+  transform: translateY(-4px) scale(1.03);
 }
 
 .search_poster {
@@ -139,22 +154,25 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: var(--color-bg-secondary);
-  border-radius: 14px;
+  background: linear-gradient(135deg, #18122b 0%, #251a3a 100%);
+  border-radius: 16px;
   padding: 1.2rem 1.1rem 1.2rem 1.1rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 24px #7c3aed22, 0 1.5px 8px #0002;
   border: 1.5px solid var(--color-border);
   color: var(--color-text);
-  transition: box-shadow 0.18s, border 0.18s, background 0.3s, color 0.3s;
+  transition: box-shadow 0.32s, border 0.28s, background 0.32s, color 0.28s,
+    transform 0.32s;
   justify-content: center;
   margin-bottom: 0.5rem;
   margin-left: 0.5rem;
   margin-right: 0.5rem;
 }
 .user_card:hover {
-  box-shadow: 0 6px 24px rgba(162, 155, 254, 0.13);
+  box-shadow: 0 8px 32px #a78bfa33, 0 2px 8px #7c3aed33;
   border: 1.5px solid var(--color-primary);
-  background: var(--color-bg);
+  background: linear-gradient(135deg, #251a3a 0%, #18122b 100%);
+  color: var(--color-glow);
+  transform: translateY(-4px) scale(1.03);
 }
 .user_profile_img {
   width: 64px;
@@ -219,9 +237,10 @@
   box-sizing: border-box;
 }
 .profile_card {
-  background: var(--color-bg-secondary, #222);
+  background: linear-gradient(135deg, #18122b 0%, #251a3a 100%);
   border-radius: 16px;
-  box-shadow: 0 2px 8px rgba(80, 80, 120, 0.1);
+  box-shadow: 0 4px 24px #7c3aed22, 0 1.5px 8px #0002;
+  border: 1.5px solid var(--color-border);
   padding: 1.3em 1.7em 1.1em 1.7em;
   display: flex;
   flex-direction: column;
@@ -232,14 +251,17 @@
   width: 100%;
   box-sizing: border-box;
   gap: 0.7em;
-  border: 1.5px solid var(--color-border, #444);
-  transition: box-shadow 0.2s, border 0.2s;
+  color: var(--color-text);
+  transition: box-shadow 0.32s, border 0.28s, background 0.32s, color 0.28s,
+    transform 0.32s;
   position: relative;
 }
 .profile_card:hover {
-  box-shadow: 0 8px 32px rgba(120, 120, 200, 0.18),
-    0 2px 8px rgba(0, 0, 0, 0.12);
-  border: 1.5px solid var(--color-primary, #6c5ce7);
+  box-shadow: 0 8px 32px #a78bfa33, 0 2px 8px #7c3aed33;
+  border: 1.5px solid var(--color-primary);
+  background: linear-gradient(135deg, #251a3a 0%, #18122b 100%);
+  color: var(--color-glow);
+  transform: translateY(-4px) scale(1.03);
 }
 .profile_title {
   font-size: 1.1rem;
@@ -297,4 +319,26 @@
   margin-right: auto;
   padding-left: 1rem;
   padding-right: 1rem;
+}
+
+body {
+  /* background: linear-gradient(135deg, #18122b 0%, #251a3a 100%); */
+  /* background-color: #222; */
+  /* background-color: #333; */
+}
+
+.modal_content button,
+#user_review_modal button {
+  background-color: var(--color-primary);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 0.6rem 1.2rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+.modal_content button:hover,
+#user_review_modal button:hover {
+  background-color: var(--color-primary-dark);
 }

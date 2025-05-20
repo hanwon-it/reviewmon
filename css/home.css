@@ -7,7 +7,7 @@
   position: relative;
   overflow: hidden;
   box-shadow: 0 4px 24px rgba(0, 0, 0, 0.15);
-  background: #222;
+  /* background: #222; */
   display: flex;
   align-items: center;
   justify-content: center;
@@ -33,37 +33,7 @@
   object-fit: cover;
   display: block;
   position: relative;
-  top: 10px;
-}
-
-.banner-arrow {
-  position: absolute;
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-
-  background: rgba(0, 0, 0, 0.4);
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 48px;
-  height: 48px;
-  font-size: 2rem;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-}
-
-.banner-arrow.left {
-  left: 24px;
-}
-.banner-arrow.right {
-  right: 24px;
-}
-.banner-arrow:hover {
-  background-color: rgba(255, 255, 255, 0.7); /* 호버 시 밝게 */
+  /* top: 10px; */
 }
 
 .banner-indicators {
@@ -243,8 +213,8 @@
 #nextBtn2 {
   width: 40px;
   height: 40px;
-  background-color: rgba(255, 255, 255, 0.4);
-  color: #222;
+  background-color: var(--color-primary);
+  color: #fff;
   border: none;
   border-radius: 50%;
   font-size: 1.5rem;
@@ -271,7 +241,8 @@
 #nextBtn:hover,
 #prevBtn2:hover,
 #nextBtn2:hover {
-  background-color: rgba(255, 255, 255, 0.8);
+  background-color: var(--color-primary-dark);
+  color: #fff;
   transform: translateY(-50%) scale(1.1);
 }
 

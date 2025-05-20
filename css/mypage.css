@@ -11,7 +11,7 @@
 }
 
 body {
-  background: var(--color-bg);
+  /* background: linear-gradient(135deg, #18122b 0%, #0a0714 100%); */
   color: var(--color-text);
   font-family: "Pretendard", "Noto Sans KR", Arial, sans-serif;
   transition: background 0.3s, color 0.3s;
@@ -27,12 +27,13 @@ body {
 }
 .profile_section,
 .preferences_section {
-  background: var(--color-bg-secondary);
+  background: linear-gradient(135deg, #18122b 0%, #251a3a 100%);
   border-radius: 18px;
-  box-shadow: 0 2px 16px rgba(80, 80, 120, 0.1);
+  box-shadow: 0 4px 24px #7c3aed22, 0 1.5px 8px #0002;
+  border: 1.5px solid var(--color-border);
   padding: 36px 40px 28px 40px;
   margin-bottom: 0;
-  transition: background 0.3s, box-shadow 0.3s, transform 0.25s;
+  transition: background 0.32s, box-shadow 0.28s, border 0.28s, transform 0.25s;
   will-change: transform, box-shadow;
   animation: cardFadeIn 0.7s cubic-bezier(0.4, 1.4, 0.6, 1) 1;
 }
@@ -91,17 +92,23 @@ body {
   height: 36px;
   padding: 0 12px;
   border-radius: 10px;
-  border: 1.5px solid var(--color-border);
-  background: var(--color-bg);
+  background: rgba(60, 40, 100, 0.32);
   color: var(--color-text);
   font-size: 1rem;
   font-weight: 500;
   transition: box-shadow 0.18s, border 0.18s, background 0.3s, color 0.3s;
-  box-shadow: none;
+  box-shadow: 0 2px 8px #7c3aed11;
   outline: none;
+  border: 1.5px solid var(--color-border);
+}
+.field input:focus {
+  border: 1.5px solid var(--color-primary);
+  background: rgba(124, 58, 237, 0.18);
+  box-shadow: 0 4px 16px #a78bfa22;
+  color: var(--color-glow);
 }
 .field input[readonly] {
-  background: var(--color-bg-secondary);
+  background: rgba(40, 30, 60, 0.18);
   color: var(--color-muted);
   border: none;
   font-weight: 500;
@@ -109,10 +116,9 @@ body {
   outline: none;
   padding-left: 0;
 }
-.field input:focus {
-  border: 1.5px solid var(--color-primary);
-  background: var(--color-bg-secondary);
-  box-shadow: 0 2px 8px rgba(162, 155, 254, 0.1);
+.field input::placeholder {
+  color: var(--color-text-sub);
+  opacity: 0.8;
 }
 .field button {
   margin-left: 0;
@@ -126,13 +132,13 @@ body {
   font-weight: 600;
   cursor: pointer;
   transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
-  box-shadow: 0 1px 4px rgba(80, 80, 120, 0.07);
+  box-shadow: 0 1px 4px #7c3aed22;
 }
 .field button:hover {
   background: var(--color-primary-dark);
-  color: var(--color-accent);
-  transform: translateY(-1px) scale(1.04);
-  box-shadow: 0 2px 8px rgba(80, 80, 120, 0.13);
+  color: #fff;
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 4px 16px #a78bfa33;
 }
 .myreview_section {
   text-align: center;
@@ -148,16 +154,17 @@ body {
   font-size: 1.08rem;
   font-weight: 700;
   cursor: pointer;
-  box-shadow: 0 2px 12px rgba(80, 80, 120, 0.1);
-  transition: background 0.2s, transform 0.1s, box-shadow 0.15s;
+  box-shadow: 0 2px 12px #7c3aed22;
+  transition: background 0.2s, transform 0.1s, box-shadow 0.15s, color 0.18s;
   margin-bottom: 8px;
   letter-spacing: 0.01em;
   will-change: transform, box-shadow;
 }
 .btn_myreview:hover {
-  transition: background 0.18s, color 0.18s, box-shadow 0.18s, transform 0.15s;
-  transform: translateY(-2px) scale(1.03);
-  box-shadow: 0 4px 16px rgba(80, 80, 120, 0.13);
+  background: var(--color-primary-dark);
+  color: #fff;
+  transform: translateY(-2px) scale(1.06);
+  box-shadow: 0 4px 16px #a78bfa33;
 }
 .my_page hr,
 .section_divider {

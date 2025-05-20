@@ -223,97 +223,139 @@ export async function movie_info(req, res) {
 }
 
 // ✅ 영화 추천 로직 (좋아하는 배우/감독 출연/연출작 기반)
+
 export async function getRecommendations(req, res) {
   try {
     const user_idx = req.id;
     if (!user_idx) return res.status(401).json({ message: "로그인 필요" });
+
+    const review_count = await Review.countDocuments({ user_idx });
+    if (review_count >= 15) {
+      // 3.5점 이상 준 영화 목록
+      const good_reviews = await Review.find({
+        user_idx,
+        rating: { $gte: 3.5 },
+      }).select("movie_id");
+      const reviewed_ids = good_reviews.map((r) => r.movie_id);
+
+      // 해당 영화의 배우 목록으로 actor_list 생성
+      const actor_set = new Set();
+      const reviewed_movies = await Movie.find(
+        { movie_id: { $in: reviewed_ids } },
+        { "cast.name": 1 }
+      );
+      reviewed_movies.forEach((m) => {
+        (m.cast || []).forEach((c) => {
+          if (c.name) actor_set.add(c.name);
+        });
+      });
+      const actor_list = Array.from(actor_set);
+
+      // 배우 매칭 기반 추천
+      const recommendations = await Movie.aggregate([
+        {
+          $match: {
+            movie_id: { $nin: reviewed_ids },
+            "cast.name": { $in: actor_list },
+            popularity: { $gte: 20 }, // 최소 인기 필터
+          },
+        },
+        {
+          $addFields: {
+            actor_match: {
+              $size: { $setIntersection: ["$cast.name", actor_list] },
+            },
+          },
+        },
+        {
+          $match: { actor_match: { $gt: 0 } },
+        },
+        {
+          $sort: { actor_match: -1, popularity: -1 },
+        },
+        {
+          $project: {
+            _id: 0,
+            movie_id: 1,
+            title: 1,
+            poster_path: 1,
+            overview: 1,
+            popularity: 1,
+            release_date: 1,
+            actor_match: 1,
+          },
+        },
+      ]);
+
+      return res.status(200).json(recommendations);
+    }
 
     const { Favorite } = await import("../data/favorite.mjs");
     const TMDB_API_KEY = config.tmdb.api_key;
     const favorite = await Favorite.findOne({ user_idx });
     if (!favorite) return res.status(200).json([]);
 
-    const genreIds = (favorite.gerne || []).filter(Boolean).map(Number);
+    const genreIds = (favorite.genre || []).filter(Boolean).map(Number);
     const actorIds = (favorite.actor || [])
       .map((a) => String(a.id))
       .filter(Boolean);
     const directorIds = (favorite.director || [])
       .map((d) => String(d.id))
       .filter(Boolean);
-    const allPersonIds = [...new Set([...actorIds, ...directorIds])];
-    if (allPersonIds.length === 0) return res.status(200).json([]);
 
-    // 1. 배우/감독별 출연/연출작 병렬 fetch
-    const creditsList = await Promise.all(
-      allPersonIds.map(async (id) => {
-        try {
-          const url = `https://api.themoviedb.org/3/person/${id}/combined_credits?api_key=${TMDB_API_KEY}&language=ko-KR`;
-          const res = await fetch(url);
-          return await res.json();
-        } catch (err) {
-          return { cast: [], crew: [] };
-        }
-      })
-    );
-
-    // 2. 영화 합집합(중복 제거)
-    const movieMap = new Map();
-    for (const credits of creditsList) {
-      for (const item of [...(credits.cast || []), ...(credits.crew || [])]) {
-        // 포스터, 한글 제목 있는 영화만
-        if (
-          !movieMap.has(item.id) &&
-          item.poster_path &&
-          item.title &&
-          /[가-힣]/.test(item.title)
-        ) {
-          movieMap.set(item.id, item);
-        }
-      }
+    const candidates = [];
+    for (const gid of genreIds) {
+      const res_g = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_genres=${gid}`
+      );
+      const data_g = await res_g.json();
+      candidates.push(...data_g.results);
     }
-    let movies = Array.from(movieMap.values());
-    if (movies.length === 0) return res.status(200).json([]);
+    for (const aid of actorIds) {
+      const res_a = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_cast=${aid}`
+      );
+      const data_a = await res_a.json();
+      candidates.push(...data_a.results);
+    }
+    for (const did of directorIds) {
+      const res_d = await fetch(
+        `https://api.themoviedb.org/3/discover/movie?api_key=${TMDB_API_KEY}&with_crew=${did}`
+      );
+      const data_d = await res_d.json();
+      candidates.push(...data_d.results);
+    }
 
-    // 3. 장르 일치 개수로 점수 부여
-    const scoredMovies = movies.map((m) => {
-      const genreMatch = (m.genre_ids || []).filter((id) =>
-        genreIds.includes(id)
-      ).length;
-      // 배우/감독 일치 여부(내가 좋아하는 인물과 실제 출연/연출 인물 id 비교)
-      let actorMatch = 0,
-        directorMatch = 0;
-      if (actorIds.length && m.cast && Array.isArray(m.cast)) {
-        actorMatch = m.cast.filter((c) =>
-          actorIds.includes(String(c.id))
-        ).length;
-      }
-      if (directorIds.length && m.crew && Array.isArray(m.crew)) {
-        directorMatch = m.crew.filter(
-          (c) => c.job === "Director" && directorIds.includes(String(c.id))
-        ).length;
-      }
-      // 점수: 배우*100 + 감독*10 + 장르*1
-      const score = actorMatch * 100 + directorMatch * 10 + genreMatch * 1;
-      return { ...m, genreMatch, actorMatch, directorMatch, score };
-    });
+    const unique_map = new Map();
+    candidates.forEach((m) => unique_map.set(m.id, m));
+    const unique_list = Array.from(unique_map.values());
 
-    // 4. 점수순/인기순 정렬 후 20개 반환
-    scoredMovies.sort(
-      (a, b) => b.score - a.score || b.popularity - a.popularity
-    );
-    const topMovies = scoredMovies.slice(0, 20);
+    const scored_movies = unique_list
+      .map((m) => {
+        let score = 0;
+        (m.genre_ids || []).forEach((id) => {
+          if (genreIds.includes(id)) score++;
+        });
+        (m.cast || []).forEach((c) => {
+          if (actorIds.includes(String(c.id))) score++;
+        });
+        (m.crew || []).forEach((c) => {
+          if (directorIds.includes(String(c.id))) score++;
+        });
+        return { ...m, score };
+      })
+      .sort((a, b) => b.score - a.score || b.popularity - a.popularity);
 
-    // 5. 필요한 필드만 반환
-    const result = topMovies.map((m) => ({
-      movie_id: m.id,
-      title: m.title,
-      poster_path: m.poster_path,
-      overview: m.overview,
-      popularity: m.popularity,
-      release_date: m.release_date,
+    const result_list = scored_movies.slice(0, 20).map((item) => ({
+      movie_id: item.id,
+      title: item.title,
+      poster_path: item.poster_path,
+      overview: item.overview,
+      popularity: item.popularity,
+      release_date: item.release_date,
     }));
 
-    res.json(result);
+    return res.json(result_list);
   } catch (err) {
     console.error("🎯 추천 영화 오류:", err);
     res.status(500).json({ message: "추천 영화 불러오기 실패" });
