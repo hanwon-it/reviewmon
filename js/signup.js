@@ -176,8 +176,9 @@ signup_form.addEventListener("submit", async (e) => {
     const result = JSON.parse(resultText);
 
     if (res.status === 201) {
-      window.showCustomAlert("회원가입이 완료되었습니다. 로그인해주세요.");
-      location.href = "/index.html";
+      window.showCustomAlert("회원가입이 완료되었습니다. 로그인해주세요.", function() {
+        location.href = "/index.html";
+      });
     } else {
       window.showCustomAlert(result.message || "회원가입 실패");
     }

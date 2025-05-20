@@ -1,15 +1,16 @@
 import mongoose from "mongoose";
 import { use_virtual_id } from "../db/database.mjs";
+import { User } from "./user.mjs";
 
 const review_schema = new mongoose.Schema(
   {
-    content: { type: String, require: true },
-    rating: { type: Number, require: true },
-    nickname: { type: String, require: true },
-    movie_title: { type: String, require: true },
-    movie_id: { type: Number, require: true },
-    like_cnt: { type: Number, require: true },
-    user_idx: { type: String, require: true },
+    content: { type: String, required: true },
+    rating: { type: Number, required: true },
+    nickname: { type: String, required: true },
+    movie_title: { type: String, required: true },
+    movie_id: { type: Number, required: true },
+    like_cnt: { type: Number, required: true },
+    user_idx: { type: String, required: true },
   },
   { versionKey: false, timestamps: true }
 );
@@ -20,9 +21,8 @@ export const Review = mongoose.model("review", review_schema);
 
 // 새로운 리뷰 등록
 export async function post_review(review_info) {
-  await User.updateOne({ _id: user_id }, { $inc: { activity_point: 1 } });
+  await User.updateOne({ _id: review_info.user_idx }, { $inc: { activity_point: 1 } });
   return new Review(review_info).save().then((data) => data.id);
-  
 }
 
 // 리뷰 수정
@@ -75,10 +75,10 @@ export async function likeReview(user_id, review_id) {
   // 3. 리뷰 좋아요 수 업데이트 (like_cnt로 통일)
   await Review.updateOne({ _id: review_id }, { $inc: { like_cnt: 1 } });
 
-  return { status: "liked" };
-  
-  //4. 4. 유저 스키마 - activity_point 1 상승
+  // 4. 유저 스키마 - activity_point 1 상승
   await User.updateOne({ _id: user_id }, { $inc: { activity_point: 1 } });
+
+  return { status: "liked" };
 }
 
 // 좋아요 취소
