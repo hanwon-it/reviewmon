@@ -22,10 +22,7 @@ router.delete("/:review_id", is_auth, review_controller.delete_review);
 router.get("/user/:nickname", is_auth, review_controller.get_reviews);
 // 유저별 좋아요한 리뷰 id 리스트 (로그인 필요)
 router.get("/user/me/review-likes", is_auth, review_controller.get_liked_review_ids);
-// 리뷰 정렬
-router.get("/recommend", review_controller.recommanded_reviews);
-router.get("/latest", review_controller.latest_reviews);
-router.get("/rate/:updown", review_controller.rating_reviews);
+
 // 리뷰 좋아요/좋아요 취소
 router.post('/:review_id/like', is_auth, review_controller.like_review);
 router.delete('/:review_id/like', is_auth, review_controller.unlike_review);

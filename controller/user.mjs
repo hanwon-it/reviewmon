@@ -5,20 +5,60 @@ import { config } from "../config.mjs";
 import { Favorite } from "../data/favorite.mjs";
 import { validationResult } from "express-validator";
 import nodemailer from "nodemailer";
-
+import { User } from "../data/user.mjs";
 
 const secret_key = config.jwt.secret_key;
 const bcrypt_salt_rounds = config.bcrypt.salt_rounds;
 const jwt_expires_in_days = config.jwt.expires_in_sec;
 
-async function create_jwt_token(id) {
-  return jwt.sign({ id }, secret_key, { expiresIn: jwt_expires_in_days });
+// 파일 상단에 추가
+const rateLimitMap = new Map();
+
+// 유틸 함수: IP 추출
+function getClientIp(req) {
+  return (
+    req.headers["x-forwarded-for"]?.split(",")[0] ||
+    req.connection.remoteAddress
+  );
+}
+
+// 하루 기준 타임스탬프 초기화
+function resetDailyCounts() {
+  const now = Date.now();
+  for (const [ip, info] of rateLimitMap.entries()) {
+    if (now - info.firstRequestTime > 24 * 60 * 60 * 1000) {
+      rateLimitMap.delete(ip);
+    }
+  }
+}
+
+// 주기적으로 리셋 (하루 1회 정도)
+setInterval(resetDailyCounts, 60 * 60 * 1000); // 1시간마다 체크
+
+function create_exp_token(id) {
+  return jwt.sign({ id, is_temp_pw: true }, secret_key, { expiresIn: "6h" });
+}
+
+function create_jwt_token(id) {
+  return jwt.sign({ id, is_temp_pw: false }, secret_key, {
+    expiresIn: jwt_expires_in_days,
+  });
 }
 
 // 회원가입
 export async function signup(req, res) {
   try {
-    const { userid, password, name, email, nickname, hp, genre, actor, director } = req.body;
+    const {
+      userid,
+      password,
+      name,
+      email,
+      nickname,
+      hp,
+      genre,
+      actor,
+      director,
+    } = req.body;
     console.log("[회원가입 요청]", req.body);
 
     const found_user = await user_repository.find_by_userid(userid);
@@ -85,32 +125,6 @@ export async function check_userid(req, res) {
   }
 }
 
-// ✅ 로그인
-export async function login(req, res) {
-  try {
-    const { userid, password } = req.body;
-    const user = await user_repository.find_by_userid(userid);
-    if (!user) {
-      console.log('[LOGIN] 존재하지 않는 아이디');
-      return res.status(401).json({ message: "존재하지 않는 아이디입니다." });
-    }
-    const is_valid_password = await bcrypt.compare(password, user.password);
-    console.log('[LOGIN] 비밀번호 일치 여부:', is_valid_password);
-    if (!is_valid_password) {
-      console.log('[LOGIN] 비밀번호 불일치');
-      return res
-        .status(401)
-        .json({ message: "아이디 또는 비밀번호가 틀립니다." });
-    }
-    const token = await create_jwt_token(user._id.toString());
-    console.log('[LOGIN] JWT 토큰 생성:', token);
-    res.status(200).json({ token: token, userid: user.userid });
-  } catch (err) {
-    console.error("[LOGIN] 로그인 오류:", err);
-    res.status(500).json({ message: "로그인 처리 중 서버 오류" });
-  }
-}
-
 // 사용자 조회
 export async function my_info(req, res) {
   try {
@@ -136,24 +150,81 @@ export async function my_info(req, res) {
     res.status(500).json({ message: "서버 오류" });
   }
 }
-// 로그아웃 기능
 
-// 내 회원 정보 가져오기  이 부분 왜 있는지 모르겠음 지금까진(광주)
-export async function logout(req, res, next) {
-  const { userid, token } = req.body;
-  //const data = await user_repository.userCheck(userid);
-  //user 테이블 내 모든 값 json + review 기준 timestamp 가장 최신순 3개 json
-  const user_and_review = await user_repository.load_mypage(userid);
-  if (user && token !== null) {
-    //req.session.destroy(() => {
-    res.status(200).json(user_and_review);
-    //});
-  } else {
-    res.status(404).json({
-      message: `현재 로그인 돼 있지 않습니다.`,
-    });
+// ✅ 로그인
+export async function login(req, res) {
+  try {
+    const { userid, password } = req.body;
+    const user = await user_repository.find_by_userid(userid);
+    if (!user) {
+      console.log("[LOGIN] 존재하지 않는 아이디");
+      return res.status(401).json({ message: "존재하지 않는 아이디입니다." });
+    }
+    const is_valid_password = await bcrypt.compare(password, user.password);
+    console.log("[LOGIN] 비밀번호 일치 여부:", is_valid_password);
+    if (!is_valid_password) {
+      console.log("[LOGIN] 비밀번호 불일치");
+      return res
+        .status(401)
+        .json({ message: "아이디 또는 비밀번호가 틀립니다." });
+    }
+
+    const is_temp_pw = user.is_temp_pw; // 임시비번인지 구분 방법: is_temp_pw가 true일 시
+    console.log(`임시 비번 여부: ${is_temp_pw}`);
+
+    if (is_temp_pw === true) {
+      const token_exp = create_exp_token(user._id.toString());
+      console.log(`[LOGIN] EXP 토큰 생성: ${token_exp}`);
+      res.status(200).json({ token_exp: token_exp, userid: user.userid });
+    } else {
+      const token = create_jwt_token(user._id.toString());
+      console.log(`[LOGIN] JWT 토큰 생성: ${token}`);
+      res.status(200).json({ token: token, userid: user.userid });
+    }
+  } catch (err) {
+    console.error("[LOGIN] 로그인 오류:", err);
+    res.status(500).json({ message: "로그인 처리 중 서버 오류" });
   }
 }
+
+export async function token_decoding(auth_header) {
+  //const auth_header = req.headers.authorization;
+  if (!auth_header || !auth_header.startsWith("Bearer ")) {
+    return res.status(401).json({ message: "토큰 없음 또는 잘못된 형식" });
+  }
+
+  const token = auth_header.split(" ")[1];
+  const decoded = jwt.verify(token, secret_key);
+  const user_idx_from_token = decoded.id;
+  return user_idx_from_token;
+}
+
+// 임시 로그인 유저 비번 변경 함수
+export async function must_change_pw(req, res, next) {
+  const { password } = req.body;
+  const auth_header = req.headers.authorization;
+  const user_idx = await token_decoding(auth_header);
+
+  const hashed = await bcrypt.hash(password, config.bcrypt.salt_rounds);
+  await user_repository.update_user_by_id(user_idx, {
+    password: hashed,
+  });
+  await user_repository.update_user_by_id(user_idx, {
+    is_temp_pw: false,
+  });
+  // 🔐 정상 로그인용 토큰 새로 발급
+  const token = create_jwt_token(user_idx);
+
+  // ✅ 변경 성공: 새 토큰과 함께 응답
+  return res.status(200).json({
+    success: true,
+    token,
+    userid: User.userid,
+    message: "비밀번호가 성공적으로 변경되었습니다.",
+  });
+}
+
+
 
 //이메일로 아이디 찾기
 export async function find_id_by_email(req, res) {
@@ -169,15 +240,43 @@ export async function find_id_by_email(req, res) {
     res.status(500).json({ message: "서버 오류" });
   }
 }
-// 이메일로 비번 찾기
-// 예외처리가 너무 많긴 한데 비번 잠김 사고(비번만 바뀌고 메일 안 감)를 막기 위해 끼워 둔 게 좀 있음.
+
+// 이메일로 비번 찾기 (1일 3회 제한 체크 on)
 export async function find_pw_by_email(req, res) {
   try {
-    const { email, userid } = req.body;
-    const user = await user_repository.find_pw(email, userid);
-    if (!user) {
-      return res.status(404).json({ message: "일치하는 사용자가 없습니다." });
+    const ip = getClientIp(req);
+    const now = Date.now();
+
+    // IP 제한 검사
+    const info = rateLimitMap.get(ip);
+    if (info) {
+      if (now - info.firstRequestTime < 24 * 60 * 60 * 1000) {
+        if (info.count >= 10) {
+          return res.status(429).json({
+            success: false,
+            message: "해당 IP에서의 요청 횟수가 하루 15회를 초과했습니다.",
+          });
+        } else {
+          info.count++;
+        }
+      } else {
+        // 하루 지났으면 초기화
+        rateLimitMap.set(ip, { count: 1, firstRequestTime: now });
+      }
+    } else {
+      rateLimitMap.set(ip, { count: 1, firstRequestTime: now });
     }
+    const { email, userid } = req.body;
+    const result = await user_repository.atomic_temp_pw_request_check(
+      email,
+      userid
+    );
+    if (!result.success) {
+      return res.status(result.status).json({ message: result.message });
+    }
+
+    const user = result.user;
+
     const random_pw = generate_password(8);
     console.log(`8자리 새 비번 생성: ${random_pw}`);
     const hashed_pw = await bcrypt.hash(random_pw, config.bcrypt.salt_rounds);
@@ -195,13 +294,19 @@ export async function find_pw_by_email(req, res) {
         message: "이메일 전송 실패, 비밀번호는 변경되지 않았습니다.",
       });
     }
+    // 이메일 전송 성공 후 비번 갱신 시도.
     await user_repository.update_user_by_id(user._id, {
       password: hashed_pw,
     });
     console.log(`비번 갱신 성공: ${hashed_pw}`);
+    // 임시 비번 여부 확인 필드 is_temp_pw를 true로 수정.
+    const temp_pw_request_count = user.temp_pw_request_count + 1;
+    await user_repository.update_user_by_id(user._id, {
+      is_temp_pw: true,
+    });
     res.status(200).json({
       success: true,
-      message: "임시 비밀번호가 이메일로 전송되었습니다.",
+      message: `임시 비밀번호가 이메일로 전송되었습니다.(임시 비밀번호는 하루 최대 3회까지 요청 가능합니다. [${temp_pw_request_count}/3]`
     });
   } catch (err) {
     console.error("비밀번호 찾기 오류:", err);
@@ -238,7 +343,7 @@ export async function find_pw_by_email(req, res) {
         },
       });
       const mailOptions = {
-        from: `"Support" <${config.email.user}>`,
+        from: `"Review_Mon" <${config.email.user}>`,
         to: to_email,
         subject: "임시 비밀번호 안내",
         text: `임시 비밀번호는: ${temp_pw}\n로그인 후 비밀번호를 변경해주세요.`,
@@ -301,7 +406,9 @@ export async function input_favorite(req, res) {
     // 이미 있으면 중복 입력 방지
     const exists = await Favorite.findOne({ user_idx });
     if (exists) {
-      return res.status(400).json({ message: "이미 선호조사 정보가 존재합니다." });
+      return res
+        .status(400)
+        .json({ message: "이미 선호조사 정보가 존재합니다." });
     }
     const favorite = await Favorite.create({
       user_idx,
@@ -316,7 +423,7 @@ export async function input_favorite(req, res) {
   }
 }
 
-// 내 취향 정보 수정 
+// 내 취향 정보 수정
 export async function update_favorite(req, res) {
   try {
     const user_idx = req.id; // 토큰에서 추출
@@ -324,7 +431,8 @@ export async function update_favorite(req, res) {
     const update = {};
     if (req.body.actor) update.actor = req.body.actor;
     if (req.body.director) update.director = req.body.director;
-    if (req.body.genre || req.body.gerne) update.genre = req.body.genre || req.body.gerne;
+    if (req.body.genre || req.body.gerne)
+      update.genre = req.body.genre || req.body.gerne;
 
     const result = await Favorite.findOneAndUpdate(
       { user_idx: user_idx },
@@ -355,14 +463,16 @@ export async function search_auth(req, res) {
     const users = await user_repository.find_by_nickname_regex(nickname);
     console.log("DB에서 찾은 유저:", users);
     if (!users || users.length === 0) {
-      return res.status(404).json({ message: "해당 닉네임의 유저가 없습니다." });
+      return res
+        .status(404)
+        .json({ message: "해당 닉네임의 유저가 없습니다." });
     }
     // 최소 정보만 반환
-    const result = users.map(u => ({
+    const result = users.map((u) => ({
       user_idx: u._id,
       nickname: u.nickname,
       profile_image_url: u.profile_image_url || null,
-      userid: u.userid
+      userid: u.userid,
     }));
     res.status(200).json(result);
   } catch (err) {

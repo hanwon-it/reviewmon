@@ -24,21 +24,64 @@ document.addEventListener("DOMContentLoaded", async () => {
   const view_email = document.getElementById("email");
 
   const token = localStorage.getItem("token"); // 저장된 JWT 토큰 가져오기
+  const token_exp = localStorage.getItem("token_exp"); // 저장된 EXP 토큰 가져오기
+
+  console.log(`토큰: ${token}`);
+  console.log(`임시 토큰: ${token_exp}`);
+
+  // 예: mypage에서 검색창이나 버튼을 disable
+  if (token_exp !== null && token === null) {
+    console.warn("임시 비번 상태에서는 마이페이지 일부 기능 제한");
+
+    // 검색창 비활성화
+    document.querySelector("#search_input").disabled = true;
+    document.querySelector("#search_btn").disabled = true;
+    document.querySelector("#search_category").disabled = true;
+
+    // 필요시 스타일 회색으로
+    document.querySelector(".search_box").style.opacity = 0.5;
+
+    // 또는 안내 문구 출력
+    const warning = document.createElement("div");
+    warning.textContent =
+      "⚠️ 임시 비밀번호 상태에서는 검색을 사용할 수 없습니다.";
+    warning.style.color = "orange";
+    warning.style.fontSize = "0.9rem";
+    warning.style.marginTop = "0.5rem";
+    document.querySelector(".search_box").appendChild(warning);
+  }
 
   if (!token) {
-    window.showCustomAlert("로그인이 필요합니다.");
-    window.location.href = "/login.html"; // 필요시 로그인 페이지로 이동
-    return;
+    if (!token_exp) {
+      window.showCustomAlert("로그인이 필요합니다.");
+      window.location.href = "/login.html"; // 필요시 로그인 페이지로 이동
+      return;
+    }
   }
 
   try {
-    const res = await fetch("/auth/me", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "application/json",
-      },
-    });
+    let res = null;
+    if (token_exp !== null) {
+      console.log("👉 임시 토큰으로 요청 중...");
+      res = await fetch("/auth/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token_exp}`,
+          "Content-Type": "application/json",
+        },
+      });
+    } else if (token !== null) {
+      console.log("👉 일반 토큰으로 요청 중...");
+      res = await fetch("/auth/me", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+    }
+
+    if (!res) throw new Error("fetch 요청이 실행되지 않았습니다.");
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
@@ -56,17 +99,31 @@ document.addEventListener("DOMContentLoaded", async () => {
     // 선호조사 정보 표시
     if (data.favorite) {
       // genre: value(숫자) 배열 → 한글명으로 변환해서 표시
-      const genreArr = (data.favorite.genre || []);
-      document.getElementById("genre_buttons").value = genreArr.map(v => GENRE_LABELS[v] || v).join(", ");
-      document.getElementById("fav_actor").value = (data.favorite.actor || []).map(a => a.name).join(", ");
-      document.getElementById("fav_director").value = (data.favorite.director || []).map(d => d.name).join(", ");
+      const genreArr = data.favorite.genre || [];
+      document.getElementById("genre_buttons").value = genreArr
+        .map((v) => GENRE_LABELS[v] || v)
+        .join(", ");
+      document.getElementById("fav_actor").value = (data.favorite.actor || [])
+        .map((a) => a.name)
+        .join(", ");
+      document.getElementById("fav_director").value = (
+        data.favorite.director || []
+      )
+        .map((d) => d.name)
+        .join(", ");
     } else {
       // 선호조사 정보가 없을 때: 장르 input은 readonly 유지, 저장 버튼 클릭 시 모달 오픈
       document.getElementById("genre_buttons").setAttribute("readonly", true);
       document.querySelector(".btn_prefs_edit").textContent = "선택";
       document.querySelector(".btn_prefs_edit").onclick = async () => {
-        document.getElementById("genre_preferences_modal").classList.add("open");
-        const genreVal = document.getElementById("genre_buttons").value.split(",").map(v => v.trim()).filter(v => v);
+        document
+          .getElementById("genre_preferences_modal")
+          .classList.add("open");
+        const genreVal = document
+          .getElementById("genre_buttons")
+          .value.split(",")
+          .map((v) => v.trim())
+          .filter((v) => v);
         try {
           const method = data.favorite ? "PATCH" : "POST";
           const res = await fetch("/auth/favorite", {
@@ -80,7 +137,9 @@ document.addEventListener("DOMContentLoaded", async () => {
           const result = await res.json();
           if (!res.ok) throw new Error(result.message);
           window.showCustomAlert("선호 장르가 저장되었습니다.");
-          document.getElementById("genre_preferences_modal").classList.remove("open");
+          document
+            .getElementById("genre_preferences_modal")
+            .classList.remove("open");
         } catch (err) {
           window.showCustomAlert("저장 실패: " + err.message);
         }
@@ -88,17 +147,25 @@ document.addEventListener("DOMContentLoaded", async () => {
       // 배우/감독 입력만 활성화
       document.getElementById("fav_actor").removeAttribute("readonly");
       document.getElementById("fav_director").removeAttribute("readonly");
-      document.querySelectorAll(".btn_add").forEach(btn => btn.textContent = "저장");
+      document
+        .querySelectorAll(".btn_add")
+        .forEach((btn) => (btn.textContent = "저장"));
       // 배우/감독 저장 버튼
       async function savePeople(inputId, key) {
-        const names = document.getElementById(inputId).value.split(",").map(v => v.trim()).filter(v => v);
+        const names = document
+          .getElementById(inputId)
+          .value.split(",")
+          .map((v) => v.trim())
+          .filter((v) => v);
         const arr = [];
         for (const name of names) {
           try {
-            const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+            const res = await fetch(
+              `/movie/search_person?query=${encodeURIComponent(name)}`
+            );
             const data = await res.json();
             if (data.results && data.results.length > 0) {
-              data.results.forEach(person => {
+              data.results.forEach((person) => {
                 arr.push({ id: person.id, name: person.name });
               });
             } else {
@@ -145,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
   edit_buttons.forEach((btn) => {
     btn.addEventListener("click", () => {
       const field = btn.previousElementSibling;
-
+      const token = localStorage.getItem("token");
       if (field.hasAttribute("readonly")) {
         field.dataset.original = field.value; // 진입 시점의 값을 data-original에 저장
         field.removeAttribute("readonly");
@@ -169,11 +236,12 @@ document.addEventListener("DOMContentLoaded", () => {
         if (field_id === "hp") {
           patchBody = { hp: updated_value };
         }
+
         fetch("/auth/me", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(patchBody),
         })
@@ -247,8 +315,8 @@ document.addEventListener("DOMContentLoaded", () => {
       const res = await fetch("/auth/me", {
         method: "DELETE",
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("token")}`
-        }
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
       });
       if (res.ok) {
         window.showCustomAlert("회원탈퇴가 완료되었습니다.");
@@ -284,11 +352,13 @@ function setupFavoriteEdit(fieldId, btnClass, key) {
       const resultArr = [];
       for (const name of valueArr) {
         try {
-          const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+          const res = await fetch(
+            `/movie/search_person?query=${encodeURIComponent(name)}`
+          );
           const data = await res.json();
           if (data.results && data.results.length > 0) {
             // 동명이인 모두 저장
-            data.results.forEach(person => {
+            data.results.forEach((person) => {
               resultArr.push({ id: person.id, name: person.name });
             });
           } else {
@@ -339,10 +409,10 @@ genreConfirmBtn.addEventListener("click", async () => {
   try {
     // 현재 favorite 존재 여부를 서버에서 다시 확인
     const resMe = await fetch("/auth/me", {
-      headers: { Authorization: `Bearer ${token}` }
+      headers: { Authorization: `Bearer ${token}` },
     });
     const meData = await resMe.json();
-    hasFavorite = !!(meData.favorite);
+    hasFavorite = !!meData.favorite;
   } catch {}
 
   try {
@@ -360,7 +430,9 @@ genreConfirmBtn.addEventListener("click", async () => {
     window.showCustomAlert("선호 장르가 저장되었습니다.");
     document.getElementById("genre_preferences_modal").classList.remove("open");
     // input에도 한글명으로 반영
-    document.getElementById("genre_buttons").value = selectedGenres.map(v => GENRE_LABELS[v] || v).join(", ");
+    document.getElementById("genre_buttons").value = selectedGenres
+      .map((v) => GENRE_LABELS[v] || v)
+      .join(", ");
   } catch (err) {
     window.showCustomAlert("저장 실패: " + err.message);
   }
@@ -402,6 +474,9 @@ pwCancelBtn.addEventListener("click", () => {
   pw_msg.textContent = "";
 });
 
+const token = localStorage.getItem("token"); // 저장된 JWT 토큰 가져오기
+const token_exp = localStorage.getItem("token_exp"); // 저장된 EXP 토큰 가져오기
+
 function check_password_match() {
   const pw = pwField.value;
   const pw_confirm = pwConfirmField.value;
@@ -432,29 +507,50 @@ pwSaveBtn.addEventListener("click", async () => {
   }
   // PATCH 요청
   try {
-    const res = await fetch("/auth/me", {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${localStorage.getItem("token")}`,
-      },
-      body: JSON.stringify({ password: pwField.value }),
-    });
-    const data = await res.json();
-    if (!data.success) throw new Error(data.message);
-    window.showCustomAlert("비밀번호가 성공적으로 변경되었습니다.");
-    // UI 원상복구
-    pwField.style.display = "none";
-    pwConfirmField.style.display = "none";
-    pw_msg.style.display = "none";
-    pwSaveBtn.style.display = "none";
-    pwCancelBtn.style.display = "none";
-    pwEditBtn.style.display = "inline-block";
-    pwField.value = "";
-    pwConfirmField.value = "";
-    pwField.setAttribute("readonly", true);
-    pwConfirmField.setAttribute("readonly", true);
-    pw_msg.textContent = "";
+    let res = null;
+    if (token_exp !== null) {
+      console.log("임시 비번 변경 시도");
+      res = await fetch("/auth/change-pw", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token_exp}`,
+        },
+        body: JSON.stringify({ password: pwField.value }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      if (!data.token) throw new Error("토큰이 반환되지 않았습니다.");
+      localStorage.setItem("token", data.token);
+      localStorage.removeItem("token_exp");
+      window.showCustomAlert("비밀번호가 성공적으로 변경되었습니다.");
+      console.log(token);
+      window.location.href = "/home.html";
+    } else if (token !== null) {
+      res = await fetch("/auth/me", {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ password: pwField.value }),
+      });
+      const data = await res.json();
+      if (!data.success) throw new Error(data.message);
+      window.showCustomAlert("비밀번호가 성공적으로 변경되었습니다.");
+      // UI 원상복구
+      pwField.style.display = "none";
+      pwConfirmField.style.display = "none";
+      pw_msg.style.display = "none";
+      pwSaveBtn.style.display = "none";
+      pwCancelBtn.style.display = "none";
+      pwEditBtn.style.display = "inline-block";
+      pwField.value = "";
+      pwConfirmField.value = "";
+      pwField.setAttribute("readonly", true);
+      pwConfirmField.setAttribute("readonly", true);
+      pw_msg.textContent = "";
+    }
   } catch (err) {
     window.showCustomAlert("비밀번호 변경 실패: " + err.message);
   }

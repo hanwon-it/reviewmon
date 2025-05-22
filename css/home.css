@@ -118,7 +118,7 @@
 .carousel-track {
   display: flex;
   transition: transform 0.5s ease;
-  padding: 0; /* ✅ padding 없음 */
+  padding: 0; /* padding 없음 */
   margin: 0;
 }
 

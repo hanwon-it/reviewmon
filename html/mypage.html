@@ -78,19 +78,7 @@
             <input id="nickname" type="text" value="현재 닉네임" readonly />
             <button class="btn_edit">수정</button>
           </div>
-          <div class="field" id="pw_field_wrap" style="display:flex; flex-direction:row; align-items:center; gap:16px;">
-            <label for="password" style="min-width:120px;">비밀번호 변경</label>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <input id="password" type="password" value="" readonly style="display:none; width:220px;" />
-              <input id="password_confirm" type="password" value="" readonly style="display:none; width:220px;" placeholder="비밀번호 확인" />
-              <p id="pw_check_msg" class="password_match" style="display:none; margin:0; width:auto;"></p>
-            </div>
-            <div class="pw_btns" style="display:flex; flex-direction:column; gap:8px; margin-left:auto;">
-              <button class="btn_edit" id="btn_pw_edit">수정</button>
-              <button class="btn_save" id="btn_pw_save" style="display:none;">저장</button>
-              <button class="btn_cancel" id="btn_pw_cancel" style="display:none;">취소</button>
-            </div>
-          </div>
+          
           <div class="field">
             <label for="hp">휴대폰 번호</label>
             <input
@@ -110,6 +98,19 @@
               readonly
             />
             <button class="btn_edit">수정</button>
+          </div>
+          <div class="field" id="pw_field_wrap" style="display:flex; flex-direction:row; align-items:center; gap:16px;">
+            <label for="password" style="min-width:120px;">비밀번호 변경</label>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <input id="password" type="password" value="" readonly style="display:none; width:220px;" />
+              <input id="password_confirm" type="password" value="" readonly style="display:none; width:220px;" placeholder="비밀번호 확인" />
+              <p id="pw_check_msg" class="password_match" style="display:none; margin:0; width:auto;"></p>
+            </div>
+            <div class="pw_btns" style="display:flex; flex-direction:column; gap:8px; margin-left:auto;">
+              <button class="btn_edit" id="btn_pw_edit">수정</button>
+              <button class="btn_save" id="btn_pw_save" style="display:none;">저장</button>
+              <button class="btn_cancel" id="btn_pw_cancel" style="display:none;">취소</button>
+            </div>
           </div>
         </div>
       </section>
@@ -222,7 +223,9 @@
         location.href = 'myreview.html';
       };
     </script>
+    <script src="../js/activate_search.js"></script>
     <script src="../js/mypage.js" type="module"></script>
+    
   </body>
 </html>
 

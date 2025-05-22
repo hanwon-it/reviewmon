@@ -10,6 +10,9 @@ const user_schema = new mongoose.Schema(
     nickname: { type: String, required: true },
     hp: { type: String, required: true },
     activity_point: { type: Number, default: 0 },
+    is_temp_pw: { type: Boolean, default: false }, // true일 시 임시 비번.
+    last_temp_pw_request: Date, // 가장 최근 임시 비번 발급 요구한 시점.
+    temp_pw_request_count: { type: Number, default: 0 }, // 임시 비번 요구 회수.
   },
   { versionKey: false, timestamps: true }
 );
@@ -71,4 +74,55 @@ export async function find_by_nickname_regex(nickname) {
       }
     }
   });
+}
+
+
+export async function atomic_temp_pw_request_check(email, userid) {
+  const now = new Date();
+  const today = now.toISOString().slice(0, 10);
+
+  const user = await User.findOne({ email, userid });
+
+  if (!user)
+    return {
+      success: false,
+      status: 404,
+      message: "일치하는 사용자가 없습니다.",
+    };
+
+  const last_request_day = user.last_temp_pw_request
+    ? new Date(user.last_temp_pw_request).toISOString().slice(0, 10)
+    : null;
+
+  if (last_request_day === today) {
+    if (user.temp_pw_request_count >= 3) {
+      return {
+        success: false,
+        status: 429,
+        message: "임시 비밀번호 발급은 1일 3회까지만 가능합니다.",
+      };
+    }
+
+    // 동일 날짜 → count + 1
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $inc: { temp_pw_request_count: 1 },
+        $set: { last_temp_pw_request: now },
+      }
+    );
+  } else {
+    // 날짜 다름 → count 리셋
+    await User.updateOne(
+      { _id: user._id },
+      {
+        $set: {
+          temp_pw_request_count: 1,
+          last_temp_pw_request: now,
+        },
+      }
+    );
+  }
+
+  return { success: true, user };
 }

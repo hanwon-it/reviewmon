@@ -60,6 +60,7 @@ router.delete("/me", is_auth, user_controller.signout);
 // 비밀번호/아이디 찾기
 router.post("/find-pw", user_controller.find_pw_by_email);
 router.post("/find-id", user_controller.find_id_by_email);
+router.patch("/change-pw", is_auth, user_controller.must_change_pw);
 
 // 취향 정보
 router.post("/favorite", is_auth, user_controller.input_favorite);

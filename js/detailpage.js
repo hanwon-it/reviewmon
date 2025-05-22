@@ -1,12 +1,21 @@
-// 영화 상세 페이지 활성화
+// ===================== 영화 상세 페이지 진입 시 동작 =====================
+// DOMContentLoaded: 페이지가 모두 로드되면 실행
+// 1. URL에서 movie_id 추출 및 유효성 검사
+// 2. '더보기' 버튼 클릭 시 리뷰페이지로 이동
+// 3. 영화 상세 정보 로드
+// 4. 리뷰 작성 모달 관련 요소 및 별점 UI 초기화
+// 5. 리뷰 작성 폼 제출 이벤트 등록
+// 6. 모달 닫기 이벤트 등록
+
 document.addEventListener("DOMContentLoaded", async () => {
+  // 1. URL에서 movie_id 추출
   const movie_id = get_movie_id_from_url();
   if (!movie_id) {
     alert("잘못된 접근입니다.");
     return;
   }
 
-  // 더보기 버튼 클릭 시 리뷰페이지로 이동
+  // 2. '더보기' 버튼 클릭 시 리뷰페이지로 이동
   const moreBtn = document.querySelector(".btn_link");
   if (moreBtn && movie_id) {
     moreBtn.addEventListener("click", (e) => {
@@ -15,20 +24,21 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   }
 
-  // 영화 상세 정보 로드
+  // 3. 영화 상세 정보 로드 (상세 정보, 출연진, 리뷰 등)
   await load_movie_details(movie_id);
 
-  // 모달 요소
+  // 4. 리뷰 작성 모달 관련 요소 및 별점 UI 초기화
   const review_modal = document.getElementById("review_modal");
   const open_review_modal = document.getElementById("open_review_modal");
   const close_modal = document.getElementById("close_modal");
   const modal_overlay = document.querySelector(".modal_overlay");
   const review_form = document.getElementById("review_form");
 
-  // 별점 입력 UI (0.5 단위, hover/클릭, 실시간 표시)
+  // 별점 입력 UI 관련 변수 및 함수
   let currentRating = 0;
   let hoverRating = 0;
 
+  // 별점 SVG 렌더링 함수 (0.5점 단위, hover/클릭 지원)
   function renderStarRating(rating = 0) {
     const starContainer = document.getElementById('star_rating_input');
     if (!starContainer) return;
@@ -74,10 +84,12 @@ document.addEventListener("DOMContentLoaded", async () => {
     const valueElem = document.getElementById('star_rating_value');
     if (valueElem) valueElem.textContent = displayRating.toFixed(1);
   }
+  // 별점 hover 시 별점 표시 업데이트
   function updateStarHover(val) {
     hoverRating = val;
     renderStarRating(currentRating);
   }
+  // 별점 클릭 시 별점 값 저장
   function setStarRating(val) {
     currentRating = val;
     renderStarRating(currentRating);
@@ -90,10 +102,10 @@ document.addEventListener("DOMContentLoaded", async () => {
       review_modal.classList.add("show");
     });
   }
-  // 최초 렌더
+  // 최초 별점 렌더링
   renderStarRating(0);
 
-  // 리뷰 등록
+  // 5. 리뷰 등록 폼 제출 이벤트 (유효성 검사 및 서버 전송)
   review_form.addEventListener("submit", async (e) => {
     e.preventDefault();
     const comment = review_form.querySelector("textarea").value.trim();
@@ -138,7 +150,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  // 모달 닫기 버튼 및 오버레이 클릭 시 닫기
+  // 6. 모달 닫기 버튼 및 오버레이 클릭 시 모달 닫기
   if (close_modal) {
     close_modal.addEventListener("click", () => {
       review_modal.classList.remove("show");
@@ -151,10 +163,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// 좋아요한 리뷰 id 리스트를 저장할 변수
+// ===================== 좋아요한 리뷰 id 리스트 관리 =====================
+// 전역 변수: likedReviewIds (좋아요한 리뷰 id 리스트 저장)
 let likedReviewIds = [];
 
-// 좋아요한 리뷰 id 리스트 받아오기
+// 서버에서 좋아요한 리뷰 id 리스트 받아오기 (비동기)
 async function fetchLikedReviewIds() {
   const token = localStorage.getItem("token");
   if (!token) return [];
@@ -167,13 +180,17 @@ async function fetchLikedReviewIds() {
   return [];
 }
 
-// 영화 상세 정보 로딩
+// ===================== 영화 상세 정보 로딩 함수 =====================
+// 1. 영화 상세 정보 fetch 및 화면 렌더링
+// 2. 출연진/감독 정보 렌더링
+// 3. 리뷰(상위 3개) 렌더링 및 좋아요(하트) 이벤트 바인딩
 async function load_movie_details(movie_id) {
   try {
     const res = await fetch(`/movie/${movie_id}`);
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
+    // 영화 제목, 개요, 포스터 등 기본 정보 표시
     document.querySelector(".info h1").textContent = data.title;
     // overview에서 마침표 하나(.) 뒤에만 줄 바꿈을 넣고, .. ... 등은 무시
     const overviewText = (data.overview || '').replace(/(?<!\.)\.(?!\.) /g, '.<br>');
@@ -181,7 +198,7 @@ async function load_movie_details(movie_id) {
     document.querySelector(".poster img").src = data.poster_path
       ? `https://image.tmdb.org/t/p/w500${data.poster_path}`
       : "./img/default_poster.jpg";
-    // 별점 SVG 생성 함수
+    // 별점 SVG 생성 함수 (내부 함수)
     function getStarSVG(rating) {
       let stars = "";
       for (let i = 1; i <= 5; i++) {
@@ -237,10 +254,9 @@ async function load_movie_details(movie_id) {
       cast_grid.appendChild(div);
     });
 
-    // 리뷰 렌더링
+    // 리뷰 렌더링 (추천 수 내림차순 상위 3개)
     const review_cards = document.querySelector(".review_cards");
     review_cards.innerHTML = "";
-    // 추천 수 내림차순 정렬 후 상위 3개만
     const topReviews = (data.reviews || [])
       .sort((a, b) => (b.like_cnt || 0) - (a.like_cnt || 0))
       .slice(0, 3);
@@ -248,6 +264,7 @@ async function load_movie_details(movie_id) {
     // (추가) 좋아요한 리뷰 id 리스트 받아오기
     likedReviewIds = await fetchLikedReviewIds();
 
+    // 각 리뷰 카드 생성 및 렌더링
     topReviews.forEach((review) => {
       const card = document.createElement("div");
       card.className = "review_card";
@@ -281,7 +298,7 @@ async function load_movie_details(movie_id) {
       review_cards.appendChild(card);
     });
 
-    // 하트(좋아요) 클릭 이벤트 바인딩
+    // 하트(좋아요) 클릭 이벤트 바인딩 (로그인 필요, 서버와 동기화)
     document.querySelectorAll('.like_count .heart_icon').forEach(icon => {
       icon.addEventListener('click', async function() {
         const parent = this.closest('.like_count');
@@ -333,7 +350,8 @@ async function load_movie_details(movie_id) {
   }
 }
 
-// URL에서 movie_id 추출
+// ===================== URL에서 movie_id 추출 함수 =====================
+// 쿼리스트링에서 movie_id 값을 추출하여 반환
 function get_movie_id_from_url() {
   const params = new URLSearchParams(window.location.search);
   return params.get("movie_id");

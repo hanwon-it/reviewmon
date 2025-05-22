@@ -90,10 +90,22 @@ signup_form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
   // 선호조사 필수값 체크
-  const genre = document.querySelector("input[name='genre']:checked");
-  const actor = document.querySelector("input[name='actor']:checked");
-  const director = document.querySelector("input[name='director']:checked");
-  if (!genre || !actor || !director) {
+  // const genre = document.querySelector("input[name='genre']:checked");
+  // const actor = document.querySelector("input[name='actor']").value.trim();
+  // const director = document.querySelector("input[name='director']").value.trim()  ;
+  // if (!genre || !actor || !director) {
+  //   window.showCustomAlert("선호 장르, 배우, 감독을 모두 선택해주세요.");
+  //   return;
+  // }
+  const genreText = document.querySelector("input[name='genre']:checked");
+  // console.log("선택된 장르 수:", checkedGenres.length);
+  const actorText = document.getElementById("actors").value.trim();
+  const directorText = document.getElementById("directors").value.trim();
+  if (
+    document.querySelectorAll("input[name='genre']:checked").length === 0 ||
+    actorText === "" ||
+    directorText === ""
+  ) {
     window.showCustomAlert("선호 장르, 배우, 감독을 모두 선택해주세요.");
     return;
   }
