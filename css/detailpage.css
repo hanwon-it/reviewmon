@@ -355,11 +355,6 @@ textarea {
     align-items: center;
     justify-content: space-between;
   }
-
-  .user_actions {
-    display: none; /* 더 이상 header 안에서 보이지 않음 */
-  }
-
   .review_cards {
     flex-direction: column;
     gap: 1.2rem;
@@ -384,9 +379,6 @@ textarea {
     justify-content: space-between;
   }
 
-  .user_actions {
-    display: none; /* 더 이상 header 안에서 보이지 않음 */
-  }
   .review_cards {
     flex-direction: column;
     gap: 1.2rem;
