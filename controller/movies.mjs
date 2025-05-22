@@ -2,12 +2,10 @@ import { Movie } from "../data/movie.mjs";
 import { Review, Like } from "../data/review.mjs";
 import { config } from "../config.mjs";
 import fetch from "node-fetch";
-import * as user_repository  from "../data/user.mjs";
-
+import * as user_repository from "../data/user.mjs";
 
 const api_key = config.tmdb.api_key;
 const creditsCache = new Map();
-
 
 // 영화 검색: title(MongoDB) / person(TMDB)
 export async function search_movie(req, res) {
@@ -76,7 +74,6 @@ export async function search_movie(req, res) {
     res.status(500).json({ message: "검색 처리 중 서버 오류 발생" });
   }
 }
-
 
 // 유틸 함수: movieid로 ObjectId 찾기
 async function getMovieObjectId(movieid) {
@@ -151,7 +148,19 @@ export async function getRecommendations(req, res) {
     const { Favorite } = await import("../data/favorite.mjs");
     const TMDB_API_KEY = config.tmdb.api_key;
     const favorite = await Favorite.findOne({ user_idx });
+
     if (!favorite) return res.status(200).json([]);
+    // ★ 추가: DB에 저장된 자료 형식(예: 각 객체에 _id가 있는지)과 비교하여,
+    // 저장된 배우/감독 데이터가 "김사과, 이메론" 등과 같은 올바른 형식이 아니라면
+    // 로직 3(getRecommendations_v3 또는 get_april_movies) 호출
+    if (
+      (favorite.actor && favorite.actor.some((actor) => actor.id === null)) ||
+      (favorite.director &&
+        favorite.director.some((director) => director.id === null))
+    ) {
+      // id가 null인 경우 실행할 함수
+      return await getRecommendations_v3(req, res);
+    }
     const genreIds = (favorite.genre || []).filter(Boolean).map(Number);
     const actorIds = (favorite.actor || [])
       .map((a) => String(a.id))
@@ -173,11 +182,10 @@ export async function getRecommendations(req, res) {
         }
       })
     );
-    // 2. 영화 합집합(중복 제거)
+    // 2. 영화 합집합(중복 제거) - 포스터, 한글 제목 있는 영화만 필터링
     const movieMap = new Map();
     for (const credits of creditsList) {
       for (const item of [...(credits.cast || []), ...(credits.crew || [])]) {
-        // 포스터, 한글 제목 있는 영화만
         if (
           !movieMap.has(item.id) &&
           item.poster_path &&
@@ -190,12 +198,11 @@ export async function getRecommendations(req, res) {
     }
     let movies = Array.from(movieMap.values());
     if (movies.length === 0) return res.status(200).json([]);
-    // 3. 장르 일치 개수로 점수 부여
+    // 3. 장르 일치 개수 및 배우/감독 일치 여부로 점수 부여
     const scoredMovies = movies.map((m) => {
       const genreMatch = (m.genre_ids || []).filter((id) =>
         genreIds.includes(id)
       ).length;
-      // 배우/감독 일치 여부(내가 좋아하는 인물과 실제 출연/연출 인물 id 비교)
       let actorMatch = 0,
         directorMatch = 0;
       if (actorIds.length && m.cast && Array.isArray(m.cast)) {
@@ -208,11 +215,11 @@ export async function getRecommendations(req, res) {
           (c) => c.job === "Director" && directorIds.includes(String(c.id))
         ).length;
       }
-      // 점수: 배우*100 + 감독*10 + 장르*1
-      const score = actorMatch * 100 + directorMatch * 10 + genreMatch * 1;
+      // 점수: 배우 매칭 100점, 감독 매칭 10점, 장르 매칭 1점
+      const score = actorMatch * 100 + directorMatch * 10 + genreMatch;
       return { ...m, genreMatch, actorMatch, directorMatch, score };
     });
-    // 4. 점수순/인기순 정렬 후 20개 반환
+    // 4. 점수순 및 인기순 정렬 후 상위 20개 반환
     scoredMovies.sort(
       (a, b) => b.score - a.score || b.popularity - a.popularity
     );
@@ -226,7 +233,6 @@ export async function getRecommendations(req, res) {
       popularity: m.popularity,
       release_date: m.release_date,
     }));
-    // console.log("함수1 뒷부분 뜨나요??");
     res.json(result);
   } catch (err) {
     console.error(":다트: 추천 영화 오류:", err);
@@ -297,6 +303,38 @@ export async function getRecommendations_v2(req, res) {
   }
 }
 
+// 로직3 (상원로직)
+// 4월 개봉작 hanwon
+export async function getRecommendations_v3(req, res) {
+  try {
+    console.log("v3 입장샷");
+    const start_date = "2025-04-01";
+    const end_date = "2025-04-30";
+
+    const movies = await Movie.find({
+      release_date: { $gte: start_date, $lte: end_date },
+    })
+      .sort({ popularity: -1 })
+      .limit(20)
+      .select("movie_id title poster_path overview popularity release_date");
+
+    console.log("무비스확인", movies);
+
+    const result = movies.map((m) => ({
+      movie_id: m.movie_id,
+      title: m.title,
+      poster_path: m.poster_path,
+      overview: m.overview,
+      popularity: m.popularity,
+      release_date: m.release_date,
+    }));
+    console.log("퇴장샷");
+    res.status(200).json(result);
+  } catch (error) {
+    res.status(500).json({ message: "서버 오류" });
+  }
+}
+
 // 인기영화
 export async function get_popular_movies(req, res) {
   try {
@@ -339,12 +377,9 @@ export async function get_person_credits(req, res) {
     const data = await response.json();
 
     // 2. 출연/감독작 id 리스트 추출
-    const movieIds = [
-      ...(data.cast || []),
-      ...(data.crew || [])
-    ]
-      .filter(item => item.poster_path && item.id)
-      .map(item => item.id);
+    const movieIds = [...(data.cast || []), ...(data.crew || [])]
+      .filter((item) => item.poster_path && item.id)
+      .map((item) => item.id);
 
     // 3. DB에서 해당 영화만 조회
     const moviesInDb = await Movie.find({ movie_id: { $in: movieIds } });
