@@ -231,3 +231,114 @@ body {
   line-height: 1;
   padding: 0;
 }
+/* 배우/감독 입력란 인풋 간 여백 추가 */
+.input_with_remove {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.input_with_remove:last-child {
+  margin-bottom: 0;
+}
+#actor_fields .actor_input,
+#director_fields .director_input {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 8px 10px;
+  height: 40px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.remove_input_btn {
+  margin-left: 0;
+  background: #eee;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.remove_input_btn:hover {
+  background: #ffdddd;
+  color: #d00;
+}
+
+/* 배우/감독 입력란 인풋 간 여백 추가 */
+#actor_fields .actor_input,
+#director_fields .director_input {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 8px 10px;
+  height: 40px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+/* 마지막 인풋은 margin-bottom 제거 */
+#actor_fields .actor_input:last-child,
+#director_fields .director_input:last-child {
+  margin-bottom: 0;
+}
+
+.input_with_remove {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  gap: 8px;
+  margin-bottom: 10px;
+}
+.input_with_remove:last-child {
+  margin-bottom: 0;
+}
+.remove_input_btn {
+  margin-left: 0;
+  background: #eee;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.remove_input_btn:hover {
+  background: #ffdddd;
+  color: #d00;
+}
+
+#add_actor_btn,
+#add_director_btn {
+  width: 30%;
+  display: block;
+  margin: 16px auto 0 auto;
+  font-size: 1rem;
+  padding: 0.8rem 0;
+  border-radius: 10px;
+  font-weight: bold;
+  background-color: var(--color-primary);
+  border: none;
+  color: white;
+  cursor: pointer;
+  text-align: center;
+  transition: background 0.2s;
+}
+#add_actor_btn:hover,
+#add_director_btn:hover {
+  background-color: var(--color-primary-dark);
+} 

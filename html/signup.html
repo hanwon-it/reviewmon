@@ -139,23 +139,19 @@
         </fieldset>
 
         <div class="form_group">
-          <label for="actors">좋아하는 배우 (쉼표로 구분)</label>
-          <input
-            type="text"
-            id="actors"
-            name="actors"
-            placeholder="예: 마동석, Emma Stone"
-          />
+          <label>좋아하는 배우</label>
+          <div id="actor_fields">
+            <input type="text" class="actor_input" placeholder="배우 이름 입력" />
+          </div>
+          <button type="button" id="add_actor_btn">+ 배우 추가</button>
         </div>
 
         <div class="form_group">
-          <label for="directors">좋아하는 감독 (쉼표로 구분)</label>
-          <input
-            type="text"
-            id="directors"
-            name="directors"
-            placeholder="예: 봉준호, Nolan"
-          />
+          <label>좋아하는 감독</label>
+          <div id="director_fields">
+            <input type="text" class="director_input" placeholder="감독 이름 입력" />
+          </div>
+          <button type="button" id="add_director_btn">+ 감독 추가</button>
         </div>
 
         <div class="form_group">

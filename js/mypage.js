@@ -96,109 +96,165 @@ document.addEventListener("DOMContentLoaded", async () => {
     view_hp.value = data.hp;
     view_email.value = data.email;
 
-    // 선호조사 정보 표시
+    // 선호조사 정보 표시 (display 영역)
     if (data.favorite) {
-      // genre: value(숫자) 배열 → 한글명으로 변환해서 표시
-      const genreArr = data.favorite.genre || [];
-      document.getElementById("genre_buttons").value = genreArr
-        .map((v) => GENRE_LABELS[v] || v)
-        .join(", ");
-      document.getElementById("fav_actor").value = (data.favorite.actor || [])
-        .map((a) => a.name)
-        .join(", ");
-      document.getElementById("fav_director").value = (
-        data.favorite.director || []
-      )
-        .map((d) => d.name)
-        .join(", ");
-    } else {
-      // 선호조사 정보가 없을 때: 장르 input은 readonly 유지, 저장 버튼 클릭 시 모달 오픈
-      document.getElementById("genre_buttons").setAttribute("readonly", true);
-      document.querySelector(".btn_prefs_edit").textContent = "선택";
-      document.querySelector(".btn_prefs_edit").onclick = async () => {
-        document
-          .getElementById("genre_preferences_modal")
-          .classList.add("open");
-        const genreVal = document
-          .getElementById("genre_buttons")
-          .value.split(",")
-          .map((v) => v.trim())
-          .filter((v) => v);
-        try {
-          const method = data.favorite ? "PATCH" : "POST";
-          const res = await fetch("/auth/favorite", {
-            method,
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ genre: genreVal }),
-          });
-          const result = await res.json();
-          if (!res.ok) throw new Error(result.message);
-          window.showCustomAlert("선호 장르가 저장되었습니다.");
-          document
-            .getElementById("genre_preferences_modal")
-            .classList.remove("open");
-        } catch (err) {
-          window.showCustomAlert("저장 실패: " + err.message);
-        }
-      };
-      // 배우/감독 입력만 활성화
-      document.getElementById("fav_actor").removeAttribute("readonly");
-      document.getElementById("fav_director").removeAttribute("readonly");
-      document
-        .querySelectorAll(".btn_add")
-        .forEach((btn) => (btn.textContent = "저장"));
-      // 배우/감독 저장 버튼
-      async function savePeople(inputId, key) {
-        const names = document
-          .getElementById(inputId)
-          .value.split(",")
-          .map((v) => v.trim())
-          .filter((v) => v);
-        const arr = [];
-        for (const name of names) {
-          try {
-            const res = await fetch(
-              `/movie/search_person?query=${encodeURIComponent(name)}`
-            );
-            const data = await res.json();
-            if (data.results && data.results.length > 0) {
-              data.results.forEach((person) => {
-                arr.push({ id: person.id, name: person.name });
-              });
-            } else {
-              arr.push({ id: null, name });
-            }
-          } catch {
-            arr.push({ id: null, name });
-          }
-        }
-        try {
-          const method = data.favorite ? "PATCH" : "POST";
-          const res = await fetch("/auth/favorite", {
-            method,
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: JSON.stringify({ [key]: arr }),
-          });
-          const result = await res.json();
-          if (!res.ok) throw new Error(result.message);
-          window.showCustomAlert("저장되었습니다.");
-        } catch (err) {
-          window.showCustomAlert("저장 실패: " + err.message);
-        }
-      }
-      document.querySelectorAll(".btn_add").forEach((btn, idx) => {
-        btn.onclick = () => {
-          if (idx === 0) savePeople("fav_actor", "actor");
-          else savePeople("fav_director", "director");
-        };
-      });
+      updateFavoriteDisplay(data.favorite);
     }
+    // 장르 수정 버튼
+    document.getElementById("genre_edit_btn").onclick = function() {
+      document.getElementById("genre_display").style.display = "none";
+      document.getElementById("genre_edit_btn").style.display = "none";
+      document.getElementById("genre_edit_area").style.display = "flex";
+      // 현재 선택된 장르로 토글 초기화
+      const currentGenres = (data.favorite && data.favorite.genre) ? data.favorite.genre : [];
+      setGenreEditToggles(currentGenres);
+    };
+    document.getElementById("genre_cancel_btn").onclick = function() {
+      document.getElementById("genre_edit_area").style.display = "none";
+      document.getElementById("genre_display").style.display = "inline";
+      document.getElementById("genre_edit_btn").style.display = "inline-block";
+    };
+    document.getElementById("genre_save_btn").onclick = async function() {
+      const selectedGenres = Array.from(document.querySelectorAll("#genre_edit_toggle_wrap .genre-toggle.selected")).map(btn => btn.dataset.genre);
+      if (selectedGenres.length === 0) {
+        window.showCustomAlert("최소 한 개 이상 선택해주세요.");
+        return;
+      }
+      try {
+        const res = await fetch("/auth/favorite", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ genre: selectedGenres }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message);
+        // 성공 시 display 갱신
+        updateFavoriteDisplay({
+          genre: selectedGenres,
+          actor: data.favorite ? data.favorite.actor : [],
+          director: data.favorite ? data.favorite.director : []
+        });
+        document.getElementById("genre_edit_area").style.display = "none";
+        document.getElementById("genre_display").style.display = "inline";
+        document.getElementById("genre_edit_btn").style.display = "inline-block";
+        window.showCustomAlert("저장되었습니다.");
+        // data.favorite 갱신
+        if (data.favorite) data.favorite.genre = selectedGenres;
+      } catch (err) {
+        window.showCustomAlert("저장 실패: " + err.message);
+      }
+    };
+    // 배우/감독 display 영역 초기화
+    if (data.favorite) {
+      updateFavoriteDisplay(data.favorite);
+    }
+    // 배우 수정 버튼
+    document.getElementById("actor_edit_btn").onclick = function() {
+      document.getElementById("actor_display").style.display = "none";
+      document.getElementById("actor_edit_btn").style.display = "none";
+      document.getElementById("actor_edit_area").style.display = "flex";
+      setInitialFavoriteInputs(data.favorite ? data.favorite.actor : [], "mypage_actor_fields", "mypage_actor_input", "배우 이름 입력");
+      // ★ 추가: 이벤트 바인딩을 여기서 다시 해줌
+      document.getElementById("mypage_add_actor_btn").onclick = function() {
+        document.getElementById("mypage_actor_fields").appendChild(
+          createInputWithRemove("mypage_actor_input", "배우 이름 입력")
+        );
+      };
+    };
+    document.getElementById("mypage_cancel_actor_btn").onclick = function() {
+      document.getElementById("actor_edit_area").style.display = "none";
+      document.getElementById("actor_display").style.display = "inline";
+      document.getElementById("actor_edit_btn").style.display = "inline-block";
+    };
+    document.getElementById("mypage_save_actor_btn").onclick = async function() {
+      const names = getFavoriteNames("mypage_actor_input");
+      if (names.length === 0) {
+        window.showCustomAlert("선호 배우를 입력해주세요.");
+        return;
+      }
+      const arr = await getPeopleArrMypage(names);
+      try {
+        const res = await fetch("/auth/favorite", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ actor: arr }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message);
+        // 성공 시 display 갱신
+        updateFavoriteDisplay({
+          genre: data.favorite ? data.favorite.genre : [],
+          actor: arr,
+          director: data.favorite ? data.favorite.director : []
+        });
+        document.getElementById("actor_edit_area").style.display = "none";
+        document.getElementById("actor_display").style.display = "inline";
+        document.getElementById("actor_edit_btn").style.display = "inline-block";
+        window.showCustomAlert("저장되었습니다.");
+        // data.favorite 갱신
+        if (data.favorite) data.favorite.actor = arr;
+      } catch (err) {
+        window.showCustomAlert("저장 실패: " + err.message);
+      }
+    };
+    // 감독 수정 버튼
+    document.getElementById("director_edit_btn").onclick = function() {
+      document.getElementById("director_display").style.display = "none";
+      document.getElementById("director_edit_btn").style.display = "none";
+      document.getElementById("director_edit_area").style.display = "flex";
+      setInitialFavoriteInputs(data.favorite ? data.favorite.director : [], "mypage_director_fields", "mypage_director_input", "감독 이름 입력");
+      // ★ 추가: 이벤트 바인딩을 여기서 다시 해줌
+      document.getElementById("mypage_add_director_btn").onclick = function() {
+        document.getElementById("mypage_director_fields").appendChild(
+          createInputWithRemove("mypage_director_input", "감독 이름 입력")
+        );
+      };
+    };
+    document.getElementById("mypage_cancel_director_btn").onclick = function() {
+      document.getElementById("director_edit_area").style.display = "none";
+      document.getElementById("director_display").style.display = "inline";
+      document.getElementById("director_edit_btn").style.display = "inline-block";
+    };
+    document.getElementById("mypage_save_director_btn").onclick = async function() {
+      const names = getFavoriteNames("mypage_director_input");
+      if (names.length === 0) {
+        window.showCustomAlert("선호 감독을 입력해주세요.");
+        return;
+      }
+      const arr = await getPeopleArrMypage(names);
+      try {
+        const res = await fetch("/auth/favorite", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({ director: arr }),
+        });
+        const result = await res.json();
+        if (!res.ok) throw new Error(result.message);
+        // 성공 시 display 갱신
+        updateFavoriteDisplay({
+          genre: data.favorite ? data.favorite.genre : [],
+          actor: data.favorite ? data.favorite.actor : [],
+          director: arr
+        });
+        document.getElementById("director_edit_area").style.display = "none";
+        document.getElementById("director_display").style.display = "inline";
+        document.getElementById("director_edit_btn").style.display = "inline-block";
+        window.showCustomAlert("저장되었습니다.");
+        // data.favorite 갱신
+        if (data.favorite) data.favorite.director = arr;
+      } catch (err) {
+        window.showCustomAlert("저장 실패: " + err.message);
+      }
+    };
   } catch (err) {
     console.error("유저 정보 가져오기 실패:", err);
     window.showCustomAlert("유저 정보를 가져오지 못했습니다.");
@@ -331,112 +387,105 @@ document.addEventListener("DOMContentLoaded", () => {
   });
 });
 
-// 배우/감독 수정 기능
-function setupFavoriteEdit(fieldId, btnClass, key) {
-  const input = document.getElementById(fieldId);
-  const btn = input.nextElementSibling;
-  btn.addEventListener("click", async () => {
-    if (input.hasAttribute("readonly")) {
-      input.removeAttribute("readonly");
-      input.focus();
-      btn.textContent = "저장";
-    } else {
-      // 저장
-      input.setAttribute("readonly", true);
-      btn.textContent = "수정";
-      const valueArr = input.value
-        .split(",")
-        .map((v) => v.trim())
-        .filter((v) => v);
-      // 이름 → TMDB id+name 객체 배열로 변환
-      const resultArr = [];
-      for (const name of valueArr) {
-        try {
-          const res = await fetch(
-            `/movie/search_person?query=${encodeURIComponent(name)}`
-          );
-          const data = await res.json();
-          if (data.results && data.results.length > 0) {
-            // 동명이인 모두 저장
-            data.results.forEach((person) => {
-              resultArr.push({ id: person.id, name: person.name });
-            });
-          } else {
-            // TMDB에 없으면 입력값(이름)만 저장 (id: null)
-            resultArr.push({ id: null, name });
-          }
-        } catch (err) {
-          // 검색 실패 시 입력값(이름)만 저장 (id: null)
-          resultArr.push({ id: null, name });
-        }
-      }
-      try {
-        const res = await fetch("/auth/favorite", {
-          method: "PATCH",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-          body: JSON.stringify({ [key]: resultArr }),
+// ====== 배우/감독 입력란 동적 추가/삭제/저장 ======
+function createInputWithRemove(className, placeholder) {
+  const wrapper = document.createElement("div");
+  wrapper.className = "input_with_remove";
+  const input = document.createElement("input");
+  input.type = "text";
+  input.className = className;
+  input.placeholder = placeholder;
+  const removeBtn = document.createElement("button");
+  removeBtn.type = "button";
+  removeBtn.className = "remove_input_btn";
+  removeBtn.textContent = "✕";
+  removeBtn.onclick = function() {
+    wrapper.remove();
+  };
+  wrapper.appendChild(input);
+  wrapper.appendChild(removeBtn);
+  return wrapper;
+}
+
+function setInitialFavoriteInputs(arr, fieldsId, className, placeholder) {
+  const fields = document.getElementById(fieldsId);
+  fields.innerHTML = '';
+  if (arr && arr.length > 0) {
+    arr.forEach(item => {
+      const wrapper = createInputWithRemove(className, placeholder);
+      wrapper.querySelector('input').value = item.name;
+      fields.appendChild(wrapper);
+    });
+  } else {
+    fields.appendChild(createInputWithRemove(className, placeholder));
+  }
+}
+
+function getFavoriteNames(className) {
+  return Array.from(document.querySelectorAll('.' + className))
+    .map(input => input.value.trim())
+    .filter(Boolean);
+}
+
+async function getPeopleArrMypage(names) {
+  const arr = [];
+  for (const name of names) {
+    try {
+      const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
+      const data = await res.json();
+      if (data.results && data.results.length > 0) {
+        data.results.forEach(person => {
+          arr.push({ id: person.id, name: person.name });
         });
-        const result = await res.json();
-        if (!res.ok) throw new Error(result.message);
-        window.showCustomAlert("수정에 성공했습니다.");
-      } catch (err) {
-        window.showCustomAlert("수정 실패: " + err.message);
+      } else {
+        console.log(`[TMDB] id를 찾지 못한 인물:`, name);
+        arr.push({ id: '', name });
       }
+    } catch {
+      console.log(`[TMDB] API 호출 실패:`, name);
+      arr.push({ id: '', name });
     }
+  }
+  return arr;
+}
+
+// ====== 선호조사 display/edit 영역 전환 및 저장/취소 ======
+function updateFavoriteDisplay(favorite) {
+  // 장르
+  const genreArr = favorite.genre || [];
+  document.getElementById("genre_display").textContent = genreArr.map(v => GENRE_LABELS[v] || v).join(", ");
+  // 배우
+  const actorArr = favorite.actor || [];
+  document.getElementById("actor_display").textContent = actorArr.map(a => a.name).join(", ");
+  // 감독
+  const directorArr = favorite.director || [];
+  document.getElementById("director_display").textContent = directorArr.map(d => d.name).join(", ");
+}
+
+function setGenreEditToggles(selectedGenres) {
+  const genres = [
+    { id: "28", name: "액션" }, { id: "12", name: "모험" }, { id: "16", name: "애니메이션" },
+    { id: "35", name: "코미디" }, { id: "80", name: "범죄" }, { id: "99", name: "다큐멘터리" },
+    { id: "18", name: "드라마" }, { id: "10751", name: "가족" }, { id: "14", name: "판타지" }, { id: "10749", name: "로맨스" }
+  ];
+  const wrap = document.getElementById("genre_edit_toggle_wrap");
+  wrap.innerHTML = '';
+  genres.forEach(g => {
+    const btn = document.createElement("button");
+    btn.className = "genre-toggle";
+    btn.dataset.genre = g.id;
+    btn.textContent = g.name;
+    if (selectedGenres.includes(g.id)) btn.classList.add("selected");
+    btn.onclick = function() {
+      if (!btn.classList.contains("selected") && wrap.querySelectorAll(".selected").length >= 3) {
+        window.showCustomAlert("최대 3개까지 선택할 수 있습니다.");
+        return;
+      }
+      btn.classList.toggle("selected");
+    };
+    wrap.appendChild(btn);
   });
 }
-setupFavoriteEdit("fav_actor", "btn_add", "actor");
-setupFavoriteEdit("fav_director", "btn_add", "director");
-
-// 장르 선택 모달 저장 버튼 클릭
-const genreConfirmBtn = document.getElementById("genre_preferences_confirm");
-genreConfirmBtn.addEventListener("click", async () => {
-  const selectedGenres = Array.from(
-    document.querySelectorAll(".genre-toggle.selected")
-  ).map((btn) => btn.dataset.genre);
-
-  if (selectedGenres.length === 0) {
-    window.showCustomAlert("최소 한 개 이상 선택해주세요.");
-    return;
-  }
-
-  // POST/PATCH 분기: favorite이 있으면 PATCH, 없으면 POST
-  const token = localStorage.getItem("token");
-  let hasFavorite = false;
-  try {
-    // 현재 favorite 존재 여부를 서버에서 다시 확인
-    const resMe = await fetch("/auth/me", {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    const meData = await resMe.json();
-    hasFavorite = !!meData.favorite;
-  } catch {}
-
-  try {
-    const method = hasFavorite ? "PATCH" : "POST";
-    const res = await fetch("/auth/favorite", {
-      method,
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({ genre: selectedGenres }),
-    });
-    const result = await res.json();
-    if (!res.ok) throw new Error(result.message);
-    window.showCustomAlert("선호 장르가 저장되었습니다.");
-    document.getElementById("genre_preferences_modal").classList.remove("open");
-    // input에도 한글명으로 반영
-    document.getElementById("genre_buttons").value = selectedGenres
-      .map((v) => GENRE_LABELS[v] || v)
-      .join(", ");
-  } catch (err) {
-    window.showCustomAlert("저장 실패: " + err.message);
-  }
-});
 
 // 비밀번호 변경 UI 동작
 const pwEditBtn = document.getElementById("btn_pw_edit");

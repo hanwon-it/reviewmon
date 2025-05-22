@@ -121,21 +121,43 @@
       <!-- 선호조사 섹션 -->
       <section class="preferences_section">
         <h1>선호조사</h1>
-        <!-- <div class="genre_buttons"> -->
         <div class="field">
           <label for="genre_buttons">선호 장르</label>
-          <input id="genre_buttons" type="text" readonly/>
-          <button class="btn_prefs_edit">수정</button>
+          <span id="genre_display"></span>
+          <button id="genre_edit_btn">수정</button>
+        </div>
+        <div class="field" id="genre_edit_area" style="display:none; flex-direction:column; align-items:flex-start; gap:8px;">
+          <div class="genre-toggle-wrap" id="genre_edit_toggle_wrap"></div>
+          <div class="modal-actions">
+            <button id="genre_save_btn" class="btn-confirm">저장</button>
+            <button id="genre_cancel_btn" class="btn-cancel">취소</button>
+          </div>
         </div>
         <div class="field">
-          <label for="fav_actor">좋아하는 배우</label>
-          <input id="fav_actor" type="text" value="" readonly />
-          <button class="btn_add">수정</button>
+          <label>좋아하는 배우</label>
+          <span id="actor_display"></span>
+          <button id="actor_edit_btn">수정</button>
+        </div>
+        <div class="field" id="actor_edit_area" style="display:none; flex-direction:column; align-items:flex-start; gap:8px;">
+          <div id="mypage_actor_fields"></div>
+          <button type="button" id="mypage_add_actor_btn">+ 배우 추가</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn_add" id="mypage_save_actor_btn">저장</button>
+            <button class="btn_cancel" id="mypage_cancel_actor_btn">취소</button>
+          </div>
         </div>
         <div class="field">
-          <label for="fav_director">좋아하는 감독</label>
-          <input id="fav_director" type="text" value="" readonly />
-          <button class="btn_add">수정</button>
+          <label>좋아하는 감독</label>
+          <span id="director_display"></span>
+          <button id="director_edit_btn">수정</button>
+        </div>
+        <div class="field" id="director_edit_area" style="display:none; flex-direction:column; align-items:flex-start; gap:8px;">
+          <div id="mypage_director_fields"></div>
+          <button type="button" id="mypage_add_director_btn">+ 감독 추가</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn_add" id="mypage_save_director_btn">저장</button>
+            <button class="btn_cancel" id="mypage_cancel_director_btn">취소</button>
+          </div>
         </div>
       </section>
       <div class="withdrawal_section">

@@ -329,3 +329,71 @@ body {
   background-color: var(--color-primary);
   color: #fff;
 }
+
+/* 배우/감독 입력란 인풋 간 여백 및 삭제 버튼 스타일 (signup과 동일) */
+.input_with_remove {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.input_with_remove:last-child {
+  margin-bottom: 0;
+}
+.mypage_actor_input,
+.mypage_director_input {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 8px 10px;
+  height: 40px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.remove_input_btn {
+  margin-left: 0;
+  background: #eee;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.remove_input_btn:hover {
+  background: #ffdddd;
+  color: #d00;
+}
+.field#actor_edit_area,
+.field#director_edit_area {
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 12px !important;
+  flex-wrap: wrap;
+}
+#mypage_actor_fields,
+#mypage_director_fields {
+  display: flex;
+  flex-direction: row;
+  gap: 8px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+#actor_edit_area .btn_add,
+#director_edit_area .btn_add,
+#actor_edit_area .btn_cancel,
+#director_edit_area .btn_cancel,
+#mypage_add_actor_btn,
+#mypage_add_director_btn {
+  height: 40px;
+  margin: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+}

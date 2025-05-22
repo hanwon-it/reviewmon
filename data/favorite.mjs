@@ -7,13 +7,13 @@ const favorite_schema = new mongoose.Schema(
     genre: { type: [String], required: true },
     actor: [
       {
-        id: { type: Number, required: true },
+        id: { type: Number },
         name: { type: String, required: true }
       }
     ],
     director: [
       {
-        id: { type: Number, required: true },
+        id: { type: Number},
         name: { type: String, required: true }
       }
     ]
