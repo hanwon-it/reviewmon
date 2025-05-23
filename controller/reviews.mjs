@@ -133,66 +133,6 @@ export async function delete_review(req, res, next) {
   }
 }
 
-// 6. 리뷰를 좋아요 숫자 순으로 정렬하는 함수
-export async function recommanded_reviews(req, res, next) {
-  const { idx } = req.body;
-  res.status(200);
-}
-
-// 7. 리뷰를 timestamp 순으로 정렬하는 함수
-export async function latest_reviews(req, res, next) {
-  try {
-    const reviews = await Review.find({}).sort({ createdAt: -1 });
-    res.status(200).json(reviews);
-  } catch (error) {
-    console.error("리뷰 최신순 조회 오류:", error);
-    res.status(500).json({ message: "서버 오류" });
-  }
-}
-
-// 8. 리뷰를 rating 순으로 정렬하는 함수
-export async function rating_reviews(req, res, next) {
-  // GET /api/reviews/rate/:updown?idxList=1,2,3
-  try {
-    const updown = req.params.updown === "true"; // 문자열 → 불리언
-    const idxList = req.query.idxList?.split(",").map(Number);
-
-    if (!Array.isArray(idxList) || idxList.some(isNaN)) {
-      return res
-        .status(400)
-        .json({ message: "유효한 idx 배열을 제공해야 합니다." });
-    }
-
-    const reviews = await reviews.find({ idx: { $in: idxList } });
-
-    const sorted = reviews.sort((a, b) => {
-      return updown ? b.rating - a.rating : a.rating - b.rating;
-    });
-
-    return res.status(200).json({ sortedReviews: sorted });
-  } catch (err) {
-    console.error(err);
-    return res.status(500).json({ message: "서버 오류 발생" });
-  }
-}
-
-export async function review_sort_by_rating(req, res) {
-  const { idxList, up } = req.body;
-  const result = await review_repository.sortByRating(idxList, up);
-  res.status(200).json(result);
-}
-
-export async function review_sort_by_likes(req, res) {
-  const { idxList, up } = req.body;
-  const result = await review_repository.sortByLikes(idxList, up);
-  res.status(200).json(result);
-}
-
-export async function review_sort_by_date(req, res) {
-  const { idxList, recentFirst } = req.body;
-  const result = await review_repository.sortByDate(idxList, recentFirst);
-  res.status(200).json(result);
-}
 
 //9. 리뷰 컬렉션에서 닉네임을 키워드로 검색
 export async function review_search_nickname(req, res) {
@@ -222,14 +162,6 @@ export async function get_reviews_by_user_idx(req, res) {
   }
 }
 
-// 평점을 요약해 전송하는 함수
-/*
-export async function reviewRatings(req, res, next) {
-  const movieId = req.params.movieId;
-  const ratings = await review_repository.ratings(movieId);
-  res.status(200).json(ratings);
-}
-*/
 
 // 토큰 > decoded.id(user_idx) 함수
 export async function token_decoding(auth_header) {

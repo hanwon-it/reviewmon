@@ -78,19 +78,7 @@
             <input id="nickname" type="text" value="현재 닉네임" readonly />
             <button class="btn_edit">수정</button>
           </div>
-          <div class="field" id="pw_field_wrap" style="display:flex; flex-direction:row; align-items:center; gap:16px;">
-            <label for="password" style="min-width:120px;">비밀번호 변경</label>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <input id="password" type="password" value="" readonly style="display:none; width:220px;" />
-              <input id="password_confirm" type="password" value="" readonly style="display:none; width:220px;" placeholder="비밀번호 확인" />
-              <p id="pw_check_msg" class="password_match" style="display:none; margin:0; width:auto;"></p>
-            </div>
-            <div class="pw_btns" style="display:flex; flex-direction:column; gap:8px; margin-left:auto;">
-              <button class="btn_edit" id="btn_pw_edit">수정</button>
-              <button class="btn_save" id="btn_pw_save" style="display:none;">저장</button>
-              <button class="btn_cancel" id="btn_pw_cancel" style="display:none;">취소</button>
-            </div>
-          </div>
+          
           <div class="field">
             <label for="hp">휴대폰 번호</label>
             <input
@@ -111,6 +99,19 @@
             />
             <button class="btn_edit">수정</button>
           </div>
+          <div class="field" id="pw_field_wrap" style="display:flex; flex-direction:row; align-items:center; gap:16px;">
+            <label for="password" style="min-width:120px;">비밀번호 변경</label>
+            <div style="display:flex; flex-direction:column; gap:8px;">
+              <input id="password" type="password" value="" readonly style="display:none; width:220px;" />
+              <input id="password_confirm" type="password" value="" readonly style="display:none; width:220px;" placeholder="비밀번호 확인" />
+              <p id="pw_check_msg" class="password_match" style="display:none; margin:0; width:auto;"></p>
+            </div>
+            <div class="pw_btns" style="display:flex; flex-direction:column; gap:8px; margin-left:auto;">
+              <button class="btn_edit" id="btn_pw_edit">수정</button>
+              <button class="btn_save" id="btn_pw_save" style="display:none;">저장</button>
+              <button class="btn_cancel" id="btn_pw_cancel" style="display:none;">취소</button>
+            </div>
+          </div>
         </div>
       </section>
       <div class="myreview_section">
@@ -120,21 +121,43 @@
       <!-- 선호조사 섹션 -->
       <section class="preferences_section">
         <h1>선호조사</h1>
-        <!-- <div class="genre_buttons"> -->
         <div class="field">
           <label for="genre_buttons">선호 장르</label>
-          <input id="genre_buttons" type="text" readonly/>
-          <button class="btn_prefs_edit">수정</button>
+          <span id="genre_display"></span>
+          <button id="genre_edit_btn">수정</button>
+        </div>
+        <div class="field" id="genre_edit_area" style="display:none; flex-direction:column; align-items:flex-start; gap:8px;">
+          <div class="genre-toggle-wrap" id="genre_edit_toggle_wrap"></div>
+          <div class="modal-actions">
+            <button id="genre_save_btn" class="btn-confirm">저장</button>
+            <button id="genre_cancel_btn" class="btn-cancel">취소</button>
+          </div>
         </div>
         <div class="field">
-          <label for="fav_actor">좋아하는 배우</label>
-          <input id="fav_actor" type="text" value="" readonly />
-          <button class="btn_add">수정</button>
+          <label>좋아하는 배우</label>
+          <span id="actor_display"></span>
+          <button id="actor_edit_btn">수정</button>
+        </div>
+        <div class="field" id="actor_edit_area" style="display:none; flex-direction:column; align-items:flex-start; gap:8px;">
+          <div id="mypage_actor_fields"></div>
+          <button type="button" id="mypage_add_actor_btn">+ 배우 추가</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn_add" id="mypage_save_actor_btn">저장</button>
+            <button class="btn_cancel" id="mypage_cancel_actor_btn">취소</button>
+          </div>
         </div>
         <div class="field">
-          <label for="fav_director">좋아하는 감독</label>
-          <input id="fav_director" type="text" value="" readonly />
-          <button class="btn_add">수정</button>
+          <label>좋아하는 감독</label>
+          <span id="director_display"></span>
+          <button id="director_edit_btn">수정</button>
+        </div>
+        <div class="field" id="director_edit_area" style="display:none; flex-direction:column; align-items:flex-start; gap:8px;">
+          <div id="mypage_director_fields"></div>
+          <button type="button" id="mypage_add_director_btn">+ 감독 추가</button>
+          <div style="display:flex; gap:8px;">
+            <button class="btn_add" id="mypage_save_director_btn">저장</button>
+            <button class="btn_cancel" id="mypage_cancel_director_btn">취소</button>
+          </div>
         </div>
       </section>
       <div class="withdrawal_section">
@@ -222,7 +245,9 @@
         location.href = 'myreview.html';
       };
     </script>
+    <script src="../js/activate_search.js"></script>
     <script src="../js/mypage.js" type="module"></script>
+    
   </body>
 </html>
 

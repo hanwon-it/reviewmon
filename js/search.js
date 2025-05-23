@@ -149,7 +149,7 @@ function renderSearchResults(data, category) {
 }
 
 // 검색 실행 함수 (카테고리/검색어)
-async function doSearch(category, keyword) {
+function doSearch(category, keyword) {
   const searchGrid = document.getElementById("search_grid");
   let apiUrl = "";
   switch (category) {
@@ -163,14 +163,13 @@ async function doSearch(category, keyword) {
       apiUrl = `/auth/search/${encodeURIComponent(keyword)}`;
       break;
   }
-  try {
-    const res = await fetch(apiUrl);
-    const data = await res.json();
-    renderSearchResults(data, category);
-  } catch (err) {
-    searchGrid.innerHTML = "<p>검색 중 오류가 발생했습니다.</p>";
-    console.error("검색 오류:", err);
-  }
+  fetch(apiUrl)
+    .then(res => res.json())
+    .then(data => renderSearchResults(data, category))
+    .catch(err => {
+      searchGrid.innerHTML = "<p>검색 중 오류가 발생했습니다.</p>";
+      console.error("검색 오류:", err);
+    });
 }
 
 // DOMContentLoaded 시 URL 파라미터로 검색 실행
@@ -195,16 +194,35 @@ document.addEventListener("DOMContentLoaded", () => {
     if (searchInput) searchInput.value = keyword;
   }
 
+  // 검색 실행을 위한 공통 함수 (버튼/엔터 모두 사용)
+  function handleSearch() {
+    let query = searchInput.value.trim();
+    if (!query) {
+      alert("검색어를 입력하세요.");
+      return;
+    }
+    if (query.length < 2) {
+      // 알림창이 바로 사라지지 않도록 setTimeout으로 포커스 이동
+      window.showCustomAlert("검색어는 최소 2글자 이상 입력해야 합니다.", function() {
+        setTimeout(() => searchInput.focus(), 10);
+      });
+      return;
+    }
+    query = normalizeQuery(query);
+    doSearch(searchCategory.value, query);
+  }
+
   // 검색 버튼 클릭 시
   if (searchBtn) {
-    searchBtn.addEventListener("click", () => {
-      let query = searchInput.value.trim();
-      if (!query) {
-        alert("검색어를 입력하세요.");
-        return;
+    searchBtn.addEventListener("click", handleSearch);
+  }
+  // 검색 input에서 Enter 시
+  if (searchInput) {
+    searchInput.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        e.preventDefault();
+        handleSearch();
       }
-      query = normalizeQuery(query);
-      doSearch(searchCategory.value, query);
     });
   }
 });

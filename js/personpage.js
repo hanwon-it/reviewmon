@@ -34,8 +34,16 @@ function renderMoviesGrid(movies, gridId) {
     grid.innerHTML = '<p>결과가 없습니다.</p>';
     return;
   }
+  // 디버깅: movie_id, id, title 모두 콘솔에 출력
+  movies.forEach(movie => {
+    console.log(`[personpage] 영화:`, {
+      movie_id: movie.movie_id,
+      id: movie.id,
+      title: movie.title || movie.name
+    });
+  });
   grid.innerHTML = movies.map(movie => `
-    <div class="search_card" data-movie-id="${movie.id || movie.movie_id}" style="cursor:pointer;">
+    <div class="search_card" data-movie-id="${movie.movie_id || movie.id}" style="cursor:pointer;">
       <img src="${movie.poster_path ? `https://image.tmdb.org/t/p/w500${movie.poster_path}` : './img/noimg.png'}" class="search_poster" alt="포스터" />
       <div class="search_info">
         <h3>${movie.title || movie.name}</h3>

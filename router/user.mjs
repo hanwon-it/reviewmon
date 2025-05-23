@@ -16,16 +16,16 @@ const validate_login = [
     body("password")
     .trim()
     .isLength({ min: 6 })
-    .withMessage("최소 6자 이상 입력")
+    .withMessage("비밀번호는 최소 6자 이상 입력하세요")
     .matches(/^(?=.*[a-zA-Z0-9])(?=.*[!@#$%^&*]).{6,}$/)
-    .withMessage("영문, 특수문자, 숫자 모두 포함"),
+    .withMessage("비밀번호는 영문, 특수문자, 숫자 모두 포함하세요"),
   validate,
 ];
 
 const validate_signup = [
   ...validate_login,
-  body("name").trim().notEmpty().withMessage("name을 입력"),
-  body("email").trim().isEmail().withMessage("이메일 형식 확인"),
+  body("name").trim().notEmpty().withMessage("이름을 입력하세요"),
+  body("email").trim().isEmail().withMessage("이메일 형식을 확인하세요"),
   body("hp").matches(/^01[016789][0-9]{7,8}$/).withMessage("휴대폰 번호는 숫자만 입력하세요\n 예) 01012345678"),
   validate,
 ];
@@ -60,6 +60,7 @@ router.delete("/me", is_auth, user_controller.signout);
 // 비밀번호/아이디 찾기
 router.post("/find-pw", user_controller.find_pw_by_email);
 router.post("/find-id", user_controller.find_id_by_email);
+router.patch("/change-pw", is_auth, user_controller.must_change_pw);
 
 // 취향 정보
 router.post("/favorite", is_auth, user_controller.input_favorite);

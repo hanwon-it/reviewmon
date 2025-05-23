@@ -329,3 +329,168 @@ body {
   background-color: var(--color-primary);
   color: #fff;
 }
+
+/* 배우/감독 입력란 인풋 간 여백 및 삭제 버튼 스타일 (signup과 동일) */
+.input_with_remove {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+}
+.input_with_remove:last-child {
+  margin-bottom: 0;
+}
+.mypage_actor_input,
+.mypage_director_input {
+  flex: 1 1 0;
+  min-width: 0;
+  margin-bottom: 0;
+  padding: 8px 10px;
+  height: 40px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+.remove_input_btn {
+  margin-left: 0;
+  background: #eee;
+  border: none;
+  color: #888;
+  font-size: 18px;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+.remove_input_btn:hover {
+  background: #ffdddd;
+  color: #d00;
+}
+.field#actor_edit_area,
+.field#director_edit_area,
+#genre_edit_area {
+  background: linear-gradient(135deg, #2d2240 0%, #3a2d5c 100%);
+  border-radius: 12px;
+  box-shadow: 0 2px 12px #7c3aed22, 0 1.5px 8px #0002;
+  padding: 18px 20px;
+  margin: 8px 0 18px 0;
+  flex-direction: row !important;
+  align-items: center !important;
+  gap: 16px !important;
+  flex-wrap: wrap;
+  border: 1.5px solid var(--color-border);
+  transition: background 0.32s, box-shadow 0.28s, border 0.28s;
+}
+#mypage_actor_fields,
+#mypage_director_fields {
+  display: flex;
+  flex-direction: row;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+.input_with_remove {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 0;
+  background: rgba(255,255,255,0.04);
+  border-radius: 8px;
+  padding: 0 4px;
+  box-shadow: 0 1px 4px #7c3aed11;
+}
+.input_with_remove input {
+  background: rgba(60, 40, 100, 0.22);
+  border: 1px solid #444;
+  color: #fff;
+  font-size: 1rem;
+  border-radius: 8px;
+  transition: border 0.2s, background 0.2s;
+}
+.input_with_remove input:focus {
+  border: 1.5px solid var(--color-primary);
+  background: rgba(124, 58, 237, 0.18);
+}
+#actor_edit_area .btn_add,
+#director_edit_area .btn_add,
+#actor_edit_area .btn_cancel,
+#director_edit_area .btn_cancel,
+#mypage_add_actor_btn,
+#mypage_add_director_btn {
+  height: 40px;
+  margin: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  box-shadow: 0 1px 4px #7c3aed22;
+  transition: background 0.2s, color 0.2s;
+  padding: 0 18px;
+}
+#actor_edit_area .btn_add:hover,
+#director_edit_area .btn_add:hover,
+#actor_edit_area .btn_cancel:hover,
+#director_edit_area .btn_cancel:hover,
+#mypage_add_actor_btn:hover,
+#mypage_add_director_btn:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+}
+#genre_edit_area .genre-toggle-wrap {
+  gap: 12px;
+  margin-bottom: 0;
+}
+#genre_edit_area .genre-toggle {
+  border-radius: 16px;
+  font-size: 1rem;
+  padding: 8px 18px;
+  background: #fff;
+  color: #333;
+  border: 1.5px solid #aaa;
+  transition: background 0.2s, color 0.2s, border 0.2s;
+}
+#genre_edit_area .genre-toggle.selected {
+  background: var(--color-primary);
+  color: #fff;
+  border-color: var(--color-primary-dark);
+}
+#genre_edit_area .modal-actions {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  margin-top: 0;
+  width: auto;
+}
+#genre_edit_area .btn-confirm,
+#genre_edit_area .btn-cancel {
+  height: 40px;
+  margin: 0;
+  align-self: stretch;
+  display: flex;
+  align-items: center;
+  background: var(--color-primary);
+  color: #fff;
+  border-radius: 10px;
+  font-weight: bold;
+  font-size: 1rem;
+  border: none;
+  box-shadow: 0 1px 4px #7c3aed22;
+  transition: background 0.2s, color 0.2s;
+  padding: 0 18px;
+}
+#genre_edit_area .btn-confirm:hover,
+#genre_edit_area .btn-cancel:hover {
+  background: var(--color-primary-dark);
+  color: #fff;
+}

@@ -59,7 +59,7 @@ const user_id_input = document.getElementById("userid");
 check_btn.addEventListener("click", async () => {
   const userid = user_id_input.value.trim();
   if (!userid) {
-    alert("아이디를 입력해주세요.");
+    window.showCustomAlert("아이디를 입력해주세요.");
     return;
   }
 
@@ -73,80 +73,207 @@ check_btn.addEventListener("click", async () => {
     const data = await res.json();
 
     if (data.exists) {
-      alert("이미 사용 중인 아이디입니다.");
+      window.showCustomAlert("이미 사용 중인 아이디입니다.");
     } else {
-      alert("사용 가능한 아이디입니다.");
+      window.showCustomAlert("사용 가능한 아이디입니다.");
     }
   } catch (err) {
     console.error(err);
-    alert("서버 오류로 확인에 실패했습니다.");
+    window.showCustomAlert("서버 오류로 확인에 실패했습니다.");
   }
 });
 
 // fetch 기반 회원가입
 const signup_form = document.querySelector(".signup_form");
 
+// 배우 입력란 추가
+const addActorBtn = document.getElementById("add_actor_btn");
+if (addActorBtn) {
+  addActorBtn.addEventListener("click", function() {
+    const wrapper = document.createElement("div");
+    wrapper.className = "input_with_remove";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "actor_input";
+    input.placeholder = "배우 이름 입력";
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove_input_btn";
+    removeBtn.textContent = "✕";
+    removeBtn.onclick = function() {
+      wrapper.remove();
+    };
+    wrapper.appendChild(input);
+    wrapper.appendChild(removeBtn);
+    document.getElementById("actor_fields").appendChild(wrapper);
+  });
+}
+// 감독 입력란 추가
+const addDirectorBtn = document.getElementById("add_director_btn");
+if (addDirectorBtn) {
+  addDirectorBtn.addEventListener("click", function() {
+    const wrapper = document.createElement("div");
+    wrapper.className = "input_with_remove";
+    const input = document.createElement("input");
+    input.type = "text";
+    input.className = "director_input";
+    input.placeholder = "감독 이름 입력";
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove_input_btn";
+    removeBtn.textContent = "✕";
+    removeBtn.onclick = function() {
+      wrapper.remove();
+    };
+    wrapper.appendChild(input);
+    wrapper.appendChild(removeBtn);
+    document.getElementById("director_fields").appendChild(wrapper);
+  });
+}
+
+// 페이지 로드 시 첫 번째 인풋도 삭제 버튼이 붙도록 보정
+window.addEventListener("DOMContentLoaded", function() {
+  // 배우
+  const actorFields = document.getElementById("actor_fields");
+  if (actorFields && actorFields.children.length === 1 && actorFields.firstElementChild.classList.contains("actor_input")) {
+    const input = actorFields.firstElementChild;
+    const wrapper = document.createElement("div");
+    wrapper.className = "input_with_remove";
+    input.parentNode.replaceChild(wrapper, input);
+    wrapper.appendChild(input);
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove_input_btn";
+    removeBtn.textContent = "✕";
+    removeBtn.onclick = function() {
+      wrapper.remove();
+    };
+    wrapper.appendChild(removeBtn);
+  }
+  // 감독
+  const directorFields = document.getElementById("director_fields");
+  if (directorFields && directorFields.children.length === 1 && directorFields.firstElementChild.classList.contains("director_input")) {
+    const input = directorFields.firstElementChild;
+    const wrapper = document.createElement("div");
+    wrapper.className = "input_with_remove";
+    input.parentNode.replaceChild(wrapper, input);
+    wrapper.appendChild(input);
+    const removeBtn = document.createElement("button");
+    removeBtn.type = "button";
+    removeBtn.className = "remove_input_btn";
+    removeBtn.textContent = "✕";
+    removeBtn.onclick = function() {
+      wrapper.remove();
+    };
+    wrapper.appendChild(removeBtn);
+  }
+});
+
 signup_form.addEventListener("submit", async (e) => {
   e.preventDefault();
 
-  const required_fields = [
-    "userid",
-    "password",
-    "password_confirm",
-    "name",
-    "hp",
-    "nickname",
-    "email",
-  ];
+  // 필수 입력값 순서대로 하나씩 체크 (아이디 → 비밀번호 → 비밀번호 확인 → 이름 → 휴대폰 → 닉네임 → 이메일)
+  const userid = document.getElementById("userid");
+  if (!userid.value.trim()) {
+    window.showCustomAlert("아이디를 입력해주세요.");
+    userid.focus();
+    return;
+  }
+  const password = document.getElementById("password");
+  if (!password.value.trim()) {
+    window.showCustomAlert("비밀번호를 입력해주세요.");
+    password.focus();
+    return;
+  }
+  const password_confirm = document.getElementById("password_confirm");
+  if (!password_confirm.value.trim()) {
+    window.showCustomAlert("비밀번호 확인을 입력해주세요.");
+    password_confirm.focus();
+    return;
+  }
+  const name = document.getElementById("name");
+  if (!name.value.trim()) {
+    window.showCustomAlert("이름을 입력해주세요.");
+    name.focus();
+    return;
+  }
+  const hp = document.getElementById("hp");
+  if (!hp.value.trim()) {
+    window.showCustomAlert("휴대폰 번호를 입력해주세요.");
+    hp.focus();
+    return;
+  }
+  const nickname = document.getElementById("nickname");
+  if (!nickname.value.trim()) {
+    window.showCustomAlert("닉네임을 입력해주세요.");
+    nickname.focus();
+    return;
+  }
+  const email = document.getElementById("email");
+  if (!email.value.trim()) {
+    window.showCustomAlert("이메일을 입력해주세요.");
+    email.focus();
+    return;
+  }
 
-  for (let field_id of required_fields) {
-    const input = document.getElementById(field_id);
-    if (!input.value.trim()) {
-      alert(`${input.previousElementSibling.textContent}을(를) 입력해주세요.`);
-      input.focus();
-      return;
-    }
+  // 선호조사(장르, 배우, 감독) 순서대로 체크
+  if (document.querySelectorAll("input[name='genre']:checked").length === 0) {
+    window.showCustomAlert("선호 장르를 선택해주세요.");
+    return;
+  }
+
+  // 배우/감독 입력값 배열로 수집
+  const actorInputs = Array.from(document.querySelectorAll(".actor_input"));
+  const directorInputs = Array.from(document.querySelectorAll(".director_input"));
+  // 값이 있는 입력란만 추출 (빈칸 무시)
+  const actorNames = actorInputs.map(input => input.value.trim()).filter(Boolean);
+  const directorNames = directorInputs.map(input => input.value.trim()).filter(Boolean);
+
+  if (actorNames.length === 0) {
+    window.showCustomAlert("선호 배우를 입력해주세요.");
+    return;
+  }
+  if (directorNames.length === 0) {
+    window.showCustomAlert("선호 감독을 입력해주세요.");
+    return;
   }
 
   if (!document.getElementById("agree_terms").checked) {
-    alert("이용약관에 동의해주세요.");
+    window.showCustomAlert("이용약관에 동의해주세요.");
     return;
   }
 
   if (pw_input.value !== pw_confirm_input.value) {
-    alert("비밀번호가 일치하지 않습니다.");
+    window.showCustomAlert("비밀번호가 일치하지 않습니다.");
     return;
   }
 
-  // 배우/감독 입력값 → TMDB id+name 객체 배열로 변환
-  async function getPeopleArr(inputId) {
-    const names = document.getElementById(inputId).value
-      .split(",")
-      .map((v) => v.trim())
-      .filter((v) => v);
+  // getPeopleArr 함수 수정
+  async function getPeopleArr(names) {
     const arr = [];
     for (const name of names) {
       try {
         const res = await fetch(`/movie/search_person?query=${encodeURIComponent(name)}`);
         const data = await res.json();
         if (data.results && data.results.length > 0) {
-          // 동명이인 모두 저장
           data.results.forEach(person => {
             arr.push({ id: person.id, name: person.name });
           });
         } else {
-          arr.push({ id: null, name });
+          console.log(`[TMDB] id를 찾지 못한 인물:`, name);
+          arr.push({ id: '', name });
         }
       } catch {
-        arr.push({ id: null, name });
+        console.log(`[TMDB] API 호출 실패:`, name);
+        arr.push({ id: '', name });
       }
     }
     return arr;
   }
 
   // 배우/감독 동기적으로 TMDB id+name 변환
-  const actorArr = await getPeopleArr("actors");
-  const directorArr = await getPeopleArr("directors");
+  const actorArr = await getPeopleArr(actorNames);
+  const directorArr = await getPeopleArr(directorNames);
 
   const data = {
     userid: document.getElementById("userid").value.trim(),
@@ -176,8 +303,9 @@ signup_form.addEventListener("submit", async (e) => {
     const result = JSON.parse(resultText);
 
     if (res.status === 201) {
-      window.showCustomAlert("회원가입이 완료되었습니다. 로그인해주세요.");
-      location.href = "/index.html";
+      window.showCustomAlert("회원가입이 완료되었습니다. 로그인해주세요.", function() {
+        location.href = "/index.html";
+      });
     } else {
       window.showCustomAlert(result.message || "회원가입 실패");
     }
