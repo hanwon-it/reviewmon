@@ -6,7 +6,7 @@ const AUTH_ERROR = { message: "인증 에러" };
 
 export const is_auth = async (req, res, next) => {
   const auth_header = req.get("Authorization");
-  console.log("Authorization:", auth_header);
+  // console.log("Authorization:", auth_header);
 
   if (!(auth_header && auth_header.startsWith("Bearer "))) {
     console.log("헤더 에러");
@@ -14,11 +14,11 @@ export const is_auth = async (req, res, next) => {
   }
 
   const token = auth_header.split(" ")[1];
-  console.log("Token:", token);
+  // console.log("Token:", token);
 
   try {
     const decoded = jwt.verify(token, config.jwt.secret_key);
-    console.log("decoded.id:", decoded.id);
+    // console.log("decoded.id:", decoded.id);
 
     const user = await auth_repository.find_by_idx(decoded.id);
     if (!user) {

@@ -264,7 +264,7 @@ signup_form.addEventListener("submit", async (e) => {
           arr.push({ id: '', name });
         }
       } catch {
-        console.log(`[TMDB] API 호출 실패:`, name);
+        // console.log(`[TMDB] API 호출 실패:`, name);
         arr.push({ id: '', name });
       }
     }

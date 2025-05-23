@@ -50,9 +50,9 @@ export async function create_review(req, res, next) {
     const user_idx = await token_decoding(auth_header);
 
     const nickname = await user_repository.find_by_sth(user_idx, "nickname");
-    console.log(nickname);
+    // console.log(nickname);
     const movie_title = await movie_repository.get_title_by_id(movie_id);
-    console.log(movie_title);
+    // console.log(movie_title);
 
     const like_cnt = 0; // 좋아요 초기값 설정
     const review = await review_repository.post_review({

@@ -145,7 +145,7 @@ function renderSearchResults(data, category) {
     return;
   }
   searchGrid.innerHTML = html;
-  console.log("검색 결과:", data);
+  // console.log("검색 결과:", data);
 }
 
 // 검색 실행 함수 (카테고리/검색어)

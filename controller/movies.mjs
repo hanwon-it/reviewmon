@@ -21,7 +21,7 @@ export async function search_movie(req, res) {
     if (type === "title") {
       // 검색어에서 공백 모두 제거
       const normalizedQuery = query.trim();
-      // console.log("normalizedQuery", normalizedQuery);
+  
       // Aggregation으로 title의 공백을 모두 제거해서 비교
       const searchResults = await Movie.aggregate([
         {
@@ -50,7 +50,7 @@ export async function search_movie(req, res) {
 
     if (type == "person") {
       const person = query.trim();
-      // console.log("person", person);
+    
       // 항상 TMDB API로만 검색
       try {
         const url = `https://api.themoviedb.org/3/search/person?api_key=${api_key}&language=ko-KR&query=${person}`;
@@ -62,7 +62,7 @@ export async function search_movie(req, res) {
           return res.status(404).json({ message: "해당 인물이 없습니다." });
         }
         return res.json({ people: data.results });
-        console.log("data.results", data.results);
+        // console.log("data.results", data.results);
       } catch (err) {
         return res.status(500).json({ message: "TMDB 인물 검색 오류" });
       }
@@ -81,7 +81,7 @@ async function getMovieObjectId(movieid) {
   return movie._id;
 }
 
-// 3. 해당 영화 상세 정보(외부 평점 포함)
+// 3. 해당 영화 상세 정보
 export async function movie_info(req, res) {
   try {
     const { movie_id } = req.params;
@@ -93,7 +93,7 @@ export async function movie_info(req, res) {
     const reviews = await Review.find({ movie_id: movie.movie_id }).sort({
       like_cnt: -1,
     });
-    // .limit(10);
+   
 
     // 리뷰 평점 평균 계산
     let avgRating = null;
@@ -115,9 +115,9 @@ export async function movie_info(req, res) {
   }
 }
 
-// 로직 분기 : 이 부분을 if ap < 40 이면 로직1 / ap >= 40 이면 로직2 돌리기
+// 로직 분기 : 이 부분을 if ap < 40 이면 로직1,2 / ap >= 40 이면 로직3 돌리기
 export async function recommend_movies_by_user(req, res) {
-  console.log(`req.id =${req.id}`);
+  // console.log(`req.id =${req.id}`);
   const user_idx = req.id;
   if (!user_idx) return res.status(400).json({ message: "user_idx 필수" });
   try {
@@ -127,10 +127,10 @@ export async function recommend_movies_by_user(req, res) {
     // activity_point 기준 분기
     if (user.activity_point < 40) {
       // :앞쪽_화살표: 로직1 호출 (req, res를 그대로 넘김)
-      return await getRecommendations(req, res); // res로 바로 응답 반환, 함수 종료
+      return await getRecommendations(req, res); 
     } else {
-      // :앞쪽_화살표: 로직2 호출
-      return await getRecommendations_v2(req, res);
+      // :앞쪽_화살표: 로직3 호출
+      return await getRecommendations_v3(req, res);
     }
   } catch (err) {
     console.error("추천 오류:", err);
@@ -139,7 +139,6 @@ export async function recommend_movies_by_user(req, res) {
 }
 
 // 3. 추천 영화 띄워주기 (로직 2개)
-// :흰색_확인_표시: 영화 추천 로직1. (좋아하는 배우/감독 출연/연출작 기반)
 export async function getRecommendations(req, res) {
   console.log("로직 1 실행");
   try {
@@ -150,17 +149,19 @@ export async function getRecommendations(req, res) {
     const favorite = await Favorite.findOne({ user_idx });
 
     if (!favorite) return res.status(200).json([]);
-    // ★ 추가: DB에 저장된 자료 형식(예: 각 객체에 _id가 있는지)과 비교하여,
-    // 저장된 배우/감독 데이터가 "김사과, 이메론" 등과 같은 올바른 형식이 아니라면
-    // 로직 3(getRecommendations_v3 또는 get_april_movies) 호출
-    if (
-      (favorite.actor && favorite.actor.some((actor) => actor.id === null)) ||
-      (favorite.director &&
-        favorite.director.some((director) => director.id === null))
-    ) {
-      // id가 null인 경우 실행할 함수
-      return await getRecommendations_v3(req, res);
+    
+    // DB에 저장된 자료 형식(예: 각 객체에 _id가 있는지)과 비교하여,
+    // 저장된 배우/감독 데이터가 올바른 형식이 아니라면
+    // 로직 getRecommendations_v2 호출
+    const actor_Ids = (favorite.actor || []).map((a) => a.id).filter((id)=> id!== null)
+    const director_Ids = (favorite.director || []).map((d) => d.id).filter((id)=> id!== null)
+    console.log("actorIds:", actor_Ids);
+    console.log("directorIds:", director_Ids);
+
+    if (actor_Ids.length === 0 && director_Ids.length === 0) {
+      return await getRecommendations_v2(req, res);
     }
+
     const genreIds = (favorite.genre || []).filter(Boolean).map(Number);
     const actorIds = (favorite.actor || [])
       .map((a) => String(a.id))
@@ -235,13 +236,13 @@ export async function getRecommendations(req, res) {
     }));
     res.json(result);
   } catch (err) {
-    console.error(":다트: 추천 영화 오류:", err);
+    console.error("추천 영화 오류:", err);
     res.status(500).json({ message: "추천 영화 불러오기 실패" });
   }
 }
 
-// 찬환이형 로직(2)
-export async function getRecommendations_v2(req, res) {
+// 찬환
+export async function getRecommendations_v3(req, res) {
   console.log("로직 2 실행");
   try {
     const user_idx = req.id;
@@ -296,18 +297,17 @@ export async function getRecommendations_v2(req, res) {
       },
     ]);
     res.status(200).json(recommendations);
-    // console.log("함수2 뒷부분 뜨나요??");
+   
   } catch (err) {
     console.error(":다트: 추천 영화 오류:", err);
     res.status(500).json({ message: "추천 영화 불러오기 실패" });
   }
 }
 
-// 로직3 (상원로직)
-// 4월 개봉작 hanwon
-export async function getRecommendations_v3(req, res) {
+// 로직2 (상원로직)
+export async function getRecommendations_v2(req, res) {
   try {
-    console.log("v3 입장샷");
+
     const start_date = "2025-04-01";
     const end_date = "2025-04-30";
 
@@ -318,8 +318,6 @@ export async function getRecommendations_v3(req, res) {
       .limit(20)
       .select("movie_id title poster_path overview popularity release_date");
 
-    console.log("무비스확인", movies);
-
     const result = movies.map((m) => ({
       movie_id: m.movie_id,
       title: m.title,
@@ -328,7 +326,7 @@ export async function getRecommendations_v3(req, res) {
       popularity: m.popularity,
       release_date: m.release_date,
     }));
-    console.log("퇴장샷");
+
     res.status(200).json(result);
   } catch (error) {
     res.status(500).json({ message: "서버 오류" });
@@ -341,12 +339,12 @@ export async function get_popular_movies(req, res) {
     const movies = await Movie.find({}).sort({ popularity: -1 }).limit(20);
     res.json(movies);
   } catch (error) {
-    console.error("🔥 인기 영화 조회 실패:", error);
+    console.error("인기 영화 조회 실패:", error);
     res.status(500).json({ message: "서버 오류" });
   }
 }
 
-// TMDB 인물 검색 프록시 (이것만 남기세요)
+// TMDB 인물 검색 프록시
 export async function search_person(req, res) {
   const { query } = req.query;
   if (!query) return res.status(400).json({ message: "query 필요" });

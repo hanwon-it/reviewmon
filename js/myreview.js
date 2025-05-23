@@ -190,7 +190,6 @@ async function patch_review(idx, new_content, new_rating) {
 
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
-    // 커스텀 알림 모달로 대체
     window.showCustomAlert("리뷰가 수정되었습니다.");
   } catch (err) {
     console.error(err);
@@ -207,7 +206,7 @@ async function delete_review(idx) {
     });
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
-    // 커스텀 알림 모달로 대체
+ 
     window.showCustomAlert("리뷰가 삭제되었습니다.");
   } catch (err) {
     console.error(err);

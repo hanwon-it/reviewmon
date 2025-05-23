@@ -99,17 +99,17 @@
             />
             <button class="btn_edit">수정</button>
           </div>
-          <div class="field" id="pw_field_wrap" style="display:flex; flex-direction:row; align-items:center; gap:16px;">
-            <label for="password" style="min-width:120px;">비밀번호 변경</label>
-            <div style="display:flex; flex-direction:column; gap:8px;">
-              <input id="password" type="password" value="" readonly style="display:none; width:220px;" />
-              <input id="password_confirm" type="password" value="" readonly style="display:none; width:220px;" placeholder="비밀번호 확인" />
-              <p id="pw_check_msg" class="password_match" style="display:none; margin:0; width:auto;"></p>
+          <div class="field" id="pw_field_wrap">
+            <label for="password" class="pw_label">비밀번호 변경</label>
+            <div class="pw_input_col">
+              <input id="password" type="password" value="" readonly class="pw_input" />
+              <input id="password_confirm" type="password" value="" readonly class="pw_input" placeholder="비밀번호 확인" />
+              <p id="pw_check_msg" class="password_match" ></p>
             </div>
-            <div class="pw_btns" style="display:flex; flex-direction:column; gap:8px; margin-left:auto;">
-              <button class="btn_edit" id="btn_pw_edit">수정</button>
-              <button class="btn_save" id="btn_pw_save" style="display:none;">저장</button>
-              <button class="btn_cancel" id="btn_pw_cancel" style="display:none;">취소</button>
+            <div class="pw_btns">
+              <button id="btn_pw_edit">수정</button>
+              <button class="btn_save" id="btn_pw_save">저장</button>
+              <button class="btn_cancel" id="btn_pw_cancel">취소</button>
             </div>
           </div>
         </div>
@@ -239,7 +239,7 @@
       </div>
     </div>
 
-    <script src="../js/logout.js"></script>
+    
     <script>
       document.getElementById('btn_myreview').onclick = function() {
         location.href = 'myreview.html';

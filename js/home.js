@@ -56,7 +56,7 @@ autoSlide();
 // 로그인한 사용자에게 맞는 추천 영화 목록을 받아와 캐러셀로 보여줌
 async function fetchRecommendedMovies() {
   const token = localStorage.getItem('token');
-  console.log("불러올 토큰:", token);
+  // console.log("불러올 토큰:", token);
   if (!token) {
     window.showCustomAlert("로그인이 필요합니다.", function() {
       window.location.href = "/index.html";

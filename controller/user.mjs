@@ -157,28 +157,28 @@ export async function login(req, res) {
     const { userid, password } = req.body;
     const user = await user_repository.find_by_userid(userid);
     if (!user) {
-      console.log("[LOGIN] 존재하지 않는 아이디");
+      // console.log("[LOGIN] 존재하지 않는 아이디");
       return res.status(401).json({ message: "존재하지 않는 아이디입니다." });
     }
     const is_valid_password = await bcrypt.compare(password, user.password);
-    console.log("[LOGIN] 비밀번호 일치 여부:", is_valid_password);
+    // console.log("[LOGIN] 비밀번호 일치 여부:", is_valid_password);
     if (!is_valid_password) {
-      console.log("[LOGIN] 비밀번호 불일치");
+      // console.log("[LOGIN] 비밀번호 불일치");
       return res
         .status(401)
         .json({ message: "아이디 또는 비밀번호가 틀립니다." });
     }
 
     const is_temp_pw = user.is_temp_pw; // 임시비번인지 구분 방법: is_temp_pw가 true일 시
-    console.log(`임시 비번 여부: ${is_temp_pw}`);
+    // console.log(`임시 비번 여부: ${is_temp_pw}`);
 
     if (is_temp_pw === true) {
       const token_exp = create_exp_token(user._id.toString());
-      console.log(`[LOGIN] EXP 토큰 생성: ${token_exp}`);
+      // console.log(`[LOGIN] EXP 토큰 생성: ${token_exp}`);
       res.status(200).json({ token_exp: token_exp, userid: user.userid });
     } else {
       const token = create_jwt_token(user._id.toString());
-      console.log(`[LOGIN] JWT 토큰 생성: ${token}`);
+      // console.log(`[LOGIN] JWT 토큰 생성: ${token}`);
       res.status(200).json({ token: token, userid: user.userid });
     }
   } catch (err) {
@@ -188,7 +188,7 @@ export async function login(req, res) {
 }
 
 export async function token_decoding(auth_header) {
-  //const auth_header = req.headers.authorization;
+
   if (!auth_header || !auth_header.startsWith("Bearer ")) {
     return res.status(401).json({ message: "토큰 없음 또는 잘못된 형식" });
   }
@@ -212,10 +212,10 @@ export async function must_change_pw(req, res, next) {
   await user_repository.update_user_by_id(user_idx, {
     is_temp_pw: false,
   });
-  // 🔐 정상 로그인용 토큰 새로 발급
+  // 정상 로그인용 토큰 새로 발급
   const token = create_jwt_token(user_idx);
 
-  // ✅ 변경 성공: 새 토큰과 함께 응답
+  // 변경 성공: 새 토큰과 함께 응답
   return res.status(200).json({
     success: true,
     token,
@@ -229,7 +229,7 @@ export async function must_change_pw(req, res, next) {
 //이메일로 아이디 찾기
 export async function find_id_by_email(req, res) {
   const { name, email } = req.body;
-  console.log(req.body);
+  // console.log(req.body);
   try {
     const user = await user_repository.find_email(email, name);
     if (!user) {
@@ -278,7 +278,7 @@ export async function find_pw_by_email(req, res) {
     const user = result.user;
 
     const random_pw = generate_password(8);
-    console.log(`8자리 새 비번 생성: ${random_pw}`);
+    // console.log(`8자리 새 비번 생성: ${random_pw}`);
     const hashed_pw = await bcrypt.hash(random_pw, config.bcrypt.salt_rounds);
     if (hashed_pw === null) {
       return res.status(500).json({
@@ -287,7 +287,7 @@ export async function find_pw_by_email(req, res) {
       });
     }
     const email_result = await send_pw_email(email, random_pw);
-    console.log(email_result);
+    // console.log(email_result);
     if (!email_result?.success) {
       return res.status(500).json({
         success: false,
@@ -298,7 +298,7 @@ export async function find_pw_by_email(req, res) {
     await user_repository.update_user_by_id(user._id, {
       password: hashed_pw,
     });
-    console.log(`비번 갱신 성공: ${hashed_pw}`);
+    // console.log(`비번 갱신 성공: ${hashed_pw}`);
     // 임시 비번 여부 확인 필드 is_temp_pw를 true로 수정.
     const temp_pw_request_count = user.temp_pw_request_count + 1;
     await user_repository.update_user_by_id(user._id, {
@@ -453,15 +453,15 @@ export async function update_favorite(req, res) {
 export async function search_auth(req, res) {
   try {
     let { nickname } = req.params;
-    console.log("닉네임 검색 요청(원본):", nickname);
+    // console.log("닉네임 검색 요청(원본):", nickname);
     nickname = nickname.replace(/\s/g, ""); // 모든 공백 제거
-    console.log("닉네임 검색 요청(공백제거):", nickname);
+    // console.log("닉네임 검색 요청(공백제거):", nickname);
     if (!nickname) {
       return res.status(400).json({ message: "닉네임을 입력해주세요." });
     }
     // 부분 일치 검색 (대소문자 구분 X, DB의 nickname에서도 공백 제거)
     const users = await user_repository.find_by_nickname_regex(nickname);
-    console.log("DB에서 찾은 유저:", users);
+    // console.log("DB에서 찾은 유저:", users);
     if (!users || users.length === 0) {
       return res
         .status(404)

@@ -494,3 +494,45 @@ body {
   background: var(--color-primary-dark);
   color: #fff;
 }
+
+/* 비밀번호 변경 영역 스타일 */
+#pw_field_wrap {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+}
+.pw_label {
+  min-width: 120px;
+}
+.pw_input_col {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.pw_input {
+  width: 220px;
+  display: none;
+}
+#pw_check_msg {
+  margin: 0;
+  width: auto;
+  display: none;
+}
+.pw_btns {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-left: auto;
+}
+#btn_pw_save,
+#btn_pw_cancel {
+  display: none;
+}
+/* 표시/숨김 제어 */
+.show {
+  display: inline-block !important;
+}
+.hide {
+  display: none !important;
+}

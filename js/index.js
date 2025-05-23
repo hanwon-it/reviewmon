@@ -8,7 +8,6 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
   const password = document.getElementById("password").value.trim();
 
   if (!userid || !password) {
-    // 커스텀 알림 모달로 대체
     window.showCustomAlert("아이디와 비밀번호를 입력해주세요.");
     return;
   }
@@ -29,14 +28,12 @@ document.querySelector(".login_form").addEventListener("submit", async (e) => {
       localStorage.setItem("token_exp", data.token_exp);
       localStorage.setItem("userid", userid);
       
-      // 커스텀 알림 모달로 대체
       window.showCustomAlert("임시 로그인 성공!", function() {
         window.location.href = "/mypage.html";
       });
     } else if (res.status === 200 && data.token) {
       localStorage.setItem("token", data.token);
       localStorage.setItem("userid", userid);
-      // 커스텀 알림 모달로 대체
       window.showCustomAlert("로그인 성공!", function () {
         window.location.href = "/home.html";
       });

@@ -45,7 +45,7 @@ connectDB()
 export async function get_popular_movies(req, res) {
   try {
     const movies = await Movie.find({}).sort({ popularity: -1 }).limit(10);
-    console.log("인기영화 쿼리 결과:", movies);
+    // console.log("인기영화 쿼리 결과:", movies);
     res.json(movies);
   } catch (error) {
     console.error("인기 영화 조회 실패:", error);

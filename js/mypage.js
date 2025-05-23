@@ -26,8 +26,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const token = localStorage.getItem("token"); // 저장된 JWT 토큰 가져오기
   const token_exp = localStorage.getItem("token_exp"); // 저장된 EXP 토큰 가져오기
 
-  console.log(`토큰: ${token}`);
-  console.log(`임시 토큰: ${token_exp}`);
+  // console.log(`토큰: ${token}`);
+  // console.log(`임시 토큰: ${token_exp}`);
 
   // 예: mypage에서 검색창이나 버튼을 disable
   if (token_exp !== null && token === null) {
@@ -62,7 +62,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   try {
     let res = null;
     if (token_exp !== null) {
-      console.log("👉 임시 토큰으로 요청 중...");
+      // console.log("임시 토큰으로 요청 중...");
       res = await fetch("/auth/me", {
         method: "GET",
         headers: {
@@ -71,7 +71,7 @@ document.addEventListener("DOMContentLoaded", async () => {
         },
       });
     } else if (token !== null) {
-      console.log("👉 일반 토큰으로 요청 중...");
+      // console.log("일반 토큰으로 요청 중...");
       res = await fetch("/auth/me", {
         method: "GET",
         headers: {
@@ -86,7 +86,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const data = await res.json();
     if (!res.ok) throw new Error(data.message);
 
-    console.log("받은 유저 데이터:", data); // 디버깅용
+    // console.log("받은 유저 데이터:", data); // 디버깅용
 
     // DOM에 사용자 정보 출력
     view_id.value = data.userid;
@@ -157,7 +157,7 @@ document.addEventListener("DOMContentLoaded", async () => {
       document.getElementById("actor_edit_btn").style.display = "none";
       document.getElementById("actor_edit_area").style.display = "flex";
       setInitialFavoriteInputs(data.favorite ? data.favorite.actor : [], "mypage_actor_fields", "mypage_actor_input", "배우 이름 입력");
-      // ★ 추가: 이벤트 바인딩을 여기서 다시 해줌
+      // 추가: 이벤트 바인딩을 여기서 다시 해줌
       document.getElementById("mypage_add_actor_btn").onclick = function() {
         document.getElementById("mypage_actor_fields").appendChild(
           createInputWithRemove("mypage_actor_input", "배우 이름 입력")
@@ -261,22 +261,23 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 });
 
-// 프로필 수정 기능 활성화
+// 프로필 수정 기능 ewr화
 document.addEventListener("DOMContentLoaded", () => {
   const edit_buttons = document.querySelectorAll(".btn_edit");
 
   edit_buttons.forEach((btn) => {
+    // id가 있으면(즉, 비밀번호 변경 버튼 등) 바인딩하지 않음
+    if (btn.id) return;
     btn.addEventListener("click", () => {
       const field = btn.previousElementSibling;
       const token = localStorage.getItem("token");
+      if (!field || field.tagName !== "INPUT") return;
       if (field.hasAttribute("readonly")) {
-        field.dataset.original = field.value; // 진입 시점의 값을 data-original에 저장
+        field.dataset.original = field.value;
         field.removeAttribute("readonly");
         field.focus();
         btn.textContent = "저장";
       } else {
-        // 저장 요청
-        // 닉네임 필드일 때 빈값 방지
         if (field.id === "nickname" && (!field.value || !field.value.trim())) {
           window.showCustomAlert("닉네임은 필수 입력 사항입니다.");
           field.value = field.dataset.original || "";
@@ -285,14 +286,12 @@ document.addEventListener("DOMContentLoaded", () => {
         }
         field.setAttribute("readonly", true);
         btn.textContent = "수정";
-
         const field_id = field.id;
         const updated_value = field.value;
         let patchBody = { [field_id]: updated_value };
         if (field_id === "hp") {
           patchBody = { hp: updated_value };
         }
-
         fetch("/auth/me", {
           method: "PATCH",
           headers: {
@@ -304,13 +303,9 @@ document.addEventListener("DOMContentLoaded", () => {
           .then((res) => res.json())
           .then((data) => {
             if (!data.success) throw new Error(data.message);
-            console.log("업데이트 성공:", data);
-
-            // ✅ 성공 알림
             window.showCustomAlert("수정에 성공했습니다.");
           })
           .catch((err) => {
-            // 실패 시 이전 값 복구 (data-original에서)
             field.value = field.dataset.original || "";
             window.showCustomAlert("수정 실패: " + err.message);
           });
@@ -320,23 +315,27 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 // 선호장르 수정 팝업 열기 버튼 연결
-document.querySelector(".btn_prefs_edit").addEventListener("click", () => {
-  document.getElementById("genre_preferences_modal").classList.add("open");
-});
+const btnPrefsEdit = document.querySelector(".btn_prefs_edit");
+if (btnPrefsEdit) {
+  btnPrefsEdit.addEventListener("click", () => {
+    document.getElementById("genre_preferences_modal").classList.add("open");
+  });
+}
 
 // 닫기 버튼 연결
-document
-  .getElementById("genre_preferences_cancel")
-  .addEventListener("click", () => {
+const btnGenreCancel = document.getElementById("genre_preferences_cancel");
+if (btnGenreCancel) {
+  btnGenreCancel.addEventListener("click", () => {
     document.getElementById("genre_preferences_modal").classList.remove("open");
   });
+}
 
 // 토글 버튼 처리
-document.querySelectorAll(".genre-toggle").forEach((button) => {
+const genreToggles = document.querySelectorAll(".genre-toggle");
+genreToggles.forEach((button) => {
   button.addEventListener("click", () => {
     const selected = document.querySelectorAll(".genre-toggle.selected");
     if (!button.classList.contains("selected") && selected.length >= 3) {
-      // 커스텀 알림 모달로 대체
       window.showCustomAlert("최대 3개까지 선택할 수 있습니다.");
       return;
     }
@@ -442,7 +441,7 @@ async function getPeopleArrMypage(names) {
         arr.push({ id: '', name });
       }
     } catch {
-      console.log(`[TMDB] API 호출 실패:`, name);
+      // console.log(`[TMDB] API 호출 실패:`, name);
       arr.push({ id: '', name });
     }
   }
@@ -487,120 +486,110 @@ function setGenreEditToggles(selectedGenres) {
   });
 }
 
-// 비밀번호 변경 UI 동작
-const pwEditBtn = document.getElementById("btn_pw_edit");
-const pwSaveBtn = document.getElementById("btn_pw_save");
-const pwCancelBtn = document.getElementById("btn_pw_cancel");
-const pwField = document.getElementById("password");
-const pwConfirmField = document.getElementById("password_confirm");
-const pw_msg = document.getElementById("pw_check_msg");
+// ====== 비밀번호 변경 UI 동작: 다른 수정 버튼과 완전히 분리 ======
+document.addEventListener('DOMContentLoaded', function() {
+  const pwEditBtn = document.getElementById("btn_pw_edit");
+  const pwSaveBtn = document.getElementById("btn_pw_save");
+  const pwCancelBtn = document.getElementById("btn_pw_cancel");
+  const pwField = document.getElementById("password");
+  const pwConfirmField = document.getElementById("password_confirm");
+  const pw_msg = document.getElementById("pw_check_msg");
 
-pwEditBtn.addEventListener("click", () => {
-  pwField.style.display = "inline-block";
-  pwConfirmField.style.display = "inline-block";
-  pw_msg.style.display = "block";
-  pwSaveBtn.style.display = "inline-block";
-  pwCancelBtn.style.display = "inline-block";
-  pwEditBtn.style.display = "none";
-  pwField.removeAttribute("readonly");
-  pwConfirmField.removeAttribute("readonly");
-  pwField.value = "";
-  pwConfirmField.value = "";
-  pw_msg.textContent = "";
-});
+  if (!pwEditBtn || !pwSaveBtn || !pwCancelBtn || !pwField || !pwConfirmField || !pw_msg) return;
 
-pwCancelBtn.addEventListener("click", () => {
-  pwField.style.display = "none";
-  pwConfirmField.style.display = "none";
-  pw_msg.style.display = "none";
-  pwSaveBtn.style.display = "none";
-  pwCancelBtn.style.display = "none";
-  pwEditBtn.style.display = "inline-block";
-  pwField.value = "";
-  pwConfirmField.value = "";
-  pwField.setAttribute("readonly", true);
-  pwConfirmField.setAttribute("readonly", true);
-  pw_msg.textContent = "";
-});
-
-const token = localStorage.getItem("token"); // 저장된 JWT 토큰 가져오기
-const token_exp = localStorage.getItem("token_exp"); // 저장된 EXP 토큰 가져오기
-
-function check_password_match() {
-  const pw = pwField.value;
-  const pw_confirm = pwConfirmField.value;
-  if (pw && pw_confirm) {
-    if (pw === pw_confirm) {
-      pw_msg.textContent = "비밀번호가 일치합니다.";
-      pw_msg.style.color = "green";
-    } else {
-      pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
-      pw_msg.style.color = "red";
-    }
-  } else {
+  pwEditBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    pwField.classList.add("show");
+    pwConfirmField.classList.add("show");
+    pw_msg.classList.add("show");
+    pwSaveBtn.classList.add("show");
+    pwCancelBtn.classList.add("show");
+    pwEditBtn.classList.add("hide");
+    pwField.removeAttribute("readonly");
+    pwConfirmField.removeAttribute("readonly");
+    pwField.value = "";
+    pwConfirmField.value = "";
     pw_msg.textContent = "";
-  }
-}
+  });
 
-pwField.addEventListener("input", check_password_match);
-pwConfirmField.addEventListener("input", check_password_match);
+  pwCancelBtn.addEventListener("click", () => {
+    pwField.classList.remove("show");
+    pwConfirmField.classList.remove("show");
+    pw_msg.classList.remove("show");
+    pwSaveBtn.classList.remove("show");
+    pwCancelBtn.classList.remove("show");
+    pwEditBtn.classList.remove("hide");
+    pwField.value = "";
+    pwConfirmField.value = "";
+    pwField.setAttribute("readonly", true);
+    pwConfirmField.setAttribute("readonly", true);
+    pw_msg.textContent = "";
+  });
 
-pwSaveBtn.addEventListener("click", async () => {
-  if (!pwField.value || !pwConfirmField.value) {
-    window.showCustomAlert("비밀번호를 모두 입력해주세요.");
-    return;
+  function check_password_match() {
+    const pw = pwField.value;
+    const pw_confirm = pwConfirmField.value;
+    if (pw && pw_confirm) {
+      if (pw === pw_confirm) {
+        pw_msg.textContent = "비밀번호가 일치합니다.";
+        pw_msg.style.color = "green";
+      } else {
+        pw_msg.textContent = "비밀번호가 일치하지 않습니다.";
+        pw_msg.style.color = "red";
+      }
+    } else {
+      pw_msg.textContent = "";
+    }
   }
-  if (pwField.value !== pwConfirmField.value) {
-    window.showCustomAlert("비밀번호가 일치하지 않습니다.");
-    return;
-  }
-  // PATCH 요청
-  try {
-    let res = null;
-    if (token_exp !== null) {
-      console.log("임시 비번 변경 시도");
-      res = await fetch("/auth/change-pw", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token_exp}`,
-        },
-        body: JSON.stringify({ password: pwField.value }),
-      });
+
+  pwField.addEventListener("input", check_password_match);
+  pwConfirmField.addEventListener("input", check_password_match);
+
+  pwSaveBtn.addEventListener("click", async () => {
+    if (!pwField.value || !pwConfirmField.value) {
+      window.showCustomAlert("비밀번호를 모두 입력해주세요.");
+      return;
+    }
+    if (pwField.value !== pwConfirmField.value) {
+      window.showCustomAlert("비밀번호가 일치하지 않습니다.");
+      return;
+    }
+    // PATCH 요청
+    const token = localStorage.getItem("token");
+    const token_exp = localStorage.getItem("token_exp");
+    try {
+      let res = null;
+      if (token_exp !== null) {
+        res = await fetch("/auth/change-pw", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token_exp}`,
+          },
+          body: JSON.stringify({ password: pwField.value }),
+        });
+      } else if (token !== null) {
+        res = await fetch("/auth/me", {
+          method: "PATCH",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({ password: pwField.value }),
+        });
+      }
+      if (!res) throw new Error("fetch 요청이 실행되지 않았습니다.");
       const data = await res.json();
       if (!data.success) throw new Error(data.message);
       if (!data.token) throw new Error("토큰이 반환되지 않았습니다.");
       localStorage.setItem("token", data.token);
-      localStorage.removeItem("token_exp");
+      if (token_exp !== null) {
+        localStorage.removeItem("token_exp");
+      }
       window.showCustomAlert("비밀번호가 성공적으로 변경되었습니다.");
-      console.log(token);
       window.location.href = "/home.html";
-    } else if (token !== null) {
-      res = await fetch("/auth/me", {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({ password: pwField.value }),
-      });
-      const data = await res.json();
-      if (!data.success) throw new Error(data.message);
-      window.showCustomAlert("비밀번호가 성공적으로 변경되었습니다.");
-      // UI 원상복구
-      pwField.style.display = "none";
-      pwConfirmField.style.display = "none";
-      pw_msg.style.display = "none";
-      pwSaveBtn.style.display = "none";
-      pwCancelBtn.style.display = "none";
-      pwEditBtn.style.display = "inline-block";
-      pwField.value = "";
-      pwConfirmField.value = "";
-      pwField.setAttribute("readonly", true);
-      pwConfirmField.setAttribute("readonly", true);
-      pw_msg.textContent = "";
+    } catch (err) {
+      window.showCustomAlert("비밀번호 변경 실패: " + err.message);
     }
-  } catch (err) {
-    window.showCustomAlert("비밀번호 변경 실패: " + err.message);
-  }
+  });
 });
